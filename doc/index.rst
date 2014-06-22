@@ -15,8 +15,8 @@ Getting Started
    tutorial
 
 
-Reference
----------
+Diving into the Code
+--------------------
 
 .. toctree::
    :maxdepth: 2
