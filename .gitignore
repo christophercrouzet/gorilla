@@ -1,0 +1,9 @@
+._*
+.DS_Store
+*.dist-info
+*.egg-info
+*.py[co]
+*.sublime-*
+__pycache__
+build/
+dist/
