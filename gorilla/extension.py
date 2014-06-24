@@ -172,14 +172,14 @@ class Extension(object):
         original = self.original
         object_type = self._get_object_type(object)
         target_type = self._get_target_type(self._target)
-        if (target_type not in (ObjectType.MODULE, ObjectType.CLASS) or
-                object_type not in (ObjectType.CLASS, ObjectType.DESCRIPTOR)):
+        if (target_type not in (ObjectType.module, ObjectType.cls) or
+                object_type not in (ObjectType.cls, ObjectType.descriptor)):
             raise TypeError("Cannot patch a `%s` with a `%s`." % (
                 type(self._target).__name__, type(object).__name))
         
         if original:
             original_type = ObjectType.get(original)
-            if object_type == original_type == ObjectType.CLASS:
+            if object_type == original_type == ObjectType.cls:
                 # An existing class has to be patched with another class.
                 # Recursively go through each attribute member.
                 attributes = gorilla._utils.class_attribute_iterator(object)
@@ -216,7 +216,7 @@ class Extension(object):
     @staticmethod
     def _get_object_type(object):
         object_type = ObjectType.get(object)
-        if not object_type in (ObjectType.CLASS, ObjectType.DESCRIPTOR):
+        if not object_type in (ObjectType.cls, ObjectType.descriptor):
             raise TypeError("Expected a `class`, a `function`, a `method` or "
                             "a `property` but got a `%s` instead." %
                             type(object).__name__)
@@ -226,7 +226,7 @@ class Extension(object):
     @staticmethod
     def _get_target_type(target):
         target_type = ObjectType.get(target)
-        if target_type not in (ObjectType.MODULE, ObjectType.CLASS):
+        if target_type not in (ObjectType.module, ObjectType.cls):
             raise TypeError("Expected a `module` or a `class` but "
                             "got a `%s` instead." % type(target).__name__)
         

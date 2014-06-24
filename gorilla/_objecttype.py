@@ -15,18 +15,18 @@ import gorilla._python
 
 class ObjectType(object):
     
-    INVALID = 0
-    MODULE = 1
-    CLASS = 2
-    DESCRIPTOR = 3  # Functions, methods, and any descriptor.
+    invalid = 0
+    module = 1
+    cls = 2
+    descriptor = 3  # Functions, methods, and any descriptor.
     
     @classmethod
     def get(cls, object):
         if isinstance(object, types.ModuleType):
-            return cls.MODULE
+            return cls.module
         elif isinstance(object, gorilla._python.CLASS_TYPES):
-            return cls.CLASS
+            return cls.cls
         elif hasattr(object, '__get__'):
-            return cls.DESCRIPTOR
+            return cls.descriptor
         
-        return cls.INVALID
+        return cls.invalid
