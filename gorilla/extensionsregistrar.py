@@ -35,6 +35,17 @@ class ExtensionsRegistrar(object):
             List of packages and modules to scan recursively.
         patch : bool, optional
             True to also apply the patches.
+        
+        Returns
+        -------
+        list of gorilla.extensionset.ExtensionSet
+            Extensions gound, grouped within an extension set per directory
+            level.
+        
+        Raises
+        ------
+        TypeError
+            The input is not a valid package or module.
         """
         if gorilla._python.PY3:
             def load_module(finder, name):
