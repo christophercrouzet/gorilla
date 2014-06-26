@@ -142,7 +142,7 @@ class GorillaTestCase(unittest.TestCase):
         def assertIs(self, expr1, expr2, msg=None):
             if expr1 is not expr2:
                 standardMsg = '%s is not %s' % (safe_repr(expr1),
-                                                 safe_repr(expr2))
+                                                safe_repr(expr2))
                 self.fail(self._formatMessage(msg, standardMsg))
         
         def assertIsNot(self, expr1, expr2, msg=None):
