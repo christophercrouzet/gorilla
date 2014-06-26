@@ -94,7 +94,6 @@ class ExtensionsRegistrar(object):
         
         if patch:
             for extension_set in extension_sets:
-                for extension in extension_set.extensions:
-                    extension.patch()
+                extension_set.patch()
         
         return extension_sets
