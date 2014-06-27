@@ -198,10 +198,8 @@ class method.
 
 For a variable `extensionspackage` pointing to a package, the class method
 :func:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
-scans recursively all the nested packages and modules and returns a list of
-:class:`~gorilla.extensionsregistrar.ExtensionsRegistrar`, each of them being
-a container for the extensions found that are belonging to a same package
-level.
+scans recursively all the nested packages and modules and returns a
+:class:`~gorilla.extensionset.ExtensionSet`
 
 See the :ref:`bananas` section to see some examples of real-world
 implementations.

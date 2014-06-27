@@ -38,9 +38,8 @@ class ExtensionsRegistrar(object):
         
         Returns
         -------
-        list of gorilla.extensionset.ExtensionSet
-            Extensions gound, grouped within an extension set per directory
-            level.
+        gorilla.extensionset.ExtensionSet
+            Extensions found grouped within an extension set.
         
         Raises
         ------
@@ -56,11 +55,10 @@ class ExtensionsRegistrar(object):
                 loader = finder.find_module(name)
                 return loader.load_module(name)
         
-        def register(package_or_module, extension_sets):
+        def register(package_or_module, extension_set):
             extensions = list(gorilla._utils.extension_iterator(
                 package_or_module))
-            extension_set = ExtensionSet(extensions)
-            extension_sets.append(extension_set)
+            extension_set.extensions.extend(extensions)
             
             # The `__path__` attribute of a package might return a list of
             # paths if the package is referenced as a namespace.
@@ -87,13 +85,13 @@ class ExtensionsRegistrar(object):
                         # current level.
                         packages.append(module)
                     else:
-                        register(module, extension_sets)
+                        register(module, extension_set)
             
             for package in packages:
-                register(package, extension_sets)
+                register(package, extension_set)
         
         
-        extension_sets = []
+        extension_set = ExtensionSet()
         modules = gorilla.utils.uniquify(gorilla.utils.listify(
             packages_and_modules))
         for module in modules:
@@ -101,10 +99,9 @@ class ExtensionsRegistrar(object):
                 raise TypeError(
                     "The path '%s' isn't a valid package or module." % module)
             
-            register(module, extension_sets)
+            register(module, extension_set)
         
         if patch:
-            for extension_set in extension_sets:
-                extension_set.patch()
+            extension_set.patch()
         
-        return extension_sets
+        return extension_set

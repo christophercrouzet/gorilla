@@ -65,9 +65,8 @@ class ExtensionsRegistrarTest(GorillaTestCase):
             Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig, name="needle_method")
         ]
         
-        extension_sets = ExtensionsRegistrar.register_extensions(packages_and_modules=rootmodule)
-        registered_extensions = [extension for extension_set in extension_sets for extension in extension_set.extensions]
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+        extension_set = ExtensionsRegistrar.register_extensions(packages_and_modules=rootmodule)
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
     
     def test_register_extensions_2(self):
         extensions = [
@@ -75,9 +74,8 @@ class ExtensionsRegistrarTest(GorillaTestCase):
             Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig, name="needle_method")
         ]
         
-        extension_sets = ExtensionsRegistrar.register_extensions(packages_and_modules=[submodule, extension2])
-        registered_extensions = [extension for extension_set in extension_sets for extension in extension_set.extensions]
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+        extension_set = ExtensionsRegistrar.register_extensions(packages_and_modules=[submodule, extension2])
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
 
 
 if __name__ == '__main__':
