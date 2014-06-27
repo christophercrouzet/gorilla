@@ -81,7 +81,9 @@ def patch(target, name='', apply=None):
     `~gorilla.extension.Extension`
     """
     def decorator(wrapped):
-        extension = Extension(wrapped, target, name=name, apply=apply)
+        extension = Extension(wrapped, target)
+        extension.name = name
+        extension.apply = apply
         data = gorilla._utils.get_decorator_data(wrapped)
         data.setdefault('extensions', []).insert(0, extension)
         return wrapped

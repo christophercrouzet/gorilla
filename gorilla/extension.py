@@ -48,7 +48,7 @@ class Extension(object):
         patching is required.
     """
         
-    def __init__(self, object, target, name='', apply=None):
+    def __init__(self, object, target):
         """Constructor.
         
         Parameters
@@ -58,11 +58,6 @@ class Extension(object):
             a descriptor.
         target : object
             Target to patch. Either a module or a class.
-        name : str, optional
-            Name for the resulting attribute. Defaults to the actual name
-            of the object to use as a patch.
-        apply : callable or list of callables, optional
-            Callable objects to apply during the patching process.
         
         Note
         ----
@@ -100,8 +95,8 @@ class Extension(object):
         """
         self._object = object
         self._target = target
-        self._name = name
-        self._apply = gorilla.utils.listify(apply)
+        self._name = ''
+        self._apply = []
         self._original = None
         self._done = False
     
@@ -135,7 +130,7 @@ class Extension(object):
     
     @apply.setter
     def apply(self, value):
-        self._apply = value
+        self._apply = gorilla.utils.listify(value)
     
     @property
     def original(self):
@@ -187,8 +182,9 @@ class Extension(object):
                     data = gorilla._utils.get_decorator_data(attribute)
                     name = data['name'] if 'name' in data else name
                     apply = data.get('apply', [])
-                    extension = self.__class__(
-                        attribute, original, name=name, apply=apply)
+                    extension = self.__class__(attribute, original)
+                    extension.name = name
+                    extension.apply = apply
                     extension.patch()
                 
                 return

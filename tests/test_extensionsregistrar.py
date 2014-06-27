@@ -56,23 +56,34 @@ class ExtensionsRegistrarTest(GorillaTestCase):
         del sys.modules[guineapig.__name__]
     
     def test_register_extensions_1(self):
-        extensions = [
-            Extension(extension1.method, guineapig.GuineaPig, name="needle_method"),
-            Extension(extension1.class_method, guineapig.GuineaPig, name="needle_class_method", apply=classmethod),
-            Extension(extension1.static_method, guineapig.GuineaPig, name="needle_static_method", apply=staticmethod),
-            Extension(extension1.value, guineapig.GuineaPig, name="needle_value", apply=property),
-            Extension(extension2.Class, guineapig, name="Needle"),
-            Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig, name="needle_method")
-        ]
+        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
+        extension1_method.name = 'needle_method'
+        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
+        extension1_class_method.name = 'needle_class_method'
+        extension1_class_method.apply = classmethod
+        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
+        extension1_static_method.name = 'needle_static_method'
+        extension1_static_method.apply = staticmethod
+        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
+        extension1_value.name = 'needle_value'
+        extension1_value.apply = property
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
+        submodule_method.name = 'needle_method'
+        
+        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
         
         extension_set = ExtensionsRegistrar.register_extensions(packages_and_modules=rootmodule)
         self.assert_true(_same_list_content(extension_set.extensions, extensions))
     
     def test_register_extensions_2(self):
-        extensions = [
-            Extension(extension2.Class, guineapig, name="Needle"),
-            Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig, name="needle_method")
-        ]
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
+        submodule_method.name = 'needle_method'
+        
+        extensions = [extension2_class, submodule_method]
         
         extension_set = ExtensionsRegistrar.register_extensions(packages_and_modules=[submodule, extension2])
         self.assert_true(_same_list_content(extension_set.extensions, extensions))

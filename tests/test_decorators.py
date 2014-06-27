@@ -29,7 +29,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)
@@ -47,7 +49,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'Needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)
@@ -65,7 +69,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)
@@ -83,7 +89,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)
@@ -101,7 +109,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)
@@ -119,7 +129,9 @@ class DecoratorsTest(GorillaTestCase):
         target = guineapig.GuineaPig
         name = 'needle'
         apply = data.decorator
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         
         decorated = gorilla.decorators.patch(target, name=name, apply=apply)(object)
         decorator_data = gorilla._utils.get_decorator_data(decorated)

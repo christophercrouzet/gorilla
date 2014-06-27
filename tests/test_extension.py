@@ -58,7 +58,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -115,7 +116,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -201,7 +203,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -229,7 +232,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object, gorilla._constants.ORIGINAL % name: original})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -259,7 +263,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -317,7 +322,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -375,7 +381,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -472,7 +479,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -529,7 +537,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -588,7 +597,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -647,7 +657,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -706,7 +717,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -765,7 +777,8 @@ class ExtensionTest(GorillaTestCase):
         
         targetDict.update({name: object})
         
-        extension = Extension(object, target, name=name)
+        extension = Extension(object, target)
+        extension.name = name
         self.assert_is(extension.object, object)
         self.assert_equal(extension.name, name)
         self.assert_is(extension.target, target)
@@ -1002,7 +1015,9 @@ class ExtensionTest(GorillaTestCase):
         name = 'needle'
         apply = classmethod
         
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         extension.patch()
         
         patched = getattr(target, name)
@@ -1016,7 +1031,9 @@ class ExtensionTest(GorillaTestCase):
         name = 'needle'
         apply = staticmethod
         
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         extension.patch()
         
         patched = getattr(target, name)
@@ -1030,7 +1047,9 @@ class ExtensionTest(GorillaTestCase):
         name = 'needle'
         apply = property
         
-        extension = Extension(object, target, name=name, apply=apply)
+        extension = Extension(object, target)
+        extension.name = name
+        extension.apply = apply
         extension.patch()
         
         patched = getattr(target, name)
