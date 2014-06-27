@@ -18,20 +18,24 @@ class ExtensionSet(object):
     Placeholder for possible future features implementations.
     """
     
-    def __init__(self, extensions=None):
-        """Constructor.
-        
-        Parameters
-        ----------
-        extensions : list of gorilla.extension.Extension, optional
-            Extensions to add into the set.
-        """
-        self._extensions = gorilla.utils.listify(extensions)
+    def __init__(self):
+        """Constructor."""
+        self._extensions = []
     
     @property
     def extensions(self):
-        """Extensions contained within the set."""
-        return self._extensions
+        """Extensions contained within this set."""
+        return list(self._extensions)
+    
+    def add(self, extensions):
+        """Add extension(s) into this set.
+        
+        Parameters
+        ----------
+        extensions : gorilla.extension.Extension
+            Extension(s) to add into this set.
+        """
+        self._extensions.extend(gorilla.utils.listify(extensions))
     
     def patch(self):
         """Apply the patches.

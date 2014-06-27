@@ -56,9 +56,9 @@ class ExtensionsRegistrar(object):
                 return loader.load_module(name)
         
         def register(package_or_module, extension_set):
-            extensions = list(gorilla._utils.extension_iterator(
-                package_or_module))
-            extension_set.extensions.extend(extensions)
+            extensions = list(
+                gorilla._utils.extension_iterator(package_or_module))
+            extension_set.add(extensions)
             
             # The `__path__` attribute of a package might return a list of
             # paths if the package is referenced as a namespace.
