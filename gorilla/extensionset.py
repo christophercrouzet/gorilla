@@ -32,7 +32,7 @@ class ExtensionSet(object):
         
         Parameters
         ----------
-        extensions : gorilla.extension.Extension
+        extensions : [list of] gorilla.extension.Extension
             Extension(s) to add into this set.
         """
         self._extensions.extend(gorilla.utils.listify(extensions))

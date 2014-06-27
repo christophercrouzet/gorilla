@@ -31,8 +31,8 @@ class ExtensionsRegistrar(object):
         
         Parameters
         ----------
-        packages_and_modules : list of modules
-            List of packages and modules to scan recursively.
+        packages_and_modules : [list of] module
+            Package(s) and/or module(s) to scan recursively.
         patch : bool, optional
             True to also apply the patches.
         
