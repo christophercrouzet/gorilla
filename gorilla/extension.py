@@ -101,8 +101,8 @@ class Extension(object):
         self._object = object
         self._target = target
         self._name = name
-        self._original = None
         self._apply = gorilla.utils.listify(apply)
+        self._original = None
         self._done = False
     
     @property
@@ -129,6 +129,15 @@ class Extension(object):
         self._name = value
     
     @property
+    def apply(self):
+        """Callable objects to apply during the patching process."""
+        return self._apply
+    
+    @apply.setter
+    def apply(self, value):
+        self._apply = value
+    
+    @property
     def original(self):
         """Attribute from the target to be overriden.
         
@@ -138,15 +147,6 @@ class Extension(object):
             return self._target.__dict__.get(self.name, None)
         
         return getattr(self._target, self.name, None)
-    
-    @property
-    def apply(self):
-        """Callable objects to apply during the patching process."""
-        return self._apply
-    
-    @apply.setter
-    def apply(self, value):
-        self._apply = value
     
     @property
     def done(self):
