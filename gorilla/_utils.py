@@ -76,7 +76,7 @@ def extension_iterator(object):
         yield
     
     valid_types = (ObjectType.cls, ObjectType.descriptor)
-    for _, attribute in gorilla._python.iteritems(underlying.__dict__):
+    for attribute in underlying.__dict__.values():
         if ObjectType.get(attribute) in valid_types:
             for extension in extension_iterator(attribute):
                 yield extension
