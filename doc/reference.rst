@@ -22,4 +22,5 @@ Any function utilies that may help with writing extensions are available in the
    
    decorators
    extensions
+   settings
    utils

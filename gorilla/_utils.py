@@ -105,7 +105,7 @@ def get_decorator_data(object):
     data = {}
     setattr(underlying, gorilla._constants.DECORATOR_DATA, data)
     return data
-    
+
 
 def get_underlying_object(object):
     """Retrieve the leaf underlying object of an object.

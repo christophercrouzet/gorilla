@@ -26,5 +26,6 @@ __all__ = [
     'extension',
     'extensionset',
     'extensionsregistrar',
+    'settings',
     'utils'
 ]
