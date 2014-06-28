@@ -11,7 +11,9 @@ Decorators
    patch
    name
    apply
+   settings
 
 .. autofunction:: patch
 .. autofunction:: name
 .. autofunction:: apply
+.. autofunction:: settings

@@ -37,6 +37,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -57,6 +58,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -77,6 +79,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -97,6 +100,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -117,6 +121,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -137,6 +142,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_is_not_none(extensions)
@@ -280,6 +286,60 @@ class DecoratorsTest(GorillaTestCase):
         self.assert_not_in('apply', decorated_data)
         self.assert_equal(extensions[0].apply, [apply, classmethod])
     
+    def test_settings_decorator_on_function(self):
+        object = needles.function
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
+    def test_settings_decorator_on_class(self):
+        object = needles.GuineaPig
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
+    def test_settings_decorator_on_method(self):
+        object = needles.GuineaPig.method
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
+    def test_settings_decorator_on_class_method(self):
+        object = needles.GuineaPig.class_method
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
+    def test_settings_decorator_on_static_method(self):
+        object = needles.GuineaPig.static_method
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
+    def test_settings_decorator_on_property(self):
+        object = needles.GuineaPig.value
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(**settings)(object)
+        settings_data = gorilla._utils.get_decorator_data(decorated).get('settings', {})
+        self.assert_equal(settings_data, settings)
+    
     def test_stack_patch_on_name(self):
         object = needles.function
         target = guineapig.GuineaPig
@@ -289,6 +349,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_equal(decorator_data.get('name', ''), 'whatever')
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_equal(extensions[0].name, name)
@@ -302,6 +363,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_equal(extensions[0].name, 'whatever')
@@ -328,9 +390,38 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated)
         self.assert_not_in('name', decorator_data)
         self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         extensions = decorator_data.get('extensions', [])
         self.assert_equal(extensions[0].apply, [classmethod])
+    
+    def test_stack_patch_on_settings(self):
+        object = needles.function
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.patch(target, **settings)(gorilla.decorators.settings(update_class=False)(object))
+        decorator_data = gorilla._utils.get_decorator_data(decorated)
+        self.assert_not_in('name', decorator_data)
+        self.assert_not_in('apply', decorator_data)
+        self.assert_equal(decorator_data.get('settings', ''), {'update_class': False})
+        
+        extensions = decorator_data.get('extensions', [])
+        self.assert_equal(extensions[0].settings, settings)
+    
+    def test_stack_settings_on_patch(self):
+        object = needles.function
+        target = guineapig.GuineaPig
+        settings = {'allow_overwriting': False}
+        
+        decorated = gorilla.decorators.settings(update_class=False)(gorilla.decorators.patch(target, **settings)(object))
+        decorator_data = gorilla._utils.get_decorator_data(decorated)
+        self.assert_not_in('name', decorator_data)
+        self.assert_not_in('apply', decorator_data)
+        self.assert_not_in('settings', decorator_data)
+        
+        extensions = decorator_data.get('extensions', [])
+        self.assert_equal(extensions[0].settings, {'allow_overwriting': False, 'update_class': False})
     
     def test_decorator_mashup(self):
         object = needles.function
@@ -340,6 +431,7 @@ class DecoratorsTest(GorillaTestCase):
         decorator_data = gorilla._utils.get_decorator_data(decorated_1)
         self.assert_equal(decorator_data.get('name', ''), 'decorator_1')
         self.assert_not_in('extensions', decorator_data)
+        self.assert_not_in('settings', decorator_data)
         
         decorated_2 = gorilla.decorators.name('decorator_2')(gorilla.decorators.patch(target)(decorated_1))
         decorator_data = gorilla._utils.get_decorator_data(decorated_2)

@@ -13,7 +13,7 @@ import gorilla._utils
 from gorilla.extension import Extension
 
 
-def patch(target, name='', apply=None):
+def patch(target, name='', apply=None, **kwargs):
     """Decorator to mark an object to use as a patch for a specified target.
     
     Parameters
@@ -26,6 +26,10 @@ def patch(target, name='', apply=None):
         the decorated object when not provided.
     apply : callable or list of callables, optional
         Callable objects to apply during the patching process.
+    kwargs
+        Optional keyword arguments to selectively define some settings.
+        The list of valid keywords matches the attributes defined
+        within the class `~gorilla.settings.Settings`.
     
     Returns
     -------
@@ -84,6 +88,9 @@ def patch(target, name='', apply=None):
         extension = Extension(wrapped, target)
         extension.name = name
         extension.apply = apply
+        if kwargs:
+            extension.settings = kwargs
+        
         data = gorilla._utils.get_decorator_data(wrapped)
         data.setdefault('extensions', []).insert(0, extension)
         return wrapped
@@ -205,6 +212,40 @@ def apply(*args, **kwargs):
             callable_list[:0] = args
         else:
             callable_list[:] = args
+        
+        return wrapped
+    
+    return decorator
+
+
+def settings(**kwargs):
+    """Decorator to define some settings.
+    
+    When using an entire class for being used as a patch, this allows to
+    define the settings of each individual class member.
+    
+    This decorator can also applied on top of a `patch` decorator, in
+    which case it will override the values of the defined settings.
+    
+    Parameters
+    ----------
+    kwargs
+        Keyword arguments to selectively define some settings.
+        The list of valid keywords matches the attributes defined
+        within the class `~gorilla.settings.Settings`.
+    
+    Returns
+    -------
+    object
+        The decorated object.
+    """
+    def decorator(wrapped):
+        data = gorilla._utils.get_decorator_data(wrapped)
+        extensions = data.get('extensions', None)
+        if extensions:
+            extensions[0].settings.update(kwargs)
+        else:
+            data['settings'] = kwargs
         
         return wrapped
     
