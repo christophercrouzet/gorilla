@@ -8,8 +8,11 @@
     :license: MIT, see LICENSE for details.
 """
 
+import inspect
+
 import gorilla._constants
 import gorilla._utils
+import gorilla.settings
 import gorilla.utils
 from gorilla._objecttype import ObjectType
 
@@ -41,6 +44,10 @@ class Extension(object):
     It is possible to apply callable objects to transform the decorated
     object during the patching process. This can be use for example to
     ensure that a function is applied as a static method in a class.
+    
+    By default, the bahavior of the patching process is dictated by the
+    settings defined in the `~gorilla.settings.Settings` class. It's
+    possible to override those by using the `settings` property.
     
     Note
     ----
@@ -97,6 +104,7 @@ class Extension(object):
         self._target = target
         self._name = ''
         self._apply = []
+        self._settings = {}
         self._original = None
         self._done = False
     
@@ -133,6 +141,26 @@ class Extension(object):
         self._apply = gorilla.utils.listify(value)
     
     @property
+    def settings(self):
+        """Settings to use during the patching operation.
+        
+        Those settings override the default settings defined in the class
+        `~gorilla.settings.Settings`.
+        
+        Either a `~gorilla.settings.Settings` or a `dict` are accepted as
+        input but the value returned is always a `dict`.
+        """
+        return self._settings
+    
+    @settings.setter
+    def settings(self, value):
+        if (isinstance(value, gorilla._python.CLASS_TYPES) and
+                gorilla.settings.Settings in inspect.getmro(value)):
+            self._settings = value.as_dict()
+        else:
+            self._settings = value
+    
+    @property
     def original(self):
         """Attribute from the target to be overriden.
         
@@ -148,6 +176,26 @@ class Extension(object):
         """True if the patch has already been applied."""
         return self._done
     
+    def get_compiled_settings(self):
+        """Compile a valid dictionary of settings.
+        
+        Any missing attribute from the settings property is completed
+        with the defaults taken from `~gorilla.settings.Settings`.
+        
+        Returns
+        -------
+        dict
+            The settings property completed with any missing attribute.
+        """
+        incomplete = any(attribute not in self._settings for attribute
+                         in gorilla.settings.Settings._attributes)
+        if not incomplete:
+            return self._settings.copy()
+        
+        compiled_settings = gorilla.settings.Settings.as_dict()
+        compiled_settings.update(self._settings)
+        return compiled_settings
+    
     def patch(self):
         """Patch the extension to the specified target.
         
@@ -155,9 +203,15 @@ class Extension(object):
         ------
         TypeError
             The object and/or target types are not suitable for patching.
+        
+        RuntimeError
+            Overwriting an existing attribute is not allowed when the settings
+            `allow_overwriting` is set to True.
         """
         if self._done:
             return
+        
+        settings = self.get_compiled_settings()
         
         object = self._object
         for item in reversed(self._apply):
@@ -173,21 +227,29 @@ class Extension(object):
                 type(self._target).__name__, type(object).__name))
         
         if original:
+            if not settings['allow_overwriting']:
+                raise RuntimeError("An attribute named '%s' already exists on "
+                                   "the target '%s'." % (
+                                       original.__name__,
+                                       self._target.__name__))
+            
             original_type = ObjectType.get(original)
             if object_type == original_type == ObjectType.cls:
-                # An existing class has to be patched with another class.
-                # Recursively go through each attribute member.
-                attributes = gorilla._utils.class_attribute_iterator(object)
-                for name, attribute in attributes:
-                    data = gorilla._utils.get_decorator_data(attribute)
-                    name = data['name'] if 'name' in data else name
-                    apply = data.get('apply', [])
-                    extension = self.__class__(attribute, original)
-                    extension.name = name
-                    extension.apply = apply
-                    extension.patch()
-                
-                return
+                if settings['update_class']:
+                    # An existing class has to be patched with another class.
+                    # Recursively go through each attribute member.
+                    attributes = gorilla._utils.class_attribute_iterator(
+                        object)
+                    for name, attribute in attributes:
+                        data = gorilla._utils.get_decorator_data(attribute)
+                        name = data['name'] if 'name' in data else name
+                        apply = data.get('apply', [])
+                        extension = self.__class__(attribute, original)
+                        extension.name = name
+                        extension.apply = apply
+                        extension.patch()
+                    
+                    return
             elif original_type != object_type:
                 raise TypeError("Expected to patch a `%s` named `%s` "
                                 "but found a `%s` instead." % (
@@ -200,12 +262,16 @@ class Extension(object):
             if not hasattr(self._target, original_name):
                 setattr(self._target, original_name, original)
         
-        # Do the actual patching.
-        underlying = gorilla._utils.get_underlying_object(object)
-        if original and not getattr(underlying, '__doc__', None):
-            setattr(underlying, '__doc__',
-                    gorilla._utils.get_underlying_object(original).__doc__)
+        # Replace any empty docstring with the original one. Python 2 doesn't
+        # allow to write the docstring of a class so we skip it.
+        if (original and
+                (not gorilla._python.PY2 or object_type != ObjectType.cls)):
+            underlying = gorilla._utils.get_underlying_object(object)
+            if not getattr(underlying, '__doc__', None):
+                setattr(underlying, '__doc__',
+                        gorilla._utils.get_underlying_object(original).__doc__)
         
+        # Do the actual patching.
         setattr(self._target, extension_name, object)
         self._done = True
     

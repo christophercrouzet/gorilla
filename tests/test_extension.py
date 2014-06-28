@@ -43,6 +43,32 @@ class ExtensionTest(GorillaTestCase):
         del sys.modules[needles.__name__]
         del sys.modules[guineapig.__name__]
     
+    def test_get_compiled_settings(self):
+        object = needles.function
+        target = guineapig
+        extension = Extension(object, target)
+        
+        expected = gorilla.settings.Settings.as_dict()
+        self.assert_equal(extension.get_compiled_settings(), expected)
+        
+        settings = {'allow_overwriting': False}
+        extension.settings = settings
+        expected = gorilla.settings.Settings.as_dict()
+        expected.update(settings)
+        self.assert_equal(extension.get_compiled_settings(), expected)
+        
+        settings = {'update_class': False}
+        extension.settings = settings
+        expected = gorilla.settings.Settings.as_dict()
+        expected.update(settings)
+        self.assert_equal(extension.get_compiled_settings(), expected)
+        
+        extension.settings['allow_overwriting'] = False
+        expected = gorilla.settings.Settings.as_dict()
+        expected.update({'allow_overwriting': False, 'update_class': False})
+        self.assert_equal(extension.get_compiled_settings(), expected)
+        return
+    
     def test_patch_module_with_module(self):
         object = sys.modules[self.__module__]
         target = guineapig
@@ -1056,6 +1082,31 @@ class ExtensionTest(GorillaTestCase):
         self.assert_isinstance(target.__dict__[name], property)
         self.assert_is(patched.fget, object)
         self.assert_equal(patched.fget(target()), "awesome")
+    
+    def test_allow_overwriting(self):
+        object = needles.GuineaPig
+        target = guineapig
+        name = object.__name__
+        
+        extension = Extension(object, target)
+        extension.name = name
+        extension.settings['allow_overwriting'] = False
+        self.assert_raises(RuntimeError, extension.patch)
+    
+    def test_update_class(self):
+        object = needles.GuineaPig
+        target = guineapig
+        name = object.__name__
+        original = getattr(target, name, None)
+        
+        extension = Extension(object, target)
+        extension.name = name
+        extension.settings['update_class'] = False
+        extension.patch()
+        
+        patched = getattr(target, name)
+        self.assert_is_not(patched, original)
+        self.assert_is_not_none(gorilla.utils.get_original_attribute(target, name))
 
 
 if __name__ == '__main__':
