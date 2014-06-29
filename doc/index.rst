@@ -31,6 +31,7 @@ Additional Information
    :maxdepth: 1
    
    bananas
+   faq
    glossary
    contributing
    changes
