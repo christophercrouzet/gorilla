@@ -9,6 +9,8 @@ Utilities
    :nosignatures:
    
    get_original_attribute
+   listify
+   uniquify
 
 .. autofunction:: get_original_attribute
 .. autofunction:: listify
