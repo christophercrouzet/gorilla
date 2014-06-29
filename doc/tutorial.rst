@@ -196,7 +196,7 @@ class method.
    >>> import extensionspackage
    >>> ExtensionsRegistrar.register_extensions(extensionspackage, patch=True)
 
-For a variable `extensionspackage` pointing to a package, the class method
+For a given package ``extensionspackage``, the class method
 :func:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
 scans recursively all the nested packages and modules and returns a
 :class:`~gorilla.extensionset.ExtensionSet`
