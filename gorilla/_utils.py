@@ -135,6 +135,29 @@ def get_underlying_object(object):
     return object
 
 
+def is_settings(object):
+    """Check if a given object represents a settings class.
+    
+    Settings matched needs to inherit from the class
+    `~gorilla.settings.Settings`.
+    
+    Parameters
+    ----------
+    object : object
+        Object to check.
+    
+    Returns
+    -------
+    bool
+        True if the given object represents a settings class.
+    """
+    if (isinstance(object, gorilla._python.CLASS_TYPES) and
+            gorilla.settings.Settings in inspect.getmro(object)):
+        return True
+    
+    return False
+
+
 def _underlying_object_iterator(object):
     """Iterate recursively through the underlying objects of an object.
     

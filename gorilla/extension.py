@@ -8,8 +8,6 @@
     :license: MIT, see LICENSE for details.
 """
 
-import inspect
-
 import gorilla._constants
 import gorilla._utils
 import gorilla.settings
@@ -156,8 +154,7 @@ class Extension(object):
     
     @settings.setter
     def settings(self, value):
-        if (isinstance(value, gorilla._python.CLASS_TYPES) and
-                gorilla.settings.Settings in inspect.getmro(value)):
+        if gorilla._utils.is_settings(value):
             self._settings = value.as_dict()
         else:
             self._settings = value

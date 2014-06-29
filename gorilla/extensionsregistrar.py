@@ -8,7 +8,6 @@
     :license: MIT, see LICENSE for details.
 """
 
-import inspect
 import pkgutil
 import sys
 import types
@@ -108,8 +107,7 @@ class ExtensionsRegistrar(object):
                 register(package, extension_set, settings)
         
         
-        if (isinstance(settings, gorilla._python.CLASS_TYPES) and
-                gorilla.settings.Settings in inspect.getmro(settings)):
+        if gorilla._utils.is_settings(settings):
             settings = settings.as_dict()
         
         extension_set = ExtensionSet()
