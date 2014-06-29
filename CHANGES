@@ -1,3 +1,15 @@
+v0.1.0 (2014-06-29)
+-------------------
+
+* Implemented settings to modify the behavior of the patching proess.
+* Refactored the class ``ExtensionSet`` towards using an ``add()`` method.
+* Cleaned-up the ``Extension.__init__()`` method from the parameters not required to construct the class.
+* Got the ``ExtensionsRegistrar.register_extensions()`` function to return a single ``ExtensionSet`` object.
+* Added a FAQ section to the doc.
+* Minor tweaks to the code.
+* Minor tweaks to the doc.
+
+
 v0.0.1 (2014-06-21)
 -------------------
 
