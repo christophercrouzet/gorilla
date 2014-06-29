@@ -54,7 +54,7 @@ the patch decorator to refer to the appropriate target.
    >>> from guineapig import GuineaPig
    >>> @gorilla.patch(GuineaPig)
    ... def needle(self):
-   ...     print("Patching %s is awesome" % self.__class__.__name__")
+   ...     print("Patching %s is awesome" % self.__class__.__name__)
 
 By default, functions are inserted into classes as methods. The first attribute
 of a such method (usually named `self` by convention) will refer to
@@ -67,7 +67,7 @@ Adding such functions as class methods instead requires to add the
    >>> from guineapig import GuineaPig
    >>> @gorilla.patch(GuineaPig, apply=classmethod)
    ... def needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__")
+   ...     print("Patching %s is awesome" % cls.__name__)
 
 If there was to be a method named `needle` already existing in the
 target class, then the patching process would override the original attribute
@@ -79,7 +79,7 @@ function.
    >>> from guineapig import GuineaPig
    >>> @gorilla.patch(GuineaPig)
    ... def needle(self, arg):
-   ...     print(Patched "%s is awesome" % self.__class__.__name__")
+   ...     print(Patched "%s is awesome" % self.__class__.__name__)
    ...     # We're overriding an existing method here,
    ...     # preserve its original behavior.
    ...     return gorilla.get_original_attribute(self, 'needle')(arg)
@@ -103,11 +103,11 @@ Marking Class Extensions
    >>> @patch(guineapig)
    ... class Needle(object):
    ...     def needle(self, arg):
-   ...         print("Patching %s is awesome" % self.__class__.__name__")
+   ...         print("Patching %s is awesome" % self.__class__.__name__)
    ...     
    ...     @classmethod
    ...     def classic_needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__")
+   ...     print("Patching %s is awesome" % cls.__name__)
    ...     
    ...     @staticmethod
    ...     def static_needle():
@@ -130,11 +130,11 @@ each member.
    ... class Needle(object):
    ...     @gorilla.name('bigger_needle')
    ...     def needle(self, arg):
-   ...         print("Patching %s is awesome" % self.__class__.__name__")
+   ...         print("Patching %s is awesome" % self.__class__.__name__)
    ...     
    ...     @gorilla.apply(classmethod)
    ...     def classic_needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__")
+   ...     print("Patching %s is awesome" % cls.__name__)
 
 The :meth:`needle` method can now be fired through a call to
 ``GuineaPig().bigger_needle()`` while the method ``classic_needle``
@@ -177,7 +177,7 @@ it.
    >>> import gorilla
    >>> import guineapig
    >>> @gorilla.name('bigger_needle')
-   >>> @gorilla.patch(guineapig)
+   ... @gorilla.patch(guineapig)
    ... def needle():
    ...     print("awesome")
 

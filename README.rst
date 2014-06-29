@@ -21,11 +21,11 @@ either:
     >>> @patch(guineapig, name='GuineaPig')
     ... class Needle(object):
     ...     def needle(self, arg):
-    ...         print("Patching %s is awesome" % self.__class__.__name__")
+    ...         print("Patching %s is awesome" % self.__class__.__name__)
     ...     
     ...     @classmethod
     ...     def classic_needle(cls):
-    ...     print("Patching %s is awesome" % cls.__name__")
+    ...     print("Patching %s is awesome" % cls.__name__)
 
 
 See the ``overview`` and ``tutorial`` sections of the documentation for more
