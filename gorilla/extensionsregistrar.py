@@ -8,12 +8,14 @@
     :license: MIT, see LICENSE for details.
 """
 
+import inspect
 import pkgutil
 import sys
 import types
 
 import gorilla._python
 import gorilla._utils
+import gorilla.settings
 import gorilla.utils
 from gorilla.extensionset import ExtensionSet
 
@@ -23,16 +25,19 @@ class ExtensionsRegistrar(object):
     """Registrar for the extensions."""
     
     @classmethod
-    def register_extensions(cls, packages_and_modules, patch=False):
+    def register_extensions(cls, packages_and_modules, settings=None,
+                            recursive=True, patch=False):
         """Scan and register all the extensions found.
-        
-        The extensions are recursively scanned from the list of packages and
-        modules provided.
         
         Parameters
         ----------
         packages_and_modules : [list of] module
             Package(s) and/or module(s) to scan recursively.
+        settings : dict or gorilla.settings.Settings, optional
+            Settings to apply to all the extensions found. Any setting
+            already existing on the extension level won't be overridden.
+        recursive : bool, optional
+            True to recursively scan for extensions in subpackages.
         patch : bool, optional
             True to also apply the patches.
         
@@ -55,9 +60,20 @@ class ExtensionsRegistrar(object):
                 loader = finder.find_module(name)
                 return loader.load_module(name)
         
-        def register(package_or_module, extension_set):
+        def register(package_or_module, extension_set, settings):
             extensions = list(
                 gorilla._utils.extension_iterator(package_or_module))
+            if settings:
+                for extension in extensions:
+                    if extension.settings:
+                        # Make sure that settings directly defined at the
+                        # extension level overwrite the global settings.
+                        compiled_settings = settings.copy()
+                        compiled_settings.update(extension.settings)
+                        extension.settings = compiled_settings
+                    else:
+                        extension.settings = settings.copy()
+            
             extension_set.add(extensions)
             
             # The `__path__` attribute of a package might return a list of
@@ -80,16 +96,21 @@ class ExtensionsRegistrar(object):
                         module = load_module(finder, module_name)
                     
                     if is_package:
-                        # Breadth-first traversal, recurse over the subpackages
-                        # only after having processed the modules at the
-                        # current level.
-                        packages.append(module)
+                        if recursive:
+                            # Breadth-first traversal, recurse over the
+                            # subpackages only after having processed the
+                            # modules at the current level.
+                            packages.append(module)
                     else:
-                        register(module, extension_set)
+                        register(module, extension_set, settings)
             
             for package in packages:
-                register(package, extension_set)
+                register(package, extension_set, settings)
         
+        
+        if (isinstance(settings, gorilla._python.CLASS_TYPES) and
+                gorilla.settings.Settings in inspect.getmro(settings)):
+            settings = settings.as_dict()
         
         extension_set = ExtensionSet()
         modules = gorilla.utils.uniquify(gorilla.utils.listify(
@@ -99,7 +120,7 @@ class ExtensionsRegistrar(object):
                 raise TypeError(
                     "The path '%s' isn't a valid package or module." % module)
             
-            register(module, extension_set)
+            register(module, extension_set, settings)
         
         if patch:
             extension_set.patch()

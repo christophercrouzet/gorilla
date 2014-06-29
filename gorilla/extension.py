@@ -145,7 +145,9 @@ class Extension(object):
         """Settings to use during the patching operation.
         
         Those settings override the default settings defined in the class
-        `~gorilla.settings.Settings`.
+        `~gorilla.settings.Settings` as well as any setting coming from the
+        `~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
+        function.
         
         Either a `~gorilla.settings.Settings` or a `dict` are accepted as
         input but the value returned is always a `dict`.
