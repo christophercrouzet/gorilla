@@ -29,6 +29,11 @@ another name and becomes callable from within the extension's code through the
 :func:`~gorilla.utils.get_original_attribute` function. This ensures that the
 original behavior of an attribute can be preserved if needed.
 
+The behavior of the patching process can be changed by overriding the default
+settings to be found in the class :class:`~gorilla.settings.Settings`. See
+:class:`~gorilla.extension.Extension` and
+:func:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`.
+
 .. note::
    
    The supported versions of Python are 2.6, 2.7, 3.3 and 3.4.
