@@ -1,9 +1,9 @@
 """
     gorilla.utils
     ~~~~~~~~~~~~~
-    
+
     Utility functions.
-    
+
     :copyright: Copyright 2014 by Christopher Crouzet.
     :license: MIT, see LICENSE for details.
 """
@@ -17,31 +17,31 @@ import gorilla._python
 import gorilla._utils
 
 
-def get_original_attribute(object, name):
+def get_original_attribute(obj, name):
     """Retrieve an attribute overriden during the patching process.
-    
+
     This method can be accessed from within an overriding function to call
     the original attribute and preserve the intended behavior.
-    
+
     Parameters
     ----------
-    object : object
+    obj : object
         Object owning the attribute to look for.
     name : str
         Name of the attribute to look for.
-    
+
     Returns
     -------
     object
         The attribute found, None otherwise.
     """
-    return getattr(object, gorilla._constants.ORIGINAL % name, None)
+    return getattr(obj, gorilla._constants.ORIGINAL % name, None)
 
 
 def register_extensions(packages_and_modules, settings=None,
                         recursive=True, patch=False):
     """Scan and register all the extensions found.
-    
+
     Parameters
     ----------
     packages_and_modules : [list of] module
@@ -53,12 +53,12 @@ def register_extensions(packages_and_modules, settings=None,
         True to recursively scan for extensions in subpackages.
     patch : bool, optional
         True to also apply the patches.
-    
+
     Returns
     -------
     [list of] gorilla.extension.Extension
         Extensions found.
-    
+
     Raises
     ------
     TypeError
@@ -72,7 +72,7 @@ def register_extensions(packages_and_modules, settings=None,
         def load_module(finder, name):
             loader = finder.find_module(name)
             return loader.load_module(name)
-    
+
     def register(extensions, package_or_module, settings):
         local_extensions = list(
             gorilla._utils.extension_iterator(package_or_module))
@@ -86,15 +86,15 @@ def register_extensions(packages_and_modules, settings=None,
                     extension.settings = compiled_settings
                 else:
                     extension.settings = settings.copy()
-        
+
         extensions.extend(gorilla._utils.listify(local_extensions))
-        
+
         # The `__path__` attribute of a package might return a list of
         # paths if the package is referenced as a namespace.
         paths = getattr(package_or_module, '__path__', None)
         if not paths:
             return
-        
+
         packages = []
         paths = gorilla._utils.uniquify(gorilla._utils.listify(paths))
         for path in paths:
@@ -107,7 +107,7 @@ def register_extensions(packages_and_modules, settings=None,
                     # the `__builtin__` function to support package
                     # namespaces.
                     module = load_module(finder, module_name)
-                
+
                 if is_package:
                     if recursive:
                         # Breadth-first traversal, recurse over the
@@ -116,14 +116,13 @@ def register_extensions(packages_and_modules, settings=None,
                         packages.append(module)
                 else:
                     register(extensions, module, settings)
-        
+
         for package in packages:
             register(extensions, package, settings)
-    
-    
+
     if gorilla._utils.is_settings(settings):
         settings = settings.as_dict()
-    
+
     extensions = []
     modules = gorilla._utils.uniquify(gorilla._utils.listify(
         packages_and_modules))
@@ -131,11 +130,11 @@ def register_extensions(packages_and_modules, settings=None,
         if not isinstance(module, types.ModuleType):
             raise TypeError(
                 "The path '%s' isn't a valid package or module." % module)
-        
+
         register(extensions, module, settings)
-    
+
     if patch:
         for extension in extensions:
             extension.patch()
-    
+
     return extensions

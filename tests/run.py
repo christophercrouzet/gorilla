@@ -18,18 +18,18 @@ def module_iterator(directory, package_dotted_path):
             dotted_path = "%s.%s" % (package_dotted_path, basename)
         else:
             dotted_path = basename
-        
+
         if os.path.isfile(full_path):
             if tail != '.py':
                 continue
-            
+
             __import__(dotted_path)
             module = sys.modules[dotted_path]
             yield module
         elif os.path.isdir(full_path):
             if not os.path.isfile(os.path.join(full_path, '__init__.py')):
                 continue
-            
+
             __import__(dotted_path)
             package = sys.modules[dotted_path]
             yield package
@@ -60,13 +60,13 @@ def main():
         '-s', '--split', action='store_true', dest='split',
         help="run each test in a separate subprocess"
     )
-    
+
     (options, args) = parser.parse_args()
-    
+
     here = os.path.abspath(os.path.dirname(__file__))
     root_path = os.path.abspath(os.path.join(here, '..'))
     sys.path.insert(0, root_path)
-    
+
     loader = unittest.TestLoader()
     tests = []
     for module in module_iterator(here, 'tests'):
@@ -79,7 +79,7 @@ def main():
                         tests.append(test)
             else:
                 tests.extend(test_iterator(module_tests))
-    
+
     if options.split:
         for test in tests:
             name = get_test_name(test)

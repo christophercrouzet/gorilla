@@ -21,4 +21,3 @@ def static_method():
 @gorilla.decorators.patch(guineapig.GuineaPig, name="needle_value", apply=property)
 def value(self):
     return self._value
-    

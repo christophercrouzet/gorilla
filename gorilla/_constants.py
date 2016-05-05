@@ -1,9 +1,9 @@
 """
     gorilla._constants
     ~~~~~~~~~~~~~~~~~~~
-    
+
     Constants for internal use.
-    
+
     :copyright: Copyright 2014 by Christopher Crouzet.
     :license: MIT, see LICENSE for details.
 """

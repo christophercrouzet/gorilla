@@ -1,16 +1,16 @@
-#                     __ __ __       
+#                     __ __ __
 #   .-----.-----.----|__|  |  .---.-.
 #   |  _  |  _  |   _|  |  |  |  _  |
 #   |___  |_____|__| |__|__|__|___._|
-#   |_____|                          
-#                                    
+#   |_____|
+#
 
 """
     gorilla
     ~~~~~~~
-    
+
     Convenient approach to monkey patching.
-    
+
     :copyright: Copyright 2014 by Christopher Crouzet.
     :license: MIT, see LICENSE for details.
 """

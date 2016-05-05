@@ -4,18 +4,18 @@ import types
 def bad_decorator_1(wrapped):
     def wrapper(*args, **kwargs):
         return wrapped(*args, **kwargs)
-    
+
     return wrapper
 
 
 class bad_decorator_2(object):
-    
+
     def __init__(self, wrapped):
         self.wrapped = wrapped
-    
+
     def __call__(self, *args, **kwargs):
         return self.wrapped(*args, **kwargs)
-    
+
     def __get__(self, instance, owner):
         if instance is None:
             return self
@@ -170,46 +170,46 @@ def property_7():
 
 
 class Class_1(object):
-    
+
     def __init__(self):
         return
-    
+
     def method(self):
         return
-    
+
     @classmethod
     def class_method(cls):
         return
-    
+
     @staticmethod
     def static_method():
         return
-    
+
     @property
     def property(self):
         return
 
 
 class Class_2(object):
-    
+
     @bad_decorator_1
     def __init__(self):
         return
-    
+
     @bad_decorator_1
     def method(self):
         return
-    
+
     @bad_decorator_1
     @classmethod
     def class_method(cls):
         return
-    
+
     @bad_decorator_1
     @staticmethod
     def static_method():
         return
-    
+
     @bad_decorator_1
     @property
     def property(self):
@@ -217,25 +217,25 @@ class Class_2(object):
 
 
 class Class_3(object):
-    
+
     @bad_decorator_2
     def __init__(self):
         return
-    
+
     @bad_decorator_2
     def method(self):
         return
-    
+
     @bad_decorator_2
     @classmethod
     def class_method(cls):
         return
-    
+
     @bad_decorator_2
     @staticmethod
     def static_method():
         return
-    
+
     @bad_decorator_2
     @property
     def property(self):
@@ -243,25 +243,25 @@ class Class_3(object):
 
 
 class Class_4(object):
-    
+
     @good_decorator
     def __init__(self):
         return
-    
+
     @good_decorator
     def method(self):
         return
-    
+
     @good_decorator
     @classmethod
     def class_method(cls):
         return
-    
+
     @good_decorator
     @staticmethod
     def static_method():
         return
-    
+
     @good_decorator
     @property
     def property(self):
