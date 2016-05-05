@@ -4,7 +4,7 @@
 
     Utility functions.
 
-    :copyright: Copyright 2014 by Christopher Crouzet.
+    :copyright: Copyright 2014-2016 by Christopher Crouzet.
     :license: MIT, see LICENSE for details.
 """
 

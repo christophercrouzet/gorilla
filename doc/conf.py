@@ -31,7 +31,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'gorilla'
-copyright = u'2014, Christopher Crouzet'
+copyright = u'2014-2016, Christopher Crouzet'
 version = gorilla.__version__
 release = version
 
