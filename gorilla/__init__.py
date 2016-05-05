@@ -16,7 +16,6 @@
 """
 
 from gorilla.decorators import apply, name, patch
-from gorilla.utils import get_original_attribute
 
 
 __version__ = '0.1.0'
