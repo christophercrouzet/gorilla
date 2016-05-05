@@ -210,8 +210,8 @@ Patching Dynamically
 --------------------
 
 In the case where patches need to be applied dynamically, meaning that the
-extension objects and/or targets are only to be known at runtime, then it is
-possible to make use of the :class:`~gorilla.extension.Extension` class.
+extension source objects and/or targets are only to be known at runtime, then
+it is possible to make use of the :class:`~gorilla.extension.Extension` class.
 
    >>> from gorilla.extension import Extension
    >>> import guineapig

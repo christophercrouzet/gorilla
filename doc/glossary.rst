@@ -12,11 +12,11 @@ Glossary
       the :mod:`gorilla.decorators` module. See `Descriptor HowTo Guide`_.
    
    extension
-      Either a class or a :term:`descriptor` object that is to be used to
+      Either a class or a :term:`descriptor` source object that is to be used to
       :term:`patch` a specified target.
    
    monkey patching
-      Operation that takes an :term:`object` (either a class or a
+      Operation that takes a source :term:`object` (either a class or a
       :term:`descriptor`) and inserts it into a target object (either a
       module or a class). This results in one or multiple new
       attributes being defined and callable from within the target object.

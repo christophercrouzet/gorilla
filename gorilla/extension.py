@@ -14,7 +14,7 @@ import gorilla._utils
 import gorilla.settings
 
 
-_VALID_OBJECT_TYPES = (
+_VALID_SOURCE_TYPES = (
     gorilla._objecttype.CLASS,
     gorilla._objecttype.DESCRIPTOR
 )
@@ -49,7 +49,7 @@ class Extension(object):
     recursively patch each attribute member.
     
     It is possible to apply callable objects to transform the decorated
-    object during the patching process. This can be use for example to
+    source object during the patching process. This can be use for example to
     ensure that a function is applied as a static method in a class.
     
     By default, the behavior of the patching process is dictated by the
@@ -62,12 +62,12 @@ class Extension(object):
         patching is required.
     """
         
-    def __init__(self, object, target):
+    def __init__(self, source, target):
         """Constructor.
         
         Parameters
         ----------
-        object : object
+        source : object
             Extension object to use as a patch. Either a class or
             a descriptor.
         target : object
@@ -94,8 +94,8 @@ class Extension(object):
             <classmethod object at 0x1007d5a98>
             
             As a result, if you need to make a direct use of the class
-            `Extension`, make sure that you pass a reference of the object
-            to use as a patch from the ``__dict__`` attribute if you need
+            `Extension`, make sure that you pass a reference of the source
+            object to use as a patch from the ``__dict__`` attribute if you need
             to transfer all the decorators applied to it.
             
             >>> from gorilla.extension import Extension
@@ -107,7 +107,7 @@ class Extension(object):
         .. [1] The `Descriptor Protocol
                <https://docs.python.org/howto/descriptor.html#descriptor-protocol>`_
         """
-        self._object = object
+        self._source = source
         self._target = target
         self._name = ''
         self._apply = []
@@ -116,9 +116,9 @@ class Extension(object):
         self._done = False
     
     @property
-    def object(self):
+    def source(self):
         """Extension object to use as a patch."""
-        return self._object
+        return self._source
     
     @property
     def target(self):
@@ -131,7 +131,7 @@ class Extension(object):
         if self._name:
             return self._name
         
-        underlying = gorilla._utils.get_underlying_object(self._object)
+        underlying = gorilla._utils.get_underlying_object(self._source)
         return underlying.__name__
     
     @name.setter
@@ -209,7 +209,7 @@ class Extension(object):
         Raises
         ------
         TypeError
-            The object and/or target types are not suitable for patching.
+            The source and/or target types are not suitable for patching.
         
         RuntimeError
             Overwriting an existing attribute is not allowed when the settings
@@ -220,18 +220,18 @@ class Extension(object):
         
         settings = self.get_compiled_settings()
         
-        object = self._object
+        source = self._source
         for item in reversed(self._apply):
-            object = item(object)
+            source = item(source)
         
         extension_name = self.name
         original = self.original
-        object_type = self._get_object_type(object)
+        source_type = self._get_source_type(source)
         target_type = self._get_target_type(self._target)
         if (target_type not in _VALID_TARGET_TYPES or
-                object_type not in _VALID_OBJECT_TYPES):
+                source_type not in _VALID_SOURCE_TYPES):
             raise TypeError("Cannot patch a `%s` with a `%s`." % (
-                type(self._target).__name__, type(object).__name))
+                type(self._target).__name__, type(source).__name))
         
         if original:
             if not settings['allow_overwriting']:
@@ -241,12 +241,11 @@ class Extension(object):
                                        self._target.__name__))
             
             original_type = gorilla._objecttype.get(original)
-            if object_type == original_type == gorilla._objecttype.CLASS:
+            if source_type == original_type == gorilla._objecttype.CLASS:
                 if settings['update_class']:
                     # An existing class has to be patched with another class.
                     # Recursively go through each attribute member.
-                    attributes = gorilla._utils.class_attribute_iterator(
-                        object)
+                    attributes = gorilla._utils.class_attribute_iterator(source)
                     for name, attribute in attributes:
                         data = gorilla._utils.get_decorator_data(attribute)
                         name = data['name'] if 'name' in data else name
@@ -257,10 +256,10 @@ class Extension(object):
                         extension.patch()
                     
                     return
-            elif original_type != object_type:
+            elif original_type != source_type:
                 raise TypeError("Expected to patch a `%s` named `%s` "
                                 "but found a `%s` instead." % (
-                                    type(object).__name__,
+                                    type(source).__name__,
                                     extension_name,
                                     type(original).__name__))
             
@@ -273,25 +272,25 @@ class Extension(object):
         # allow to write the docstring of a class so we skip it.
         if (original
                 and (not gorilla._python.PY2
-                     or object_type != gorilla._objecttype.CLASS)):
-            underlying = gorilla._utils.get_underlying_object(object)
+                     or source_type != gorilla._objecttype.CLASS)):
+            underlying = gorilla._utils.get_underlying_object(source)
             if not getattr(underlying, '__doc__', None):
                 setattr(underlying, '__doc__',
                         gorilla._utils.get_underlying_object(original).__doc__)
         
         # Do the actual patching.
-        setattr(self._target, extension_name, object)
+        setattr(self._target, extension_name, source)
         self._done = True
     
     @staticmethod
-    def _get_object_type(object):
-        object_type = gorilla._objecttype.get(object)
-        if object_type not in _VALID_OBJECT_TYPES:
+    def _get_source_type(source):
+        source_type = gorilla._objecttype.get(source)
+        if source_type not in _VALID_SOURCE_TYPES:
             raise TypeError("Expected a `class`, a `function`, a `method` or "
                             "a `property` but got a `%s` instead." %
-                            type(object).__name__)
+                            type(source).__name__)
         
-        return object_type
+        return source_type
     
     @staticmethod
     def _get_target_type(target):
