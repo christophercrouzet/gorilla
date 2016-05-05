@@ -11,8 +11,8 @@
 import inspect
 
 import gorilla._constants
+import gorilla._objecttype
 import gorilla._python
-from gorilla._objecttype import ObjectType
 
 
 def class_attribute_iterator(cls):
@@ -35,14 +35,14 @@ def class_attribute_iterator(cls):
             The attribute found.
     """
     ignore = ('__class__', '__dict__', '__weakref__')
-    valid_types = (ObjectType.cls, ObjectType.descriptor)
+    valid_types = (gorilla._objecttype.CLASS, gorilla._objecttype.DESCRIPTOR)
     bases = (base for base in inspect.getmro(cls)
              if not base in (type, object))
     yielded = set()
     for base in bases:
         for name, attribute in gorilla._python.iteritems(base.__dict__):
             if (name not in ignore and name not in yielded and
-                    ObjectType.get(attribute) in valid_types):
+                    gorilla._objecttype.get(attribute) in valid_types):
                 yield (name, attribute)
                 yielded.add(name)
 
@@ -75,9 +75,9 @@ def extension_iterator(object):
         return
         yield
     
-    valid_types = (ObjectType.cls, ObjectType.descriptor)
+    valid_types = (gorilla._objecttype.CLASS, gorilla._objecttype.DESCRIPTOR)
     for attribute in underlying.__dict__.values():
-        if ObjectType.get(attribute) in valid_types:
+        if gorilla._objecttype.get(attribute) in valid_types:
             for extension in extension_iterator(attribute):
                 yield extension
 

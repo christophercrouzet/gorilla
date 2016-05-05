@@ -9,10 +9,20 @@
 """
 
 import gorilla._constants
+import gorilla._objecttype
 import gorilla._utils
 import gorilla.settings
 import gorilla.utils
-from gorilla._objecttype import ObjectType
+
+
+_VALID_OBJECT_TYPES = (
+    gorilla._objecttype.CLASS,
+    gorilla._objecttype.DESCRIPTOR
+)
+_VALID_TARGET_TYPES = (
+    gorilla._objecttype.MODULE,
+    gorilla._objecttype.CLASS
+)
 
 
 class Extension(object):
@@ -220,8 +230,8 @@ class Extension(object):
         original = self.original
         object_type = self._get_object_type(object)
         target_type = self._get_target_type(self._target)
-        if (target_type not in (ObjectType.module, ObjectType.cls) or
-                object_type not in (ObjectType.cls, ObjectType.descriptor)):
+        if (target_type not in _VALID_TARGET_TYPES or
+                object_type not in _VALID_OBJECT_TYPES):
             raise TypeError("Cannot patch a `%s` with a `%s`." % (
                 type(self._target).__name__, type(object).__name))
         
@@ -232,8 +242,8 @@ class Extension(object):
                                        original.__name__,
                                        self._target.__name__))
             
-            original_type = ObjectType.get(original)
-            if object_type == original_type == ObjectType.cls:
+            original_type = gorilla._objecttype.get(original)
+            if object_type == original_type == gorilla._objecttype.CLASS:
                 if settings['update_class']:
                     # An existing class has to be patched with another class.
                     # Recursively go through each attribute member.
@@ -263,8 +273,9 @@ class Extension(object):
         
         # Replace any empty docstring with the original one. Python 2 doesn't
         # allow to write the docstring of a class so we skip it.
-        if (original and
-                (not gorilla._python.PY2 or object_type != ObjectType.cls)):
+        if (original
+                and (not gorilla._python.PY2
+                     or object_type != gorilla._objecttype.CLASS)):
             underlying = gorilla._utils.get_underlying_object(object)
             if not getattr(underlying, '__doc__', None):
                 setattr(underlying, '__doc__',
@@ -276,8 +287,8 @@ class Extension(object):
     
     @staticmethod
     def _get_object_type(object):
-        object_type = ObjectType.get(object)
-        if not object_type in (ObjectType.cls, ObjectType.descriptor):
+        object_type = gorilla._objecttype.get(object)
+        if object_type not in _VALID_OBJECT_TYPES:
             raise TypeError("Expected a `class`, a `function`, a `method` or "
                             "a `property` but got a `%s` instead." %
                             type(object).__name__)
@@ -286,8 +297,8 @@ class Extension(object):
     
     @staticmethod
     def _get_target_type(target):
-        target_type = ObjectType.get(target)
-        if target_type not in (ObjectType.module, ObjectType.cls):
+        target_type = gorilla._objecttype.get(target)
+        if target_type not in _VALID_TARGET_TYPES:
             raise TypeError("Expected a `module` or a `class` but "
                             "got a `%s` instead." % type(target).__name__)
         
