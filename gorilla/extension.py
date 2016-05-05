@@ -52,7 +52,7 @@ class Extension(object):
     object during the patching process. This can be use for example to
     ensure that a function is applied as a static method in a class.
     
-    By default, the bahavior of the patching process is dictated by the
+    By default, the behavior of the patching process is dictated by the
     settings defined in the `~gorilla.settings.Settings` class. It's
     possible to override those by using the `settings` property.
     
