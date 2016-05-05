@@ -14,4 +14,5 @@ Utilities
 
 .. autofunction:: get_original_attribute
 .. autofunction:: listify
+.. autofunction:: register_extensions
 .. autofunction:: uniquify

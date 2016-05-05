@@ -7,8 +7,8 @@ The module :mod:`gorilla.decorators` contains everything to mark some code
 as being :term:`extension`\ s to use to :term:`patch` a specified target.
 
 If using the decorators approach, the extensions can be automatically
-registered and applied using the
-:class:`~gorilla.extensionsregistrar.ExtensionsRegistrar` class.
+registered and applied using the :func:`~gorilla.utils.register_extensions`
+function.
 
 Applying patches dynamically can be done by directly using the core class
 :class:`~gorilla.extension.Extension`.

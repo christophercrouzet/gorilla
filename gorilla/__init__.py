@@ -25,7 +25,6 @@ __all__ = [
     'decorators',
     'extension',
     'extensionset',
-    'extensionsregistrar',
     'settings',
     'utils'
 ]

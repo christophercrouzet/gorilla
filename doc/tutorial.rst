@@ -11,7 +11,7 @@ in 2 steps:
      :func:`~gorilla.decorators.patch` decorator.
    * :ref:`registering and applying the patches
      <registering_and_applying_the_patches>` through the
-     :class:`~gorilla.extensionsregistrar.ExtensionsRegistrar` class.
+     :func:`~gorilla.utils.register_extensions` function.
 
 The other option is to directly use the :class:`~gorilla.extension.Extension`
 class if :ref:`dynamic patching <patching_dynamically>` is required.
@@ -107,7 +107,7 @@ Marking Class Extensions
    ...     
    ...     @classmethod
    ...     def classic_needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__)
+   ...         print("Patching %s is awesome" % cls.__name__)
    ...     
    ...     @staticmethod
    ...     def static_needle():
@@ -134,7 +134,7 @@ each member.
    ...     
    ...     @gorilla.apply(classmethod)
    ...     def classic_needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__)
+   ...         print("Patching %s is awesome" % cls.__name__)
 
 The :meth:`needle` method can now be fired through a call to
 ``GuineaPig().bigger_needle()`` while the method ``classic_needle``
@@ -189,17 +189,15 @@ Registering and Applying the Patches
 
 Once that the extensions are marked, the next step is to apply them before
 we can actually use them. This is easily achieved with the help of the
-:meth:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
-class method.
+:func:`~gorilla.utils.register_extensions` function.
 
-   >>> from gorilla.extensionsregistrar import ExtensionsRegistrar
+   >>> import gorilla.utils
    >>> import extensionspackage
-   >>> ExtensionsRegistrar.register_extensions(extensionspackage, patch=True)
+   >>> gorilla.utils.register_extensions(extensionspackage, patch=True)
 
-For a given package ``extensionspackage``, the class method
-:func:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
-scans recursively all the nested packages and modules and returns a
-:class:`~gorilla.extensionset.ExtensionSet`
+For a given package ``extensionspackage``, the function
+:func:`~gorilla.utils.register_extensions` scans recursively all the nested
+packages and modules and returns a :class:`~gorilla.extensionset.ExtensionSet`.
 
 See the :ref:`bananas` section to see some examples of real-world
 implementations.

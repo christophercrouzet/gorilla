@@ -8,7 +8,7 @@ Extensions
    
    ~gorilla.extension.Extension
    ~gorilla.extensionset.ExtensionSet
-   ~gorilla.extensionsregistrar.ExtensionsRegistrar
+   ~gorilla.utils.register_extensions
 
 
 Extension Class
@@ -33,10 +33,10 @@ ExtensionSet Class
    .. automethod:: __init__
 
 
-ExtensionsRegistrar Class
--------------------------
+register_extensions Function
+----------------------------
 
-.. module:: gorilla.extensionsregistrar
+.. module:: gorilla.utils
 
-.. autoclass:: ExtensionsRegistrar
-   :members:
+.. autofunction:: register_extensions
+   :noindex:

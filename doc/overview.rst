@@ -19,9 +19,9 @@ being an :term:`extension` to use to :term:`patch` a specified target
 
 The :term:`extension`\ s marked with the :func:`~gorilla.decorators.patch`
 decorator are discoverable with the help of the
-:meth:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
-class method. A breadth-first scan is performed recursively on the packages
-and modules provided to find any extension defined.
+:func:`~gorilla.utils.register_extensions` function. A breadth-first scan
+is performed recursively on the packages and modules provided to find
+any extension defined.
 
 When an attribute with the same name as the :term:`extension` to apply
 already exists on the target, then the existing attribute is saved under
@@ -32,7 +32,7 @@ original behavior of an attribute can be preserved if needed.
 The behavior of the patching process can be changed by overriding the default
 settings to be found in the class :class:`~gorilla.settings.Settings`. See
 :class:`~gorilla.extension.Extension` and
-:func:`~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`.
+:func:`~gorilla.utils.register_extensions`.
 
 .. note::
    

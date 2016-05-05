@@ -154,8 +154,7 @@ class Extension(object):
         
         Those settings override the default settings defined in the class
         `~gorilla.settings.Settings` as well as any setting coming from the
-        `~gorilla.extensionsregistrar.ExtensionsRegistrar.register_extensions`
-        function.
+        `~gorilla.utils.register_extensions` function.
         
         Either a `~gorilla.settings.Settings` or a `dict` are accepted as
         input but the value returned is always a `dict`.

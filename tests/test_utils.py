@@ -3,11 +3,14 @@ import unittest
 
 import gorilla._python
 import gorilla._utils
-import gorilla.decorators
 import gorilla.utils
 from gorilla.extension import Extension
 
+from . import data_utils
 from .data_utils import data, guineapig
+from .data_utils import extensions as rootmodule
+from .data_utils.extensions import extension1, extension2
+from .data_utils.extensions.subpackage import extension as submodule
 from . import GorillaTestCase
 
 
@@ -32,13 +35,29 @@ class UtilsTest(GorillaTestCase):
     def setup(self):
         global data
         global guineapig
+        global rootmodule
+        global extension1
+        global extension2
+        global submodule
         guineapig = __import__('data_utils.guineapig', globals(), locals(), ['*'], 1)
         data = __import__('data_utils.data', globals(), locals(), ['*'], 1)
+        rootmodule = __import__('data_utils.extensions', globals(), locals(), ['*'], 1)
+        extension1 = __import__('data_utils.extensions.extension1', globals(), locals(), ['*'], 1)
+        extension2 = __import__('data_utils.extensions.extension2', globals(), locals(), ['*'], 1)
+        submodule = __import__('data_utils.extensions.subpackage.extension', globals(), locals(), ['*'], 1)
         self.sys_path = list(sys.path)
     
     def teardown(self):
         global data
         global guineapig
+        global rootmodule
+        global extension1
+        global extension2
+        global submodule
+        del sys.modules[submodule.__name__]
+        del sys.modules[extension2.__name__]
+        del sys.modules[extension1.__name__]
+        del sys.modules[rootmodule.__name__]
         del sys.modules[data.__name__]
         del sys.modules[guineapig.__name__]
         sys.path[:] = self.sys_path
@@ -193,6 +212,89 @@ class UtilsTest(GorillaTestCase):
         self.assert_equal(gorilla.utils.listify('abc'), ['abc'])
         self.assert_equal(gorilla.utils.listify((True, False)), [True, False])
     
+    def test_register_extensions_1(self):
+        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
+        extension1_method.name = 'needle_method'
+        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
+        extension1_class_method.name = 'needle_class_method'
+        extension1_class_method.apply = classmethod
+        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
+        extension1_static_method.name = 'needle_static_method'
+        extension1_static_method.apply = staticmethod
+        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
+        extension1_value.name = 'needle_value'
+        extension1_value.apply = property
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
+        submodule_method.name = 'needle_method'
+        
+        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
+        
+        extension_set = gorilla.utils.register_extensions(packages_and_modules=rootmodule)
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+    
+    def test_register_extensions_2(self):
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
+        submodule_method.name = 'needle_method'
+        
+        extensions = [extension2_class, submodule_method]
+        
+        extension_set = gorilla.utils.register_extensions(packages_and_modules=[submodule, extension2])
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+    
+    def test_register_extensions_3(self):
+        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
+        extension1_method.name = 'needle_method'
+        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
+        extension1_class_method.name = 'needle_class_method'
+        extension1_class_method.apply = classmethod
+        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
+        extension1_static_method.name = 'needle_static_method'
+        extension1_static_method.apply = staticmethod
+        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
+        extension1_value.name = 'needle_value'
+        extension1_value.apply = property
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        
+        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class]
+        
+        extension_set = gorilla.utils.register_extensions(packages_and_modules=[rootmodule], recursive=False)
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+    
+    def test_register_extensions_4(self):
+        settings = {'allow_overwriting': True, 'update_class': False}
+        
+        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
+        extension1_method.name = 'needle_method'
+        extension1_method.settings = settings
+        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
+        extension1_class_method.name = 'needle_class_method'
+        extension1_class_method.apply = classmethod
+        extension1_class_method.settings = settings
+        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
+        extension1_static_method.name = 'needle_static_method'
+        extension1_static_method.apply = staticmethod
+        extension1_static_method.settings = settings
+        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
+        extension1_value.name = 'needle_value'
+        extension1_value.apply = property
+        extension1_value.settings = settings
+        extension2_class = Extension(extension2.Class, guineapig)
+        extension2_class.name = 'Needle'
+        extension2_class.settings = settings
+        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
+        submodule_method.name = 'needle_method'
+        submodule_method.settings = settings
+        
+        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
+        
+        extension_set = gorilla.utils.register_extensions(packages_and_modules=rootmodule, settings=data_utils.ExtensionsSettings)
+        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+        
     def test_uniquify(self):
         self.assert_equal(gorilla.utils.uniquify([]), [])
         self.assert_equal(gorilla.utils.uniquify([None]), [None])
