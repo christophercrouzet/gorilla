@@ -200,17 +200,17 @@ class UtilsTest(GorillaTestCase):
             self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(object)))), underlying_object)
     
     def test_listify(self):
-        self.assert_equal(gorilla.utils.listify(None), [])
-        self.assert_equal(gorilla.utils.listify(''), [])
-        self.assert_equal(gorilla.utils.listify([]), [])
-        self.assert_equal(gorilla.utils.listify(()), [])
+        self.assert_equal(gorilla._utils.listify(None), [])
+        self.assert_equal(gorilla._utils.listify(''), [])
+        self.assert_equal(gorilla._utils.listify([]), [])
+        self.assert_equal(gorilla._utils.listify(()), [])
         
-        self.assert_equal(gorilla.utils.listify(None, valid=(None, )), [None])
-        self.assert_equal(gorilla.utils.listify(None, valid=[None]), [None])
-        self.assert_equal(gorilla.utils.listify('', valid=('')), [''])
+        self.assert_equal(gorilla._utils.listify(None, valid=(None, )), [None])
+        self.assert_equal(gorilla._utils.listify(None, valid=[None]), [None])
+        self.assert_equal(gorilla._utils.listify('', valid=('')), [''])
         
-        self.assert_equal(gorilla.utils.listify('abc'), ['abc'])
-        self.assert_equal(gorilla.utils.listify((True, False)), [True, False])
+        self.assert_equal(gorilla._utils.listify('abc'), ['abc'])
+        self.assert_equal(gorilla._utils.listify((True, False)), [True, False])
     
     def test_register_extensions_1(self):
         extension1_method = Extension(extension1.method, guineapig.GuineaPig)
@@ -296,18 +296,18 @@ class UtilsTest(GorillaTestCase):
         self.assert_true(_same_list_content(extension_set.extensions, extensions))
         
     def test_uniquify(self):
-        self.assert_equal(gorilla.utils.uniquify([]), [])
-        self.assert_equal(gorilla.utils.uniquify([None]), [None])
-        self.assert_equal(gorilla.utils.uniquify('abc'), ['a', 'b', 'c'])
-        self.assert_equal(gorilla.utils.uniquify(['a', 'b', 'c']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla.utils.uniquify(('a', 'b', 'c')), ['a', 'b', 'c'])
+        self.assert_equal(gorilla._utils.uniquify([]), [])
+        self.assert_equal(gorilla._utils.uniquify([None]), [None])
+        self.assert_equal(gorilla._utils.uniquify('abc'), ['a', 'b', 'c'])
+        self.assert_equal(gorilla._utils.uniquify(['a', 'b', 'c']), ['a', 'b', 'c'])
+        self.assert_equal(gorilla._utils.uniquify(('a', 'b', 'c')), ['a', 'b', 'c'])
         
-        self.assert_equal(gorilla.utils.uniquify(['a', 'a', 'b', 'b', 'c', 'c']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla.utils.uniquify(['a', 'b', 'c', 'c', 'b', 'a']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla.utils.uniquify(['c', 'b', 'a']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla.utils.uniquify(['c', 'c', 'b', 'b', 'a', 'a']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla.utils.uniquify(['c', 'b', 'a', 'a', 'b', 'c']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla.utils.uniquify([9, 4, 2, 85, 86, 4, 28]), [9, 4, 2, 85, 86, 28])
+        self.assert_equal(gorilla._utils.uniquify(['a', 'a', 'b', 'b', 'c', 'c']), ['a', 'b', 'c'])
+        self.assert_equal(gorilla._utils.uniquify(['a', 'b', 'c', 'c', 'b', 'a']), ['a', 'b', 'c'])
+        self.assert_equal(gorilla._utils.uniquify(['c', 'b', 'a']), ['c', 'b', 'a'])
+        self.assert_equal(gorilla._utils.uniquify(['c', 'c', 'b', 'b', 'a', 'a']), ['c', 'b', 'a'])
+        self.assert_equal(gorilla._utils.uniquify(['c', 'b', 'a', 'a', 'b', 'c']), ['c', 'b', 'a'])
+        self.assert_equal(gorilla._utils.uniquify([9, 4, 2, 85, 86, 4, 28]), [9, 4, 2, 85, 86, 28])
 
 
 if __name__ == '__main__':

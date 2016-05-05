@@ -8,7 +8,7 @@
     :license: MIT, see LICENSE for details.
 """
 
-import gorilla.utils
+import gorilla._utils
 
 
 class ExtensionSet(object):
@@ -35,7 +35,7 @@ class ExtensionSet(object):
         extensions : [list of] gorilla.extension.Extension
             Extension(s) to add into this set.
         """
-        self._extensions.extend(gorilla.utils.listify(extensions))
+        self._extensions.extend(gorilla._utils.listify(extensions))
     
     def patch(self):
         """Apply the patches.

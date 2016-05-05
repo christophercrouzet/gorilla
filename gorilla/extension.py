@@ -12,7 +12,6 @@ import gorilla._constants
 import gorilla._objecttype
 import gorilla._utils
 import gorilla.settings
-import gorilla.utils
 
 
 _VALID_OBJECT_TYPES = (
@@ -146,7 +145,7 @@ class Extension(object):
     
     @apply.setter
     def apply(self, value):
-        self._apply = gorilla.utils.listify(value)
+        self._apply = gorilla._utils.listify(value)
     
     @property
     def settings(self):
