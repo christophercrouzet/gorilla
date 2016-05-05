@@ -231,8 +231,8 @@ class UtilsTest(GorillaTestCase):
         
         extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
         
-        extension_set = gorilla.utils.register_extensions(packages_and_modules=rootmodule)
-        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=rootmodule)
+        self.assert_true(_same_list_content(registered_extensions, extensions))
     
     def test_register_extensions_2(self):
         extension2_class = Extension(extension2.Class, guineapig)
@@ -242,8 +242,8 @@ class UtilsTest(GorillaTestCase):
         
         extensions = [extension2_class, submodule_method]
         
-        extension_set = gorilla.utils.register_extensions(packages_and_modules=[submodule, extension2])
-        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=[submodule, extension2])
+        self.assert_true(_same_list_content(registered_extensions, extensions))
     
     def test_register_extensions_3(self):
         extension1_method = Extension(extension1.method, guineapig.GuineaPig)
@@ -262,8 +262,8 @@ class UtilsTest(GorillaTestCase):
         
         extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class]
         
-        extension_set = gorilla.utils.register_extensions(packages_and_modules=[rootmodule], recursive=False)
-        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=[rootmodule], recursive=False)
+        self.assert_true(_same_list_content(registered_extensions, extensions))
     
     def test_register_extensions_4(self):
         settings = {'allow_overwriting': True, 'update_class': False}
@@ -292,8 +292,8 @@ class UtilsTest(GorillaTestCase):
         
         extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
         
-        extension_set = gorilla.utils.register_extensions(packages_and_modules=rootmodule, settings=data_utils.ExtensionsSettings)
-        self.assert_true(_same_list_content(extension_set.extensions, extensions))
+        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=rootmodule, settings=data_utils.ExtensionsSettings)
+        self.assert_true(_same_list_content(registered_extensions, extensions))
         
     def test_uniquify(self):
         self.assert_equal(gorilla._utils.uniquify([]), [])

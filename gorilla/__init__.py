@@ -24,7 +24,6 @@ __version__ = '0.1.0'
 __all__ = [
     'decorators',
     'extension',
-    'extensionset',
     'settings',
     'utils'
 ]

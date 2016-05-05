@@ -197,7 +197,8 @@ we can actually use them. This is easily achieved with the help of the
 
 For a given package ``extensionspackage``, the function
 :func:`~gorilla.utils.register_extensions` scans recursively all the nested
-packages and modules and returns a :class:`~gorilla.extensionset.ExtensionSet`.
+packages and modules and returns a list of
+:class:`~gorilla.extension.Extension`.
 
 See the :ref:`bananas` section to see some examples of real-world
 implementations.

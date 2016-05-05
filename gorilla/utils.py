@@ -15,7 +15,6 @@ import types
 import gorilla._constants
 import gorilla._python
 import gorilla._utils
-from gorilla.extensionset import ExtensionSet
 
 
 def get_original_attribute(object, name):
@@ -57,8 +56,8 @@ def register_extensions(packages_and_modules, settings=None,
     
     Returns
     -------
-    gorilla.extensionset.ExtensionSet
-        Extensions found grouped within an extension set.
+    [list of] gorilla.extension.Extension
+        Extensions found.
     
     Raises
     ------
@@ -74,11 +73,11 @@ def register_extensions(packages_and_modules, settings=None,
             loader = finder.find_module(name)
             return loader.load_module(name)
     
-    def register(package_or_module, extension_set, settings):
-        extensions = list(
+    def register(extensions, package_or_module, settings):
+        local_extensions = list(
             gorilla._utils.extension_iterator(package_or_module))
         if settings:
-            for extension in extensions:
+            for extension in local_extensions:
                 if extension.settings:
                     # Make sure that settings directly defined at the
                     # extension level overwrite the global settings.
@@ -88,7 +87,7 @@ def register_extensions(packages_and_modules, settings=None,
                 else:
                     extension.settings = settings.copy()
         
-        extension_set.add(extensions)
+        extensions.extend(gorilla._utils.listify(local_extensions))
         
         # The `__path__` attribute of a package might return a list of
         # paths if the package is referenced as a namespace.
@@ -116,16 +115,16 @@ def register_extensions(packages_and_modules, settings=None,
                         # modules at the current level.
                         packages.append(module)
                 else:
-                    register(module, extension_set, settings)
+                    register(extensions, module, settings)
         
         for package in packages:
-            register(package, extension_set, settings)
+            register(extensions, package, settings)
     
     
     if gorilla._utils.is_settings(settings):
         settings = settings.as_dict()
     
-    extension_set = ExtensionSet()
+    extensions = []
     modules = gorilla._utils.uniquify(gorilla._utils.listify(
         packages_and_modules))
     for module in modules:
@@ -133,9 +132,10 @@ def register_extensions(packages_and_modules, settings=None,
             raise TypeError(
                 "The path '%s' isn't a valid package or module." % module)
         
-        register(module, extension_set, settings)
+        register(extensions, module, settings)
     
     if patch:
-        extension_set.patch()
+        for extension in extensions:
+            extension.patch()
     
-    return extension_set
+    return extensions

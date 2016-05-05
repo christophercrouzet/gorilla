@@ -7,7 +7,6 @@ Extensions
    :nosignatures:
    
    ~gorilla.extension.Extension
-   ~gorilla.extensionset.ExtensionSet
    ~gorilla.utils.register_extensions
 
 
@@ -17,17 +16,6 @@ Extension Class
 .. module:: gorilla.extension
 
 .. autoclass:: Extension
-   :members:
-   
-   .. automethod:: __init__
-
-
-ExtensionSet Class
-------------------
-
-.. module:: gorilla.extensionset
-
-.. autoclass:: ExtensionSet
    :members:
    
    .. automethod:: __init__
