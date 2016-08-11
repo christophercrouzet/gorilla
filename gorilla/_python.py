@@ -2,7 +2,7 @@
     gorilla._python
     ~~~~~~~~~~~~~~~
 
-    Compatibility layer for writing code that runs on Python 2 and 3.
+    Compatibility layer for writing code that runs on both Python 2 and 3.
 
     Taken from `six <https://pypi.python.org/pypi/six>`_
     by Benjamin Peterson.
@@ -22,15 +22,15 @@ PY3 = VERSION[0] == 3
 
 if PY2:
     CLASS_TYPES = (type, types.ClassType)
-    STRING_TYPES = basestring,
+    STRING_TYPES = (basestring,)
 
-    def iteritems(dictionary, **kwargs):
-        """Iterate over the items of a dictionary."""
-        return iter(dictionary.iteritems(**kwargs))
+    def iteritems(d, **kwargs):
+        """Iterate over the ``(key, value)`` pairs of a dictionary."""
+        return d.iteritems(**kwargs)
 else:
-    CLASS_TYPES = type,
-    STRING_TYPES = str,
+    CLASS_TYPES = (type,)
+    STRING_TYPES = (str,)
 
-    def iteritems(dictionary, **kwargs):
-        """Iterate over the items of a dictionary."""
-        return iter(dictionary.items(**kwargs))
+    def iteritems(d, **kwargs):
+        """Iterate over the ``(key, value)`` pairs of a dictionary."""
+        return iter(d.items(**kwargs))

@@ -171,7 +171,7 @@ class Extension(object):
     def original(self):
         """Attribute from the target to be overriden.
 
-        Return None if no attributes are to be overriden.
+        Returns None if no attributes are to be overriden.
         """
         if hasattr(self._target, '__dict__'):
             return self._target.__dict__.get(self.name, None)
@@ -249,11 +249,9 @@ class Extension(object):
                         source)
                     for name, attribute in attributes:
                         data = gorilla._utils.get_decorator_data(attribute)
-                        name = data['name'] if 'name' in data else name
-                        apply = data.get('apply', [])
                         extension = self.__class__(attribute, original)
-                        extension.name = name
-                        extension.apply = apply
+                        extension.name = data.get('name', name)
+                        extension.apply = data.get('apply', [])
                         extension.patch()
 
                     return
