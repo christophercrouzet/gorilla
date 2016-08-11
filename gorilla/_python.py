@@ -20,17 +20,17 @@ PY2 = VERSION[0] == 2
 PY3 = VERSION[0] == 3
 
 
-if PY3:
-    CLASS_TYPES = type,
-    STRING_TYPES = str,
-
-    def iteritems(dictionary, **kwargs):
-        """Iterate over the items of a dictionary."""
-        return iter(dictionary.items(**kwargs))
-else:
+if PY2:
     CLASS_TYPES = (type, types.ClassType)
     STRING_TYPES = basestring,
 
     def iteritems(dictionary, **kwargs):
         """Iterate over the items of a dictionary."""
         return iter(dictionary.iteritems(**kwargs))
+else:
+    CLASS_TYPES = type,
+    STRING_TYPES = str,
+
+    def iteritems(dictionary, **kwargs):
+        """Iterate over the items of a dictionary."""
+        return iter(dictionary.items(**kwargs))

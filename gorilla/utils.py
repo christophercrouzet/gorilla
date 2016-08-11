@@ -64,14 +64,14 @@ def register_extensions(packages_and_modules, settings=None,
     TypeError
         The input is not a valid package or module.
     """
-    if gorilla._python.PY3:
-        def load_module(finder, name):
-            loader, _ = finder.find_loader(name)
-            return loader.load_module()
-    else:
+    if gorilla._python.PY2:
         def load_module(finder, name):
             loader = finder.find_module(name)
             return loader.load_module(name)
+    else:
+        def load_module(finder, name):
+            loader, _ = finder.find_loader(name)
+            return loader.load_module()
 
     def register(extensions, package_or_module, settings):
         local_extensions = list(
