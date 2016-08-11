@@ -25,7 +25,7 @@ either:
     ...     
     ...     @classmethod
     ...     def classic_needle(cls):
-    ...     print("Patching %s is awesome" % cls.__name__)
+    ...         print("Patching %s is awesome" % cls.__name__)
 
 
 See the ``overview`` and ``tutorial`` sections of the documentation for more
