@@ -6,6 +6,8 @@ FAQ
 What's the motivation behind this library? In what is it different from a more conventional approach?
 -----------------------------------------------------------------------------------------------------
 
+.. code-block:: python
+
    >>> import guineapig
    >>> def needle():
    ...     print("awesome")
@@ -17,6 +19,8 @@ of ways of doing monkey patching after all.
 
 Now, what if we had to patch a class method into an hypothetical
 :class:`guineapig.GuineaPig` class?
+
+.. code-block:: python
 
    >>> import guineapig
    >>> class Needle(object):
@@ -48,6 +52,8 @@ Furthermore, if we now have to patch 50 methods inside our target class
 patching assignment for each, we could instead regroup those 50 methods within
 a single class and mark that entire class as being an extension.
 
+.. code-block:: python
+
    >>> import gorilla
    >>> import guineapig
    >>> @gorilla.patch(guineapig, name='GuineaPig')
@@ -72,6 +78,8 @@ by overidding the default settings from the class
 Another feature is that if a name clash is detected, then the original
 attribute is saved under another name to remain accessible from within our
 code.
+
+.. code-block:: python
 
    >>> import gorilla
    >>> from guineapig import GuineaPig

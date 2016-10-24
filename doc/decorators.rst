@@ -13,6 +13,7 @@ Decorators
    apply
    settings
 
+
 .. autofunction:: patch
 .. autofunction:: name
 .. autofunction:: apply

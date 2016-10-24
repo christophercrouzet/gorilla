@@ -6,26 +6,30 @@ Gorilla is a library that provides a convenient approach to monkey patching.
 Defining a function ``needle()`` as being an extension for a module
 ``guineapig`` is as easy as:
 
-    >>> import gorilla
-    >>> import guineapig
-    >>> @gorilla.patch(guineapig)
-    ... def needle():
-    ...     print("awesome")
+.. code-block:: python
+
+   >>> import gorilla
+   >>> import guineapig
+   >>> @gorilla.patch(guineapig)
+   ... def needle():
+   ...     print("awesome")
 
 
 Marking a class ``GuineaPig`` to be patched with a class of our own is no sweat
 either:
 
-    >>> import gorilla
-    >>> import guineapig
-    >>> @patch(guineapig, name='GuineaPig')
-    ... class Needle(object):
-    ...     def needle(self, arg):
-    ...         print("Patching %s is awesome" % self.__class__.__name__)
-    ...     
-    ...     @classmethod
-    ...     def classic_needle(cls):
-    ...         print("Patching %s is awesome" % cls.__name__)
+.. code-block:: python
+
+   >>> import gorilla
+   >>> import guineapig
+   >>> @patch(guineapig, name='GuineaPig')
+   ... class Needle(object):
+   ...     def needle(self, arg):
+   ...         print("Patching %s is awesome" % self.__class__.__name__)
+   ...     
+   ...     @classmethod
+   ...     def classic_needle(cls):
+   ...         print("Patching %s is awesome" % cls.__name__)
 
 
 See the ``overview`` and ``tutorial`` sections of the documentation for more
@@ -49,7 +53,7 @@ by firing:
 
 .. code-block:: bash
     
-    $ python tests/run.py
+   $ python tests/run.py
 
 
 To run specific tests, it is possible to pass names to match in the command
@@ -57,7 +61,7 @@ line.
 
 .. code-block:: bash
     
-    $ python tests/run.py TestCase test_my_code
+   $ python tests/run.py TestCase test_my_code
 
 
 This command will run all the tests within the ``TestCase`` class as well as
