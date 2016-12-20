@@ -3,8 +3,8 @@
 Installation
 ============
 
-Gorilla is written in the Python language and requires at least Python 2.6 or
-Python 3.3 to work correctly.
+Gorilla is written in the Python language and supports both Python 2 and
+Python 3 versions.
 
 
 The Easy Way
@@ -15,14 +15,14 @@ installation tools [1]_, then you can install the most recent version of
 Gorilla using `pip`_:
 
 .. code-block:: bash
-   
+
    $ pip install gorilla
 
 
 An alternative would be to use `easy_install`_ (included in `setuptools`_):
 
 .. code-block:: bash
-   
+
    $ easy_install gorilla
 
 
@@ -30,7 +30,7 @@ From the Source
 ---------------
 
 You can also download a compressed archive containing the source from either
-`PyPI`_ or `GitHub`_. 
+`PyPI`_ or `GitHub`_.
 
 Then, it's only a matter of:
 

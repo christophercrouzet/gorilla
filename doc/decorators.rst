@@ -1,20 +1,29 @@
+.. currentmodule:: gorilla
+
 .. _decorators:
 
 Decorators
 ==========
 
-.. module:: gorilla.decorators
-
 .. autosummary::
    :nosignatures:
-   
+
    patch
+   patches
+   destination
    name
-   apply
    settings
+   filter
 
 
 .. autofunction:: patch
+
+.. autofunction:: patches
+
+.. autofunction:: destination
+
 .. autofunction:: name
-.. autofunction:: apply
+
 .. autofunction:: settings
+
+.. autofunction:: filter

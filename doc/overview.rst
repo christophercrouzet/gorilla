@@ -1,39 +1,36 @@
+.. currentmodule:: gorilla
+
 .. _overview:
 
 Overview
 ========
 
-Gorilla is a library that provides a convenient approach to
-:term:`monkey patching`.
+Gorilla is a library providing a convenient approach to monkey patching.
 
-The API revolves around the concept of
-:term:`extension`\ s, represented by the class
-:class:`~gorilla.extension.Extension`. This class is useful to be used directly
-if the patching details are to be only known at runtime but otherwise a set of
-decorators are available to make the whole process straightforward.
+The API revolves around the concept of patches, represented by the class
+:class:`Patch`. This class can be used directly if the patching information are
+only known at runtime but otherwise a set of decorators are available to make
+the whole process more intuitive.
 
-This process consists in decorating a class or a :term:`descriptor`
-with the :func:`~gorilla.decorators.patch` decorator. This marks that object as
-being an :term:`extension` to use to :term:`patch` a specified target
-(either a module or a class).
+This recommended process consists in decorating a class or a descriptor with
+the :func:`patch` decorator. This marks the decorated object as the attribute
+value to use to patch a specified destination (either a module or a class). A
+decorator :func:`patches` is also provided to create a patch for each member of
+a class.
 
-The :term:`extension`\ s marked with the :func:`~gorilla.decorators.patch`
-decorator are discoverable with the help of the
-:func:`~gorilla.utils.register_extensions` function. A breadth-first scan
-is performed recursively on the packages and modules provided to find
-any extension defined.
+The objects marked with these two decorators are discoverable through the
+:func:`find_patches` function and can be applied using the :func:`apply`
+function.
 
-When an attribute with the same name as the :term:`extension` to apply
-already exists on the target, then the existing attribute is saved under
-another name and becomes callable from within the extension's code through the
-:func:`~gorilla.utils.get_original_attribute` function. This ensures that the
-original behavior of an attribute can be preserved if needed.
+When an attribute with the same name as the patch to apply already exists on
+the destination, then a hit occurs which leads the existing attribute to be
+optionally saved under another name and to become accessible through the
+:func:`get_original_attribute` function. This ensures that the original
+behaviour of an attribute can be preserved if needed.
 
-The behavior of the patching process can be changed by overriding the default
-settings to be found in the class :class:`~gorilla.settings.Settings`. See
-:class:`~gorilla.extension.Extension` and
-:func:`~gorilla.utils.register_extensions`.
+The behaviour of the patching process can be modified for each patch by
+overriding the default settings. See :class:`Patch`, and :class:`Settings`.
 
 .. note::
-   
-   The supported versions of Python are 2.6, 2.7, 3.3 and 3.4.
+
+   Both Python 2 and Python 3 versions are supported.

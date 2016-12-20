@@ -4,25 +4,25 @@ import re
 import setuptools
 
 
-# Taken from `Python Packaging User Guide
-# <https://python-packaging-user-guide.readthedocs.org/en/latest/tutorial.html#id30>`_
+# Taken from the `Python Packaging User Guide
+# <https://packaging.python.org/single_source_version/>`_
 def find_version(*file_paths):
     here = os.path.abspath(os.path.dirname(__file__))
-    with codecs.open(os.path.join(here, *file_paths), 'r', 'latin1') as f:
+    with codecs.open(os.path.join(here, *file_paths), 'r', 'utf8') as f:
         version_file = f.read()
-    
+
     version_match = re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]',
-        version_file, re.M)
+                              version_file, re.M)
     if version_match:
         return version_match.group(1)
-    
+
     raise RuntimeError("Unable to find the version string.")
 
 
 setuptools.setup(
     name='gorilla',
-    version=find_version('gorilla', '__init__.py'),
-    description='Convenient approach to monkey patching.',
+    version=find_version('gorilla.py'),
+    description='Convenient approach to monkey patching',
     keywords='gorilla monkey patch',
     license='MIT',
     url='https://github.com/christophercrouzet/gorilla',
@@ -34,7 +34,6 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
@@ -42,7 +41,7 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities'
     ],
-    packages=setuptools.find_packages(exclude=('tests', 'tests.*')),
-    include_package_data=True,
-    zip_safe=False
+    packages=[],
+    py_modules=['gorilla'],
+    include_package_data=True
 )

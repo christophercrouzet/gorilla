@@ -1,257 +1,243 @@
+.. currentmodule:: gorilla
+
 .. _tutorial:
 
 Tutorial
 ========
 
-The standard approach for :term:`patch`\ ing some external code is to be done
-in 2 steps:
-   
-   * marking the :ref:`descriptor extensions <marking_descriptor_extensions>`
-     and/or the :ref:`class extensions <marking_class_extensions>` with the
-     :func:`~gorilla.decorators.patch` decorator.
-   * :ref:`registering and applying the patches
-     <registering_and_applying_the_patches>` through the
-     :func:`~gorilla.utils.register_extensions` function.
+The standard approach for patching some external code is to be done in two
+steps:
 
-The other option is to directly use the :class:`~gorilla.extension.Extension`
-class if :ref:`dynamic patching <patching_dynamically>` is required.
+   * creating a :ref:`single patch <creating_single_patch>` and/or
+     :ref:`multiple patches <creating_multiple_patches>` respectively with the
+     :func:`patch` and :func:`patches` decorators.
+   * :ref:`finding and applying the patches <finding_and_applying_the_patches>`
+     through the :func:`find_patches` and :func:`apply` functions.
 
-
-.. _marking_descriptor_extensions:
-
-Marking Descriptor Extensions
------------------------------
-
-Using a function :func:`needle` that we've created to patch a 3rd party
-module goes as follows:
-
-.. code-block:: python
-
-   >>> import gorilla
-   >>> import guineapig
-   >>> @gorilla.patch(guineapig)
-   ... def needle():
-   ...     print("awesome")
+The other option to create patches is to directly use the :class:`Patch` class
+which might be useful if some sort of
+:ref:`dynamic patching <dynamic_patching>` is required.
 
 
-After applying the patch, this will have for effect to make the function
-:func:`needle` available from within the module :mod:`guineapig`. Indeed,
-a call to ``guineapig.needle()`` will print ``awesome``.
+.. _creating_single_patch:
 
-Changing the name of the function at runtime can be done via the parameter
-`name`.
+Creating A Single Patch
+-----------------------
+
+In order to make a function ``my_function()`` available from within a
+third-party module ``destination``, the first step is to create a new patch by
+decorating our function:
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> import guineapig
-   >>> @gorilla.patch(guineapig, name='bigger_needle')
-   ... def needle():
-   ...     print("awesome")
+   >>> import destination
+   >>> @gorilla.patch(destination)
+   ... def my_function():
+   ...     print("Hello world!")
 
 
-The function :func:`needle` will now be accessible through a call to
-``guineapig.bigger_needle()``.
+This step only creates the :class:`Patch` object containing the patch
+information but does not inject the function into the destination module just
+yet. The :func:`apply` function needs to be called for that to happen, as shown
+in the section :ref:`finding_and_applying_the_patches`.
 
-Patching it into an existing class is only a matter of getting
-the patch decorator to refer to the appropriate target.
-
-.. code-block:: python
-
-   >>> import gorilla
-   >>> from guineapig import GuineaPig
-   >>> @gorilla.patch(GuineaPig)
-   ... def needle(self):
-   ...     print("Patching %s is awesome" % self.__class__.__name__)
-
-
-By default, functions are inserted into classes as methods. The first attribute
-of a such method (usually named `self` by convention) will refer to
-the instance of the target class.
-
-Adding such functions as class methods instead requires to add the
-:func:`classmethod` descriptor into the list of callable objects to apply.
+The defaut behaviour is for the patch to inject the function at the destination
+using the name of the decorated object, that is ``'my_function'``. If a
+different name is desired but changing the function name is not possible, then
+it can be done via the parameter `name`:
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> from guineapig import GuineaPig
-   >>> @gorilla.patch(GuineaPig, apply=classmethod)
-   ... def needle(cls):
-   ...     print("Patching %s is awesome" % cls.__name__)
+   >>> import destination
+   >>> @gorilla.patch(destination, name='better_function')
+   ... def my_function():
+   ...     print("Hello world!")
 
 
-If there was to be a method named `needle` already existing in the
-target class, then the patching process would override the original attribute
-only after making a copy of it. This way, it remains accessible from within
-our code with the help of the :func:`~gorilla.utils.get_original_attribute`
-function.
+After applying the patch, the function will become accessible through a call to
+``destination.better_function()``.
+
+A patch's destination can not only be a module as shown above, but also an
+existing class:
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> from guineapig import GuineaPig
-   >>> @gorilla.patch(GuineaPig)
-   ... def needle(self, arg):
-   ...     print(Patched "%s is awesome" % self.__class__.__name__)
-   ...     # We're overriding an existing method here,
-   ...     # preserve its original behavior.
-   ...     return gorilla.get_original_attribute(self, 'needle')(arg)
+   >>> import destination
+   >>> @gorilla.patch(destination.Class)
+   ... def my_method(self):
+   ...     print("Hello")
+   >>> @gorilla.patch(destination.Class)
+   ... @classmethod
+   ... def my_class_method(cls):
+   ...     print("world!")
+
+
+If there was to be an attribute at the patch's destination already existing
+with the patch's name, then the patching process can optionally override the
+original attribute after storing a copy of it. This way, it would remain
+accessible from within our code with the help of the
+:func:`get_original_attribute` function:
+
+.. code-block:: python
+
+   >>> import gorilla
+   >>> import destination
+   >>> settings = gorilla.Settings(allow_hit=True)
+   >>> @gorilla.patch(destination, settings=settings)
+   ... def function():
+   ...     print("Hello world!")
+   ...     # We're overriding an existing function here,
+   ...     # preserve its original behaviour.
+   ...     original = gorilla.get_original_attribute(destination, 'function')
+   ...     return original()
 
 
 .. note::
-    
-   The mechanism of saving an attribute to be overriden under another name
-   also works if the target is a module.
+
+   The default settings of a patch do not allow attributes at the destination
+   to be overriden. For such a behaviour, the attribute
+   :attr:`Settings.allow_hit` needs to be set to ``True``.
 
 
-Now this would quickly become cumbersome if it wasn't possible to patch a class
-as a whole.
+.. _creating_multiple_patches:
 
+Creating Multiple Patches at Once
+---------------------------------
 
-.. _marking_class_extensions:
-
-Marking Class Extensions
-------------------------
+As the number of patches grows, the process of defining a decorator for each
+individual patch can quickly become cumbersome. Instead, another decorator
+:func:`patches` is available to create a batch of patches
+(tongue-twister challenge: repeat "batch of patches" 10 times):
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> import guineapig
-   >>> @patch(guineapig)
-   ... class Needle(object):
-   ...     def needle(self, arg):
-   ...         print("Patching %s is awesome" % self.__class__.__name__)
-   ...     
+   >>> import destination
+   >>> @gorilla.patches(destination.Class)
+   ... class MyClass(object):
+   ...     def method(self):
+   ...         print("Hello")
    ...     @classmethod
-   ...     def classic_needle(cls):
-   ...         print("Patching %s is awesome" % cls.__name__)
-   ...     
+   ...     def class_method(cls):
+   ...         print("world")
    ...     @staticmethod
-   ...     def static_needle():
-   ...         print("awesome")
+   ...     def static_method():
+   ...         print("!")
 
 
-If no attribute named `Needle` were to be found in the target
-module, then the class would simply be inserted as is. Otherwise,
-each member from the class :class:`Needle` gets individually patched
-into the target class found.
+The :func:`patches` decorator iterates through all the members of the
+decorated class, by default filtered using the :func:`default_filter` function,
+while creating a patch for each of them.
 
-The members of :class:`Needle` are transferred over while preserving
-their names as well as any decorators applied to them. This
-behavior can be overrided by applying the decorators
-:func:`~gorilla.decorators.name` and :func:`~gorilla.decorators.apply` on
-each member.
+Each patch created in this manner inherits the properties defined by the root
+decorator but it is still possible to override them using any of the
+:func:`destination`, :func:`name`, :func:`settings`, and :func:`filter`
+modifier decorators:
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> import guineapig
-   >>> @patch(guineapig, name='GuineaPig')
-   ... class Needle(object):
-   ...     @gorilla.name('bigger_needle')
-   ...     def needle(self, arg):
-   ...         print("Patching %s is awesome" % self.__class__.__name__)
-   ...     
-   ...     @gorilla.apply(classmethod)
-   ...     def classic_needle(cls):
-   ...         print("Patching %s is awesome" % cls.__name__)
+   >>> import destination
+   >>> @gorilla.patches(destination.Class)
+   ... class MyClass(object):
+   ...     @gorilla.name('better_method')
+   ...     def method(self):
+   ...         print("Hello")
+   ...     @gorilla.settings(allow_hit=True)
+   ...     @classmethod
+   ...     def class_method(cls):
+   ...         print("world")
+   ...     @gorilla.filter(False)
+   ...     @staticmethod
+   ...     def static_method():
+   ...         print("!")
 
 
-The :meth:`needle` method can now be fired through a call to
-``GuineaPig().bigger_needle()`` while the method ``classic_needle``
-will be made a class method.
+In the example above, the method's name is overriden to ``'better_method'``,
+the class method is allowed to overwrite an attribute with the same name at the
+destination, and the static method is to be filtered out during the discovery
+process described in :ref:`finding_and_applying_the_patches`, leading to no
+patch being created for it.
+
+.. note::
+
+   The same operation can also be used to create a patch for each member of a
+   module but, since it is not possible to decorate a module, the function
+   :func:`create_patches` needs to be directly used instead.
 
 
 .. _stack_ordering:
 
 Stack Ordering
 --------------
-    
+
 The order in which the decorators are applied *does* matter. The
-:func:`~gorilla.decorators.patch` decorator can only be aware of
-the decorators defined below it.
+:func:`patch` decorator can only be aware of the decorators defined below it.
 
 .. code-block:: python
 
    >>> import gorilla
-   >>> from guineapig import GuineaPig
-   ... class Needle(object):
-   ...     @patch(GuineaPig)
-   ...     @staticmethod
-   ...     def needle_1():
-   ...         print("awesome")
-   ...     
-   ...     @staticmethod
-   ...     @patch(GuineaPig)
-   ...     def needle_2():
-   ...         print("awesome")
+   >>> import destination
+   >>> @gorilla.patch(destination.Class)
+   ... @staticmethod
+   ... def my_static_method_1():
+   ...     print("Hello")
+   >>> @staticmethod
+   ... @gorilla.patch(destination.Class)
+   ... def my_static_method_2():
+   ...     print("world!")
 
 
-Here, the class :class:`GuineaPig` will be patched with the static method
-:func:`Needle.needle_1` and a normal method :meth:`Needle.needle_2`. The
-patching of the latter method will result in an invalid method definition
-since it is missing the mandatory first argument referring to the class
-instance.
+Here, only the static method ``my_static_method_1()`` will be injected as
+expected with the decorator ``staticmethod`` while the other one will result
+in an invalid definition since it will be interpreted as a standard method but
+doesn't define any parameter referring to the class object such as ``self``.
 
-Following the same logic, the :func:`~gorilla.decorators.name` and the
-:func:`~gorilla.decorators.apply` decorators can override the values of a
-:func:`~gorilla.decorators.patch` decorator only if they're applied on top of
-it.
+
+.. _finding_and_applying_the_patches:
+
+Finding and Applying the Patches
+--------------------------------
+
+Once that the patches are created with the help of the decorators, the next
+step is to (recursively) scan the modules and packages to retrieve them. This
+is easily achieved with the :func:`find_patches` function.
+
+Finally, each patch can be applied using the :func:`apply` function.
+
+.. code-block:: python
 
    >>> import gorilla
-   >>> import guineapig
-   >>> @gorilla.name('bigger_needle')
-   ... @gorilla.patch(guineapig)
-   ... def needle():
-   ...     print("awesome")
+   >>> import mypackage
+   >>> patches = gorilla.find_patches([mypackage])
+   >>> for patch in patches:
+   ...     gorilla.apply(patch)
 
 
-.. _registering_and_applying_the_patches:
+.. _dynamic_patching:
 
-Registering and Applying the Patches
-------------------------------------
+Dynamic Patching
+----------------
 
-Once that the extensions are marked, the next step is to apply them before
-we can actually use them. This is easily achieved with the help of the
-:func:`~gorilla.utils.register_extensions` function.
-
-.. code-block:: python
-
-   >>> import gorilla.utils
-   >>> import extensionspackage
-   >>> gorilla.utils.register_extensions(extensionspackage, patch=True)
-
-
-For a given package ``extensionspackage``, the function
-:func:`~gorilla.utils.register_extensions` scans recursively all the nested
-packages and modules and returns a list of
-:class:`~gorilla.extension.Extension`.
-
-See the :ref:`bananas` section to see some examples of real-world
-implementations.
-
-
-.. _patching_dynamically:
-
-Patching Dynamically
---------------------
-
-In the case where patches need to be applied dynamically, meaning that the
-extension source objects and/or targets are only to be known at runtime, then
-it is possible to make use of the :class:`~gorilla.extension.Extension` class.
+In the case where patches need to be created dynamically, meaning that the
+patch source objects and/or destinations are only to be known at runtime,
+then it is possible to directly use the :class:`Patch` class.
 
 .. code-block:: python
 
-   >>> from gorilla.extension import Extension
-   >>> import guineapig
-   ... def needle():
-   ...     print("awesome")
-   >>> Extension(needle, guineapig).patch()
+   >>> import gorilla
+   >>> import destination
+   >>> def my_function():
+   ...     print("Hello world!")
+   >>> patch = gorilla.Patch(destination, 'better_function', my_function)
+   >>> gorilla.apply(patch)
 
 
 .. note::
-    
-   Special precaution is advised when directly dealing with the
-   :class:`~gorilla.extension.Extension` class. See the class
-   :class:`~gorilla.extension.Extension` for more details.
+
+   Special precaution is advised when directly setting the :attr:`Patch.obj`
+   attribute. See the warning note in the class :class:`Patch` for more
+   details.

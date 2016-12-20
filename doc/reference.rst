@@ -1,26 +1,24 @@
+.. currentmodule:: gorilla
+
 .. _reference:
 
 Reference
 =========
 
-The module :mod:`gorilla.decorators` contains everything to mark some code
-as being :term:`extension`\ s to use to :term:`patch` a specified target.
+The whole content of the library is contained within the only module
+``gorilla``.
 
-If using the decorators approach, the extensions can be automatically
-registered and applied using the :func:`~gorilla.utils.register_extensions`
-function.
+The classes :class:`Settings`, :class:`Patch`, and the function `apply` form
+the :ref:`core <core>` of the library and cover all the requirements for monkey
+patching.
 
-Applying patches dynamically can be done by directly using the core class
-:class:`~gorilla.extension.Extension`.
-
-Any function utilies that may help with writing extensions are available in the
-:mod:`gorilla.utils` module.
+For a better intuitivity and convenience, :ref:`decorators <decorators>` and
+:ref:`utility <utilities>` functions are also provided.
 
 
 .. toctree::
    :maxdepth: 2
-   
+
+   core
    decorators
-   extensions
-   settings
-   utils
+   utilities

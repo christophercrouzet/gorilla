@@ -1,314 +1,515 @@
+#!/usr/bin/env python
+
+import os
 import sys
+_HERE = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
+
+
+import importlib
 import unittest
+import sys
 
-import gorilla._python
-import gorilla._utils
-import gorilla.utils
-from gorilla.extension import Extension
+import gorilla
 
-from . import data_utils
-from .data_utils import data, guineapig
-from .data_utils import extensions as rootmodule
-from .data_utils.extensions import extension1, extension2
-from .data_utils.extensions.subpackage import extension as submodule
-from . import GorillaTestCase
+from tests._testcase import GorillaTestCase
+import tests.utils
+from tests.utils import frommodule, tomodule, subpackage
+from tests.utils.subpackage import module1, module2
 
 
-def _same_list_content(list_1, list_2):
-    if len(list_1) != len(list_2):
-        return False
-
-    for item_1 in list_1:
-        for item_2 in list_2:
-            if (item_1.__dict__ == item_2.__dict__ and
-                    item_1.name == item_2.name and
-                    item_1.original == item_2.original):
-                break
-        else:
-            return False
-
-    return True
+if sys.version_info[0] == 2:
+    def _unfold(obj):
+        return obj.__func__
+else:
+    def _unfold(obj):
+        return obj
 
 
 class UtilsTest(GorillaTestCase):
 
-    def setup(self):
-        global data
-        global guineapig
-        global rootmodule
-        global extension1
-        global extension2
-        global submodule
-        guineapig = __import__('data_utils.guineapig', globals(), locals(), ['*'], 1)
-        data = __import__('data_utils.data', globals(), locals(), ['*'], 1)
-        rootmodule = __import__('data_utils.extensions', globals(), locals(), ['*'], 1)
-        extension1 = __import__('data_utils.extensions.extension1', globals(), locals(), ['*'], 1)
-        extension2 = __import__('data_utils.extensions.extension2', globals(), locals(), ['*'], 1)
-        submodule = __import__('data_utils.extensions.subpackage.extension', globals(), locals(), ['*'], 1)
-        self.sys_path = list(sys.path)
+    def setUp(self):
+        global frommodule, tomodule, subpackage, module1, module2
+        tomodule = importlib.import_module(tomodule.__name__)
+        frommodule = importlib.import_module(frommodule.__name__)
+        subpackage = importlib.import_module(subpackage.__name__)
+        module1 = importlib.import_module(module1.__name__)
+        module2 = importlib.import_module(module2.__name__)
 
-    def teardown(self):
-        global data
-        global guineapig
-        global rootmodule
-        global extension1
-        global extension2
-        global submodule
-        del sys.modules[submodule.__name__]
-        del sys.modules[extension2.__name__]
-        del sys.modules[extension1.__name__]
-        del sys.modules[rootmodule.__name__]
-        del sys.modules[data.__name__]
-        del sys.modules[guineapig.__name__]
-        sys.path[:] = self.sys_path
+    def tearDown(self):
+        for module in [tomodule, frommodule, subpackage, module1, module2]:
+            if module.__name__ in sys.modules:
+                del sys.modules[module.__name__]
 
-    def test_class_attribute_iterator(self):
-        object = data.EmptyClass
-        attributes = []
-        self.assert_equal(list(gorilla._utils.class_attribute_iterator(object)), attributes)
-
-        object = data.Class
-        attributes = [
-            ('__init__', object.__dict__['__init__']),
-            ('__str__', object.__dict__['__str__']),
-            ('__eq__', object.__dict__['__eq__']),
-            ('method', object.__dict__['method']),
-            ('class_method', object.__dict__['class_method']),
-            ('static_method', object.__dict__['static_method']),
-            ('property', object.__dict__['property'])
+    def test_create_patches_1(self):
+        destination = tomodule
+        obj = frommodule
+        patches = gorilla.create_patches(destination, obj,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'function', obj),
+            (destination, 'global_variable', obj),
+            (destination, 'unbound_class_method', obj),
+            (destination, 'unbound_method', obj),
+            (destination, 'unbound_static_method', obj),
+            (destination.Child, 'STATIC_VALUE', obj.Child),
+            (destination.Child, 'child_value', obj.Child),
+            (destination.Child, 'from_value', obj.Child),
+            (destination.Child, 'instance_value', obj.Child),
+            (destination.Child, 'method', obj.Child),
+            (destination.Child, 'parent_value', obj.Child),
+            (destination.Child, 'to_value', obj.Child),
+            (destination.Class, 'STATIC_VALUE', obj.Class),
+            (destination.Class, 'class_method', obj.Class),
+            (destination.Class, 'method', obj.Class),
+            (destination.Class, 'static_method', obj.Class),
+            (destination.Class, 'value', obj.Class),
+            (destination.Parent, 'STATIC_VALUE', obj.Parent),
+            (destination.Parent, 'from_value', obj.Parent),
+            (destination.Parent, 'instance_value', obj.Parent),
+            (destination.Parent, 'method', obj.Parent),
+            (destination.Parent, 'parent_value', obj.Parent),
+            (destination.Parent, 'to_value', obj.Parent),
+            (destination.Class.Inner, 'STATIC_VALUE', obj.Class.Inner),
+            (destination.Class.Inner, 'method', obj.Class.Inner),
         ]
-        self.assert_equal(list(gorilla._utils.class_attribute_iterator(object)).sort(), attributes.sort())
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-        object = data.DerivedClass
-        base = data.Class
-        attributes = [
-            ('method', object.__dict__['method']),
-            ('derived', object.__dict__['derived']),
-            ('class_method', base.__dict__['class_method']),
-            ('static_method', base.__dict__['static_method']),
-            ('property', base.__dict__['property'])
+        destination = tomodule.Class
+        obj = frommodule.Class
+        patches = gorilla.create_patches(destination, obj,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'class_method', obj),
+            (destination, 'method', obj),
+            (destination, 'static_method', obj),
+            (destination, 'value', obj),
+            (destination.Inner, 'STATIC_VALUE', obj.Inner),
+            (destination.Inner, 'method', obj.Inner),
         ]
-        self.assert_equal(list(gorilla._utils.class_attribute_iterator(object)).sort(), attributes.sort())
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_extension_iterator(self):
-        extensions = [
-            Extension(data.decorated_function, guineapig),
-            Extension(data.DecoratedClass, guineapig),
-            Extension(data.DecoratedClass.__dict__['decorated_method'], guineapig.GuineaPig),
-            Extension(data.UndecoratedClass.UndecoratedInnerClass.__dict__['decorated_method'], guineapig.GuineaPig.InnerClass),
-            Extension(data.UndecoratedClass.DecoratedInnerClass, guineapig.GuineaPig),
-            Extension(data.UndecoratedClass.DecoratedInnerClass.__dict__['decorated_method'], guineapig.GuineaPig.InnerClass),
-            Extension(data.UndecoratedClass.__dict__['decorated_method'], guineapig.GuineaPig)
+        destination = tomodule.Parent
+        obj = frommodule.Parent
+        patches = gorilla.create_patches(destination, obj,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'from_value', obj),
+            (destination, 'instance_value', obj),
+            (destination, 'method', obj),
+            (destination, 'parent_value', obj),
+            (destination, 'to_value', obj),
         ]
-        discovered_extensions = list(gorilla._utils.extension_iterator(data))
-        self.assert_true(_same_list_content(discovered_extensions, extensions))
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_1(self):
-        decorated = data.decorator('value')(data.function)
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'default': 'value'})
+        destination = tomodule.Child
+        obj = frommodule.Child
+        patches = gorilla.create_patches(destination, obj,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'child_value', obj),
+            (destination, 'from_value', obj),
+            (destination, 'instance_value', obj),
+            (destination, 'method', obj),
+            (destination, 'parent_value', obj),
+            (destination, 'to_value', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_2(self):
-        decorated = data.decorator_1('value')(data.function)
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'first': 'value'})
+    def test_create_patches_2(self):
+        destination = tomodule
+        obj = frommodule
+        patches = gorilla.create_patches(destination, obj, recursive=False,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'Child', obj),
+            (destination, 'Class', obj),
+            (destination, 'Parent', obj),
+            (destination, 'function', obj),
+            (destination, 'global_variable', obj),
+            (destination, 'unbound_class_method', obj),
+            (destination, 'unbound_method', obj),
+            (destination, 'unbound_static_method', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_3(self):
-        decorated = data.decorator_2('value')(data.function)
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'second': 'value'})
+        destination = tomodule.Class
+        obj = frommodule.Class
+        patches = gorilla.create_patches(destination, obj, recursive=False,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'Inner', obj),
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'class_method', obj),
+            (destination, 'method', obj),
+            (destination, 'static_method', obj),
+            (destination, 'value', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_4(self):
-        decorated = data.decorator_1('value_1')(data.decorator_2('value_2')(data.function))
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'first': 'value_1', 'second': 'value_2'})
+        destination = tomodule.Parent
+        obj = frommodule.Parent
+        patches = gorilla.create_patches(destination, obj, recursive=False,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'from_value', obj),
+            (destination, 'instance_value', obj),
+            (destination, 'method', obj),
+            (destination, 'parent_value', obj),
+            (destination, 'to_value', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_5(self):
-        decorated = data.decorator_2('value_2')(data.decorator_1('value_1')(data.function))
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'first': 'value_1', 'second': 'value_2'})
+        destination = tomodule.Child
+        obj = frommodule.Child
+        patches = gorilla.create_patches(destination, obj, recursive=False,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'STATIC_VALUE', obj),
+            (destination, 'child_value', obj),
+            (destination, 'from_value', obj),
+            (destination, 'instance_value', obj),
+            (destination, 'method', obj),
+            (destination, 'parent_value', obj),
+            (destination, 'to_value', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_decorator_data_6(self):
-        decorated = data.decorator('value_a')(data.decorator('value_b')(data.function))
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'default': 'value_a'})
+    def test_create_patches_3(self):
+        def filter(name, value):
+            return 'method' in name
 
-    def test_get_decorator_data_7(self):
-        decorated = data.decorator('value_b')(data.decorator('value_a')(data.function))
-        self.assert_equal(gorilla._utils.get_decorator_data(decorated), {'default': 'value_b'})
+        destination = tomodule
+        obj = frommodule
+        patches = gorilla.create_patches(destination, obj, filter=filter,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'unbound_class_method', obj),
+            (destination, 'unbound_method', obj),
+            (destination, 'unbound_static_method', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-    def test_get_underlying_object(self):
-        object = data.function
-        underlying_object = object
-        self.assert_is(gorilla._utils.get_underlying_object(object), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(classmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(staticmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(property(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(object)), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(staticmethod(property(data.decorator('value')(object))))), underlying_object)
-        else:
-            self.assert_is(gorilla._utils.get_underlying_object(staticmethod(property(data.decorator('value')(object)))), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(classmethod(object))))), underlying_object)
+        destination = tomodule.Class
+        obj = frommodule.Class
+        patches = gorilla.create_patches(destination, obj, filter=filter,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'class_method', obj),
+            (destination, 'method', obj),
+            (destination, 'static_method', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-        object = data.Class.method
-        underlying_object = object.__func__ if hasattr(object, '__func__') else object
-        self.assert_is(gorilla._utils.get_underlying_object(object), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(classmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(staticmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(property(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(object)), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(staticmethod(property(data.decorator('value')(object))))), underlying_object)
-        else:
-            self.assert_is(gorilla._utils.get_underlying_object(staticmethod(property(data.decorator('value')(object)))), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(classmethod(object))))), underlying_object)
+        destination = tomodule.Parent
+        obj = frommodule.Parent
+        patches = gorilla.create_patches(destination, obj, filter=filter,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'method', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-        object = data.Class.class_method
-        underlying_object = object.__func__
-        self.assert_is(gorilla._utils.get_underlying_object(object), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(classmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(staticmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(property(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(object)), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(staticmethod(property(data.decorator('value')(object))))), underlying_object)
-        else:
-            self.assert_is(gorilla._utils.get_underlying_object(staticmethod(property(data.decorator('value')(object)))), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(classmethod(object))))), underlying_object)
+        destination = tomodule.Child
+        obj = frommodule.Child
+        patches = gorilla.create_patches(destination, obj, filter=filter,
+                                         use_decorators=False)
+        expected_patches = [
+            (destination, 'method', obj),
+        ]
+        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
 
-        object = data.Class.static_method
-        underlying_object = object
-        self.assert_is(gorilla._utils.get_underlying_object(object), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(classmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(staticmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(property(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(object)), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(staticmethod(property(data.decorator('value')(object))))), underlying_object)
-        else:
-            self.assert_is(gorilla._utils.get_underlying_object(staticmethod(property(data.decorator('value')(object)))), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(classmethod(object))))), underlying_object)
+    def test_create_patches_4(self):
+        def filter(name, value):
+            return 'method' in name
 
-        object = data.Class.property
-        underlying_object = object.fget
-        self.assert_is(gorilla._utils.get_underlying_object(object), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(staticmethod(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(property(object)), underlying_object)
-        self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(object)), underlying_object)
-        if gorilla._python.VERSION >= (2, 7):
-            self.assert_is(gorilla._utils.get_underlying_object(classmethod(staticmethod(property(data.decorator('value')(object))))), underlying_object)
-            self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(classmethod(object))))), underlying_object)
-        else:
-            self.assert_is(gorilla._utils.get_underlying_object(staticmethod(property(data.decorator('value')(object)))), underlying_object)
-            self.assert_is(gorilla._utils.get_underlying_object(data.decorator('value')(property(staticmethod(object)))), underlying_object)
+        destination = tomodule
+        obj = frommodule
+        patches = gorilla.create_patches(destination, obj, filter=filter)
+        expected_patches = [
+            gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'function')),
+            gorilla.Patch(destination, 'whatever', gorilla.get_attribute(obj, 'unbound_class_method')),
+            gorilla.Patch(destination, 'unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method'), settings=gorilla.Settings(allow_hit=True))
+        ]
+        self.assertEqual(patches, expected_patches)
 
-    def test_listify(self):
-        self.assert_equal(gorilla._utils.listify(None), [])
-        self.assert_equal(gorilla._utils.listify(''), [])
-        self.assert_equal(gorilla._utils.listify([]), [])
-        self.assert_equal(gorilla._utils.listify(()), [])
+        destination = tomodule.Class
+        obj = frommodule.Class
+        patches = gorilla.create_patches(destination, obj, filter=filter)
+        expected_patches = [
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
+            gorilla.Patch(destination, 'whatever', gorilla.get_attribute(obj, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
 
-        self.assert_equal(gorilla._utils.listify(None, valid=(None, )), [None])
-        self.assert_equal(gorilla._utils.listify(None, valid=[None]), [None])
-        self.assert_equal(gorilla._utils.listify('', valid=('')), [''])
+        destination = tomodule.Parent
+        obj = frommodule.Parent
+        patches = gorilla.create_patches(destination, obj, filter=filter)
+        expected_patches = [
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
 
-        self.assert_equal(gorilla._utils.listify('abc'), ['abc'])
-        self.assert_equal(gorilla._utils.listify((True, False)), [True, False])
+        destination = tomodule.Child
+        obj = frommodule.Child
+        patches = gorilla.create_patches(destination, obj, filter=filter)
+        expected_patches = [
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
 
-    def test_register_extensions_1(self):
-        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
-        extension1_method.name = 'needle_method'
-        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
-        extension1_class_method.name = 'needle_class_method'
-        extension1_class_method.apply = classmethod
-        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
-        extension1_static_method.name = 'needle_static_method'
-        extension1_static_method.apply = staticmethod
-        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
-        extension1_value.name = 'needle_value'
-        extension1_value.apply = property
-        extension2_class = Extension(extension2.Class, guineapig)
-        extension2_class.name = 'Needle'
-        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
-        submodule_method.name = 'needle_method'
+    def test_find_patches(self):
+        patches = gorilla.find_patches([tests.utils])
+        expected_patches = [
+            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
+            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
+            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule, 'function0', gorilla.get_attribute(subpackage, 'function')),
+            gorilla.Patch(tomodule, 'function1', gorilla.get_attribute(module1, 'function')),
+            gorilla.Patch(tomodule.Class, 'unbound_class_method', gorilla.get_attribute(module1, 'unbound_class_method')),
+            gorilla.Patch(tomodule.Class, 'unbound_method', gorilla.get_attribute(module1, 'unbound_method')),
+            gorilla.Patch(tomodule.Class, 'unbound_static_method', gorilla.get_attribute(module1, 'unbound_static_method')),
+            gorilla.Patch(tomodule.Class, 'method1', gorilla.get_attribute(module1.Class, 'method')),
+            gorilla.Patch(tomodule.Class, 'value1', gorilla.get_attribute(module1.Class, 'value')),
+            gorilla.Patch(tomodule.Class, 'class_method2', gorilla.get_attribute(module2.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'static_method2', gorilla.get_attribute(module2.Class, 'static_method')),
+        ]
+        self.assertEqual(patches, expected_patches)
 
-        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
+        patches = gorilla.find_patches([tests.utils], recursive=False)
+        expected_patches = [
+            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
+            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
+            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
 
-        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=rootmodule)
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+    def test_get_attribute(self):
+        self.assertIs(gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE'), frommodule.Class.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(frommodule.Class, '__init__'), frommodule.Class.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(frommodule.Class, 'value'), frommodule.Class.__dict__['value'])
+        self.assertIs(gorilla.get_attribute(frommodule.Class, 'method'), frommodule.Class.__dict__['method'])
+        self.assertIs(gorilla.get_attribute(frommodule.Class, 'class_method'), frommodule.Class.__dict__['class_method'])
+        self.assertIs(gorilla.get_attribute(frommodule.Class, 'static_method'), frommodule.Class.__dict__['static_method'])
+        self.assertIs(gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE'), frommodule.Parent.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(frommodule.Parent, '__init__'), frommodule.Parent.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(frommodule.Parent, 'method'), frommodule.Parent.__dict__['method'])
+        self.assertIs(gorilla.get_attribute(frommodule.Child, 'STATIC_VALUE'), frommodule.Parent.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(frommodule.Child, '__init__'), frommodule.Child.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(frommodule.Child, 'method'), frommodule.Parent.__dict__['method'])
 
-    def test_register_extensions_2(self):
-        extension2_class = Extension(extension2.Class, guineapig)
-        extension2_class.name = 'Needle'
-        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
-        submodule_method.name = 'needle_method'
+    def test_get_original_attribute(self):
+        destination = tomodule.Class
+        name = 'method'
+        target = gorilla.get_attribute(destination, name)
+        obj = gorilla.get_attribute(frommodule, 'unbound_method')
+        settings = gorilla.Settings(allow_hit=True)
+        patch = gorilla.Patch(destination, name, obj, settings=settings)
 
-        extensions = [extension2_class, submodule_method]
+        gorilla.apply(patch)
+        self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
 
-        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=[submodule, extension2])
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+        gorilla.apply(patch)
+        self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
 
-    def test_register_extensions_3(self):
-        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
-        extension1_method.name = 'needle_method'
-        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
-        extension1_class_method.name = 'needle_class_method'
-        extension1_class_method.apply = classmethod
-        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
-        extension1_static_method.name = 'needle_static_method'
-        extension1_static_method.apply = staticmethod
-        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
-        extension1_value.name = 'needle_value'
-        extension1_value.apply = property
-        extension2_class = Extension(extension2.Class, guineapig)
-        extension2_class.name = 'Needle'
+    def test_get_members_1(self):
+        members = gorilla._get_members(frommodule)
+        expected_members = [
+            ('Child', gorilla.get_attribute(frommodule, 'Child')),
+            ('Class', gorilla.get_attribute(frommodule, 'Class')),
+            ('Parent', gorilla.get_attribute(frommodule, 'Parent')),
+            ('function', gorilla.get_attribute(frommodule, 'function')),
+            ('global_variable', gorilla.get_attribute(frommodule, 'global_variable')),
+            ('unbound_class_method', gorilla.get_attribute(frommodule, 'unbound_class_method')),
+            ('unbound_method', gorilla.get_attribute(frommodule, 'unbound_method')),
+            ('unbound_static_method', gorilla.get_attribute(frommodule, 'unbound_static_method')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('Inner', frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class]
+        members = gorilla._get_members(frommodule.Class)
+        expected_members = [
+            ('Inner', frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=[rootmodule], recursive=False)
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+        members = gorilla._get_members(frommodule.Parent)
+        expected_members = [
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+        ]
+        self.assertEqual(members, expected_members)
 
-    def test_register_extensions_4(self):
-        settings = {'allow_overwriting': True, 'update_class': False}
+        members = gorilla._get_members(frommodule.Child)
+        expected_members = [
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        extension1_method = Extension(extension1.method, guineapig.GuineaPig)
-        extension1_method.name = 'needle_method'
-        extension1_method.settings = settings
-        extension1_class_method = Extension(extension1.class_method, guineapig.GuineaPig)
-        extension1_class_method.name = 'needle_class_method'
-        extension1_class_method.apply = classmethod
-        extension1_class_method.settings = settings
-        extension1_static_method = Extension(extension1.static_method, guineapig.GuineaPig)
-        extension1_static_method.name = 'needle_static_method'
-        extension1_static_method.apply = staticmethod
-        extension1_static_method.settings = settings
-        extension1_value = Extension(extension1.value, guineapig.GuineaPig)
-        extension1_value.name = 'needle_value'
-        extension1_value.apply = property
-        extension1_value.settings = settings
-        extension2_class = Extension(extension2.Class, guineapig)
-        extension2_class.name = 'Needle'
-        extension2_class.settings = settings
-        submodule_method = Extension(submodule.Class.__dict__['method'], guineapig.GuineaPig)
-        submodule_method.name = 'needle_method'
-        submodule_method.settings = settings
+    def test_get_members_2(self):
+        members = gorilla._get_members(frommodule, traverse_bases=False)
+        expected_members = [
+            ('Child', gorilla.get_attribute(frommodule, 'Child')),
+            ('Class', gorilla.get_attribute(frommodule, 'Class')),
+            ('Parent', gorilla.get_attribute(frommodule, 'Parent')),
+            ('function', gorilla.get_attribute(frommodule, 'function')),
+            ('global_variable', gorilla.get_attribute(frommodule, 'global_variable')),
+            ('unbound_class_method', gorilla.get_attribute(frommodule, 'unbound_class_method')),
+            ('unbound_method', gorilla.get_attribute(frommodule, 'unbound_method')),
+            ('unbound_static_method', gorilla.get_attribute(frommodule, 'unbound_static_method')),
+            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
+            ('Inner', frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        extensions = [extension1_method, extension1_class_method, extension1_static_method, extension1_value, extension2_class, submodule_method]
+        members = gorilla._get_members(frommodule.Class, traverse_bases=False)
+        expected_members = [
+            ('Inner', frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        registered_extensions = gorilla.utils.register_extensions(packages_and_modules=rootmodule, settings=data_utils.ExtensionsSettings)
-        self.assert_true(_same_list_content(registered_extensions, extensions))
+        members = gorilla._get_members(frommodule.Parent, traverse_bases=False)
+        expected_members = [
+            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+        ]
+        self.assertEqual(members, expected_members)
 
-    def test_uniquify(self):
-        self.assert_equal(gorilla._utils.uniquify([]), [])
-        self.assert_equal(gorilla._utils.uniquify([None]), [None])
-        self.assert_equal(gorilla._utils.uniquify('abc'), ['a', 'b', 'c'])
-        self.assert_equal(gorilla._utils.uniquify(['a', 'b', 'c']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla._utils.uniquify(('a', 'b', 'c')), ['a', 'b', 'c'])
+        members = gorilla._get_members(frommodule.Child, traverse_bases=False)
+        expected_members = [
+            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
+        ]
+        self.assertEqual(members, expected_members)
 
-        self.assert_equal(gorilla._utils.uniquify(['a', 'a', 'b', 'b', 'c', 'c']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla._utils.uniquify(['a', 'b', 'c', 'c', 'b', 'a']), ['a', 'b', 'c'])
-        self.assert_equal(gorilla._utils.uniquify(['c', 'b', 'a']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla._utils.uniquify(['c', 'c', 'b', 'b', 'a', 'a']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla._utils.uniquify(['c', 'b', 'a', 'a', 'b', 'c']), ['c', 'b', 'a'])
-        self.assert_equal(gorilla._utils.uniquify([9, 4, 2, 85, 86, 4, 28]), [9, 4, 2, 85, 86, 28])
+    def test_get_members_3(self):
+        obj = frommodule
+        members = gorilla._get_members(obj, recursive=False)
+        expected_members = [
+            ('Child', gorilla.get_attribute(obj, 'Child')),
+            ('Class', gorilla.get_attribute(obj, 'Class')),
+            ('Parent', gorilla.get_attribute(obj, 'Parent')),
+            ('function', gorilla.get_attribute(obj, 'function')),
+            ('global_variable', gorilla.get_attribute(obj, 'global_variable')),
+            ('unbound_class_method', gorilla.get_attribute(obj, 'unbound_class_method')),
+            ('unbound_method', gorilla.get_attribute(obj, 'unbound_method')),
+            ('unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method')),
+        ]
+        self.assertEqual(members, expected_members)
+
+        obj = frommodule.Class
+        members = gorilla._get_members(obj, recursive=False)
+        expected_members = [
+            ('Inner', gorilla.get_attribute(obj, 'Inner')),
+            ('STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(obj, 'class_method')),
+            ('method', gorilla.get_attribute(obj, 'method')),
+            ('static_method', gorilla.get_attribute(obj, 'static_method')),
+            ('value', gorilla.get_attribute(obj, 'value')),
+        ]
+        self.assertEqual(members, expected_members)
+
+        obj = frommodule.Parent
+        members = gorilla._get_members(obj, recursive=False)
+        expected_members = [
+            ('STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(obj, 'from_value')),
+            ('instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            ('method', gorilla.get_attribute(obj, 'method')),
+            ('parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            ('to_value', gorilla.get_attribute(obj, 'to_value')),
+        ]
+        self.assertEqual(members, expected_members)
+
+        obj = frommodule.Child
+        members = gorilla._get_members(obj, recursive=False)
+        expected_members = [
+            ('STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            ('child_value', gorilla.get_attribute(obj, 'child_value')),
+            ('from_value', gorilla.get_attribute(obj, 'from_value')),
+            ('instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            ('method', gorilla.get_attribute(obj, 'method')),
+            ('parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            ('to_value', gorilla.get_attribute(obj, 'to_value')),
+        ]
+        self.assertEqual(members, expected_members)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)

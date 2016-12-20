@@ -1,2 +1,0 @@
-class GuineaPig(object):
-    pass

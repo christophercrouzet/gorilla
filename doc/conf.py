@@ -3,7 +3,7 @@
 import os
 import sys
 
-src_path = os.path.abspath('..')
+src_path = os.path.abspath(os.pardir)
 if not src_path in sys.path:
     sys.path.insert(0, src_path)
 
