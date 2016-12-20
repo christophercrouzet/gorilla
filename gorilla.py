@@ -22,7 +22,7 @@ import sys
 import types
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 
 _PY2 = sys.version_info[0] == 2
