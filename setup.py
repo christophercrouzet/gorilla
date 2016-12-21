@@ -4,9 +4,8 @@ import re
 import setuptools
 
 
-# Taken from the `Python Packaging User Guide
-# <https://packaging.python.org/single_source_version/>`_
 def find_version(*file_paths):
+    # Credits: https://packaging.python.org/single_source_version.
     here = os.path.abspath(os.path.dirname(__file__))
     with codecs.open(os.path.join(here, *file_paths), 'r', 'utf8') as f:
         version_file = f.read()
