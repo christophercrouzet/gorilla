@@ -52,8 +52,7 @@ class is no sweat either:
    ...         print("world!")
 
 
-See the ``overview`` and ``tutorial`` sections of the documentation for more
-details.
+See the ``tutorial`` sections of the documentation for more examples.
 
 
 Documentation
