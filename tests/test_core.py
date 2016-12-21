@@ -15,7 +15,8 @@ import sys
 import gorilla
 
 from tests._testcase import GorillaTestCase
-from tests.core import frommodule, tomodule
+from tests.core import frommodule
+from tests.core import tomodule
 
 
 _MODULES = [frommodule, tomodule]

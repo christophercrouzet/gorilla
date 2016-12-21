@@ -13,7 +13,8 @@ import sys
 import gorilla
 
 from tests._testcase import GorillaTestCase
-from tests.decorators import frommodule, tomodule
+from tests.decorators import frommodule
+from tests.decorators import tomodule
 
 
 class DecoratorsTest(GorillaTestCase):

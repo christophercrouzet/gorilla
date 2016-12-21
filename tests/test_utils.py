@@ -14,8 +14,11 @@ import gorilla
 
 from tests._testcase import GorillaTestCase
 import tests.utils
-from tests.utils import frommodule, tomodule, subpackage
-from tests.utils.subpackage import module1, module2
+from tests.utils import frommodule
+from tests.utils import tomodule
+from tests.utils import subpackage
+from tests.utils.subpackage import module1
+from tests.utils.subpackage import module2
 
 
 if sys.version_info[0] == 2:
