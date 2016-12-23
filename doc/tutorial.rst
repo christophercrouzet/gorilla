@@ -75,33 +75,6 @@ existing class:
    ...     print("world!")
 
 
-If there was to be an attribute at the patch's destination already existing
-with the patch's name, then the patching process can optionally override the
-original attribute after storing a copy of it. This way, it would remain
-accessible from within our code with the help of the
-:func:`get_original_attribute` function:
-
-.. code-block:: python
-
-   >>> import gorilla
-   >>> import destination
-   >>> settings = gorilla.Settings(allow_hit=True)
-   >>> @gorilla.patch(destination, settings=settings)
-   ... def function():
-   ...     print("Hello world!")
-   ...     # We're overriding an existing function here,
-   ...     # preserve its original behaviour.
-   ...     original = gorilla.get_original_attribute(destination, 'function')
-   ...     return original()
-
-
-.. note::
-
-   The default settings of a patch do not allow attributes at the destination
-   to be overriden. For such a behaviour, the attribute
-   :attr:`Settings.allow_hit` needs to be set to ``True``.
-
-
 .. _creating_multiple_patches:
 
 Creating Multiple Patches at Once
@@ -167,6 +140,38 @@ patch being created for it.
    The same operation can also be used to create a patch for each member of a
    module but, since it is not possible to decorate a module, the function
    :func:`create_patches` needs to be directly used instead.
+
+
+.. _overwriting_attributes:
+
+Overwriting Attributes at Destination
+-------------------------------------
+
+If there was to be an attribute at the patch's destination already existing
+with the patch's name, then the patching process can optionally override the
+original attribute after storing a copy of it. This way, the original attribtue
+remains accessible from within our code with the help of the
+:func:`get_original_attribute` function:
+
+.. code-block:: python
+
+   >>> import gorilla
+   >>> import destination
+   >>> settings = gorilla.Settings(allow_hit=True)
+   >>> @gorilla.patch(destination, settings=settings)
+   ... def function():
+   ...     print("Hello world!")
+   ...     # We're overriding an existing function here,
+   ...     # preserve its original behaviour.
+   ...     original = gorilla.get_original_attribute(destination, 'function')
+   ...     return original()
+
+
+.. note::
+
+   The default settings of a patch do not allow attributes at the destination
+   to be overriden. For such a behaviour, the attribute
+   :attr:`Settings.allow_hit` needs to be set to ``True``.
 
 
 .. _stack_ordering:
