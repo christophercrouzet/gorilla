@@ -95,7 +95,20 @@ class _DecoratorData(object):
 
 class Settings(object):
 
-    """Defines the patching behaviour."""
+    """Defines the patching behaviour.
+
+    Attributes
+    ----------
+    allow_hit
+        A hit occurs when an attribute at the destination already exists with
+        the name given by the patch. If ``False``, the patch process won't
+        allow setting a new value for the attribute by raising an exception.
+        Defaults to ``False``.
+    store_hit
+        If ``True`` and :attr:`allow_hit` is also set to ``True``, then any
+        attribute at the destination that is hit is stored under a different
+        name before being overwritten by the patch. Defaults to ``True``.
+    """
 
     __slots__ = ('allow_hit', 'store_hit')
 
@@ -106,19 +119,6 @@ class Settings(object):
         ----------
         kwargs
             Keyword arguments, see the attributes.
-
-        Attributes
-        ----------
-        allow_hit
-            A hit occurs when an attribute at the destination already exists
-            with the name given by the patch. If ``False``, the patch process
-            won't allow setting a new value for the attribute by raising an
-            exception. Defaults to ``False``.
-        store_hit
-            If ``True`` and :attr:`allow_hit` is also set to ``True``, then any
-            attribute at the destination that is hit is stored under a
-            different name before being overwritten by the patch. Defaults to
-            ``True``.
         """
         self.allow_hit = False
         self.store_hit = True
@@ -155,7 +155,26 @@ class Settings(object):
 
 class Patch(object):
 
-    """Describes all the information required to apply a patch."""
+    """Describes all the information required to apply a patch.
+
+    Attributes
+    ----------
+    destination
+        Patch destination.
+    name
+        Name of the attribute at the destination.
+    obj
+        Attribute value.
+    settings
+        Settings. If ``None``, the default settings are used.
+
+    Warning
+    -------
+    It is highly recommended to use the output of the function
+    :func:`get_attribute` for setting the attribute :attr:`obj`. This will
+    ensure that the descriptor protocol is bypassed instead of possibly
+    retrieving attributes invalid for patching, such as bound methods.
+    """
 
     __slots__ = ('destination', 'name', 'obj', 'settings')
 
@@ -172,24 +191,6 @@ class Patch(object):
             See the :attr:`obj` attribute.
         settings : gorilla.Settings
             See the :attr:`settings` attribute.
-
-        Attributes
-        ----------
-        destination
-            Patch destination.
-        name
-            Name of the attribute at the destination.
-        obj
-            Attribute value.
-        settings
-            Settings. If ``None``, the default settings are used.
-
-        Warning
-        -------
-        It is highly recommended to use the output of the function
-        :func:`get_attribute` for setting the attribute :attr:`obj`. This will
-        ensure that the descriptor protocol is bypassed instead of possibly
-        retrieving attributes invalid for patching, such as bound methods.
         """
         self.destination = destination
         self.name = name
