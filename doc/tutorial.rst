@@ -22,7 +22,7 @@ The recommended approach involving decorators is to be done in two steps:
 
 .. _creating_single_patch:
 
-Creating A Single Patch
+Creating a Single Patch
 -----------------------
 
 In order to make a function ``my_function()`` available from within a
