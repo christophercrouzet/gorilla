@@ -23,6 +23,12 @@ def _find_tests(path, selectors=None):
         obj = stack.popleft()
         if isinstance(obj, unittest.TestSuite):
             stack.extend(test for test in obj)
+        elif type(obj).__name__ == 'ModuleImportFailure':
+            try:
+                # This should always throw an ImportError exception.
+                getattr(obj, _get_test_name(obj))()
+            except ImportError as e:
+                sys.exit(e.message.strip())
         elif filter(obj):
             out.append(obj)
 
