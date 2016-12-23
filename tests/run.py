@@ -14,7 +14,7 @@ def _find_tests(path, selectors=None):
             return True
     else:
         def filter(test):
-            return any(selector in _get_test_name(test)
+            return any(selector in _get_test_full_name(test)
                        for selector in selectors)
 
     out = []
@@ -30,9 +30,12 @@ def _find_tests(path, selectors=None):
 
 
 def _get_test_name(test):
-    return '%s.%s.%s' % (
-        test.__class__.__module__, test.__class__.__name__,
-        test._testMethodName)
+    return test._testMethodName
+
+
+def _get_test_full_name(test):
+    return '%s.%s.%s' % (test.__class__.__module__, test.__class__.__name__,
+                         _get_test_name(test))
 
 
 def main():
@@ -54,7 +57,7 @@ def main():
 
     if options.split:
         for test in tests:
-            name = _get_test_name(test)
+            name = _get_test_full_name(test)
             subprocess.call([sys.executable, '-m', 'unittest', '-v', name],
                             env={'PYTHONPATH': ':'.join(sys.path)})
     else:
