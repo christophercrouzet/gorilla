@@ -184,13 +184,13 @@ class Patch(object):
         Parameters
         ----------
         destination : object
-            See the :attr:`destination` attribute.
+            See the :attr:`~Patch.destination` attribute.
         name : str
-            See the :attr:`name` attribute.
+            See the :attr:`~Patch.name` attribute.
         obj : object
-            See the :attr:`obj` attribute.
+            See the :attr:`~Patch.obj` attribute.
         settings : gorilla.Settings
-            See the :attr:`settings` attribute.
+            See the :attr:`~Patch.settings` attribute.
         """
         self.destination = destination
         self.name = name
