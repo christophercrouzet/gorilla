@@ -5,18 +5,19 @@
 Tutorial
 ========
 
-The standard approach for patching some external code is to be done in two
-steps:
+The API revolves around the concept of patches, represented by the class
+:class:`Patch`. This class can be used directly if the patching information are
+only known at runtime, as described in the section :ref:`dynamic_patching`, but
+otherwise a set of decorators are available to make the whole process more
+intuitive.
+
+The recommended approach involving decorators is to be done in two steps:
 
    * creating a :ref:`single patch <creating_single_patch>` and/or
      :ref:`multiple patches <creating_multiple_patches>` respectively with the
      :func:`patch` and :func:`patches` decorators.
    * :ref:`finding and applying the patches <finding_and_applying_the_patches>`
      through the :func:`find_patches` and :func:`apply` functions.
-
-The other option to create patches is to directly use the :class:`Patch` class
-which might be useful if some sort of
-:ref:`dynamic patching <dynamic_patching>` is required.
 
 
 .. _creating_single_patch:
