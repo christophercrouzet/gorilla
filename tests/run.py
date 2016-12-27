@@ -52,7 +52,7 @@ def main():
         help="run each test in a separate subprocess"
     )
 
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     here = os.path.abspath(os.path.dirname(__file__))
     root_path = os.path.abspath(os.path.join(here, os.pardir))
