@@ -8,7 +8,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
 
 import collections
 import optparse
-import os
 import subprocess
 import sys
 import unittest
