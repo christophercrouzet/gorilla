@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+import os
+import sys
+_HERE = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
+
+
 import collections
 import optparse
 import os
@@ -54,12 +60,8 @@ def main():
 
     options, args = parser.parse_args()
 
-    here = os.path.abspath(os.path.dirname(__file__))
-    root_path = os.path.abspath(os.path.join(here, os.pardir))
-    sys.path.insert(0, root_path)
-
     selectors = args if args else None
-    tests = _find_tests(here, selectors)
+    tests = _find_tests(_HERE, selectors)
 
     if options.split:
         for test in tests:
