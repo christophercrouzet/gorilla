@@ -21,11 +21,11 @@ def find_version(*file_paths):
 setuptools.setup(
     name='gorilla',
     version=find_version('gorilla.py'),
-    description='Convenient approach to monkey patching',
+    description="Convenient approach to monkey patching",
     keywords='gorilla monkey patch',
     license='MIT',
     url='https://github.com/christophercrouzet/gorilla',
-    author='Christopher Crouzet',
+    author="Christopher Crouzet",
     author_email='christopher.crouzet@gmail.com',
     classifiers=[
         'Development Status :: 4 - Beta',
