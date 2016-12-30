@@ -27,6 +27,7 @@ setuptools.setup(
     name='gorilla',
     version=find_version('gorilla.py'),
     description="Convenient approach to monkey patching",
+    long_description=read('README.rst'),
     keywords='gorilla monkey patch',
     license='MIT',
     url='https://github.com/christophercrouzet/gorilla',
