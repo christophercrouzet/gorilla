@@ -14,7 +14,7 @@ Gorilla
    :alt: License
 
 
-Gorilla is a library providing a convenient approach to monkey patching.
+Gorilla is a library that provides a convenient approach to monkey patching.
 
 Monkey patching is the process of modifying modules and classes attributes at
 runtime with the purpose of replacing of extending third-party code. See
