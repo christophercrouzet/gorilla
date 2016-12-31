@@ -5,11 +5,11 @@ __pycache__/
 build/
 dist/
 env/
+htmlcov/
 sdist/
 wheels/
 *.egg-info/
 *.egg
 *.lprof
 *.py[co]
-
-*.sublime-*
+.coverage
