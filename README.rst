@@ -71,46 +71,43 @@ See the ``tutorial`` section from the documentation for more examples.
 Documentation
 -------------
 
-Read the documentation online at <https://gorilla.readthedocs.io> or check
-their source from the ``doc`` folder.
+See the `Tutorial`_ section from the documentation for more information and
+examples on using Gorilla.
 
-The documentation can be built in different formats using Sphinx.
+
+Installation
+------------
+
+See the `Installation`_ section from the documentation.
+
+
+Documentation
+-------------
+
+Read the documentation online at <https://gorilla.readthedocs.io> or check its
+source in the ``doc`` directory.
 
 
 Running the Tests
 -----------------
 
-A suite of unit tests is available from the ``tests`` directory. You can run it
-by firing:
+Tests are available in the ``tests`` directory and can be fired through the
+``run.py`` file:
 
 .. code-block:: bash
 
    $ python tests/run.py
 
 
-To run specific tests, it is possible to pass names to match in the command
-line.
+It is also possible to run specific tests by passinga space-separated list of
+partial names to match:
 
 .. code-block:: bash
 
-   $ python tests/run.py TestCase test_my_code
+   $ python tests/run.py TestClass
 
 
-This command will run all the tests within the ``TestCase`` class as well as
-the individual tests which contains ``test_my_code`` in their name.
-
-
-Get the Source
---------------
-
-The source code is available from the `GitHub project page`_.
-
-
-Contributing
-------------
-
-Found a bug or got a feature request? Don't keep it for yourself, log a new
-issue on `GitHub <https://github.com/christophercrouzet/gorilla/issues>`_.
+Finally, each test file is standalone and can be directly executed.
 
 
 Author
@@ -121,4 +118,5 @@ Christopher Crouzet
 
 
 .. _Wikipedia's Monkey patch page: https://en.wikipedia.org/wiki/Monkey_patch
-.. _GitHub project page: https://github.com/christophercrouzet/gorilla
+.. _Tutorial: https://gorilla.readthedocs.io/en/latest/tutorial.html
+.. _Installation: https://gorilla.readthedocs.io/en/latest/installation.html
