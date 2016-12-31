@@ -1,6 +1,19 @@
 Gorilla
 =======
 
+.. image:: https://img.shields.io/pypi/v/gorilla.svg
+   :target: https://pypi.python.org/pypi/gorilla
+   :alt: PyPI latest version
+
+.. image:: https://readthedocs.org/projects/gorilla/badge/?version=latest
+   :target: https://gorilla.readthedocs.io
+   :alt: Documentation status
+
+.. image:: https://img.shields.io/pypi/l/gorilla.svg
+   :target: https://pypi.python.org/pypi/gorilla
+   :alt: License
+
+
 Gorilla is a library providing a convenient approach to monkey patching.
 
 Monkey patching is the process of modifying modules and classes attributes at
