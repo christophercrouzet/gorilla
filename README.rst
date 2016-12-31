@@ -71,7 +71,7 @@ See the ``tutorial`` section from the documentation for more examples.
 Documentation
 -------------
 
-Read the documentation online at <http://gorilla.readthedocs.io> or check
+Read the documentation online at <https://gorilla.readthedocs.io> or check
 their source from the ``doc`` folder.
 
 The documentation can be built in different formats using Sphinx.
@@ -117,7 +117,7 @@ Author
 ------
 
 Christopher Crouzet
-<`christophercrouzet.com <http://christophercrouzet.com>`_>
+<`christophercrouzet.com <https://christophercrouzet.com>`_>
 
 
 .. _Wikipedia's Monkey patch page: https://en.wikipedia.org/wiki/Monkey_patch
