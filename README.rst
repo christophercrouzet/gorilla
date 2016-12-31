@@ -71,7 +71,7 @@ See the ``tutorial`` section from the documentation for more examples.
 Documentation
 -------------
 
-Read the documentation online at <http://gorilla.readthedocs.org> or check
+Read the documentation online at <http://gorilla.readthedocs.io> or check
 their source from the ``doc`` folder.
 
 The documentation can be built in different formats using Sphinx.
