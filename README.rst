@@ -69,12 +69,6 @@ class is no sweat either:
    ...         print("world!")
 
 
-See the ``tutorial`` section from the documentation for more examples.
-
-
-Documentation
--------------
-
 See the `Tutorial`_ section from the documentation for more information and
 examples on using Gorilla.
 
