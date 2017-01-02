@@ -9,9 +9,10 @@ import unittest
 
 # Usage's syntax based on docopt.
 _USAGE = "%(prog)s [<name>...]"
-_DESCRIPTION = """\
-Runs the tests that have their name containing either one of the 'name'
-arguments passed. If no 'name' argument is passed, all the tests are run."""
+_DESCRIPTION = (
+    "Runs the tests that have their name containing either one of the 'name' "
+    "arguments passed. If no 'name' argument is passed, all the tests are run."
+)
 
 
 def _find_tests(path, selectors=None):
