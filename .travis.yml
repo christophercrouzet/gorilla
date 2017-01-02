@@ -7,4 +7,11 @@ python:
   - "3.5"
   - "3.6"
 
-script: python -m unittest discover -s tests -v
+install:
+  - pip install coveralls
+
+script:
+  - coverage run --source gorilla -m unittest discover -s tests -v
+
+after_success:
+  - coveralls
