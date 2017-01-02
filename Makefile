@@ -1,6 +1,7 @@
 clean:
 	@find . \( \
 		-type d -name "__pycache__" \
+		-or -type d -name ".tox" \
 		-or -type d -name "htmlcov" \
 	\) -exec rm -rf {} +
 	@find . \( \
