@@ -13,3 +13,4 @@ wheels/
 *.lprof
 *.py[co]
 .coverage
+.tox
