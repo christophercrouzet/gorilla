@@ -46,6 +46,10 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities'
     ],
+    extras_require={
+        'dev': ['coverage', 'sphinx>=1.3', 'tox'],
+        'docs': ['sphinx>=1.3'],
+    },
     packages=[],
     py_modules=['gorilla'],
     include_package_data=True
