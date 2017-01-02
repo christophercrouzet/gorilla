@@ -15,7 +15,8 @@ clean:
 	@rm -rf doc/_build/*
 
 coverage:
-	@python -m coverage run --branch --source gorilla tests/run.py
+	@python -m coverage run --branch --source gorilla \
+		-m unittest discover -s tests
 	@coverage report
 	@coverage html
 
@@ -28,15 +29,10 @@ doc:
 env:
 	virtualenv env
 
-test.py2:
-	@python tests/run.py
-
-test.py3:
-	@python3 tests/run.py
-
-test: test.py2 test.py3
+test:
+	@python -m unittest discover -s tests -v
 
 upload:
 	@twine upload dist/*
 
-.PHONY: clean coverage dist doc test test.py2 test.py3 upload
+.PHONY: clean coverage dist doc env test upload
