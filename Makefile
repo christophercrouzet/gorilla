@@ -16,8 +16,7 @@ clean:
 	@rm -rf doc/_build/*
 
 coverage:
-	@python -m coverage run --branch --source gorilla \
-		-m unittest discover -s tests
+	@coverage run --branch --source gorilla -m unittest discover -s tests
 	@coverage report
 	@coverage html
 
