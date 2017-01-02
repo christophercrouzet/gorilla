@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
+import argparse
+import collections
 import os
 import sys
-_HERE = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
-
-
-import collections
-import optparse
-import subprocess
-import sys
 import unittest
+
+
+# Usage's syntax based on docopt.
+_USAGE = "%(prog)s [<name>...]"
+_DESCRIPTION = """\
+Runs the tests that have their name containing either one of the 'name'
+arguments passed. If no 'name' argument is passed, all the tests are run."""
 
 
 def _find_tests(path, selectors=None):
@@ -23,7 +24,12 @@ def _find_tests(path, selectors=None):
                        for selector in selectors)
 
     out = []
-    stack = collections.deque((unittest.TestLoader().discover(path),))
+    if path == '__main__':
+        root_test = unittest.TestLoader().loadTestsFromModule(sys.modules[path])
+    else:
+        root_test = unittest.TestLoader().discover(path)
+
+    stack = collections.deque((root_test,))
     while stack:
         obj = stack.popleft()
         if isinstance(obj, unittest.TestSuite):
@@ -49,28 +55,16 @@ def _get_test_full_name(test):
                          _get_test_name(test))
 
 
-def main():
-    usage = "usage: %prog [options] [test1..testN]"
-    parser = optparse.OptionParser(usage=usage)
-    parser.add_option(
-        '-s', '--split', action='store_true', dest='split',
-        help="run each test in a separate subprocess"
-    )
-
-    options, args = parser.parse_args()
-
-    selectors = args if args else None
-    tests = _find_tests(_HERE, selectors)
-
-    if options.split:
-        for test in tests:
-            name = _get_test_full_name(test)
-            subprocess.call([sys.executable, '-m', 'unittest', '-v', name],
-                            env={'PYTHONPATH': ':'.join(sys.path)})
-    else:
-        suite = unittest.TestLoader().suiteClass(tests)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+def run(start_path, verbosity=2):
+    parser = argparse.ArgumentParser(usage=_USAGE, description=_DESCRIPTION)
+    parser.add_argument('name', nargs='*',
+                        help='partial test names to search')
+    args = parser.parse_args()
+    selectors = args.name if args.name else None
+    tests = _find_tests(start_path, selectors)
+    suite = unittest.TestLoader().suiteClass(tests)
+    unittest.TextTestRunner(verbosity=verbosity).run(suite)
 
 
 if __name__ == "__main__":
-    main()
+    run(os.path.abspath(os.path.dirname(__file__)))

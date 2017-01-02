@@ -160,4 +160,5 @@ class DecoratorsTest(GorillaTestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    from tests.run import run
+    run('__main__')
