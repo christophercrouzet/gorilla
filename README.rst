@@ -1,6 +1,10 @@
 Gorilla
 =======
 
+.. image:: https://img.shields.io/travis/christophercrouzet/gorilla/master.svg
+   :alt: Build status
+   :target: https://travis-ci.org/christophercrouzet/gorilla
+
 .. image:: https://img.shields.io/pypi/v/gorilla.svg
    :target: https://pypi.python.org/pypi/gorilla
    :alt: PyPI latest version
