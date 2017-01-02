@@ -9,7 +9,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
 import collections
 import importlib
 import itertools
-import unittest
 import sys
 
 import gorilla
