@@ -2,8 +2,12 @@ Gorilla
 =======
 
 .. image:: https://img.shields.io/travis/christophercrouzet/gorilla/master.svg
-   :alt: Build status
    :target: https://travis-ci.org/christophercrouzet/gorilla
+   :alt: Build status
+
+.. image:: https://img.shields.io/coveralls/christophercrouzet/gorilla/master.svg
+   :target: https://coveralls.io/r/christophercrouzet/gorilla
+   :alt: Coverage Status
 
 .. image:: https://img.shields.io/pypi/v/gorilla.svg
    :target: https://pypi.python.org/pypi/gorilla
