@@ -86,8 +86,8 @@ See the `Installation`_ section from the documentation.
 Documentation
 -------------
 
-Read the documentation online at <https://gorilla.readthedocs.io> or check its
-source in the ``doc`` directory.
+Read the documentation online at `gorilla.readthedocs.io`_ or check its source
+in the ``doc`` directory.
 
 
 Running the Tests
@@ -119,6 +119,7 @@ Christopher Crouzet
 <`christophercrouzet.com <https://christophercrouzet.com>`_>
 
 
+.. _gorilla.readthedocs.io: https://gorilla.readthedocs.io
 .. _Wikipedia's Monkey patch page: https://en.wikipedia.org/wiki/Monkey_patch
 .. _Tutorial: https://gorilla.readthedocs.io/en/latest/tutorial.html
 .. _Installation: https://gorilla.readthedocs.io/en/latest/installation.html
