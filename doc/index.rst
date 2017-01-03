@@ -31,7 +31,7 @@ Additional Information
    :maxdepth: 1
 
    contributing
-   changes
+   changelog
    versioning
    license
 
