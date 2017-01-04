@@ -4,7 +4,7 @@ import re
 import setuptools
 
 
-def read(*names, **kwargs):
+def _read(*names, **kwargs):
     # Credits: https://packaging.python.org/single_source_version.
     here = os.path.dirname(__file__)
     encoding = kwargs.get('encoding', 'utf8')
@@ -12,9 +12,9 @@ def read(*names, **kwargs):
         return fp.read()
 
 
-def find_version(*file_paths):
+def _find_version(*file_paths):
     # Credits: https://packaging.python.org/single_source_version.
-    version_file = read(*file_paths)
+    version_file = _read(*file_paths)
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                               version_file, re.M)
     if version_match:
@@ -25,9 +25,9 @@ def find_version(*file_paths):
 
 setuptools.setup(
     name='gorilla',
-    version=find_version('gorilla.py'),
+    version=_find_version('gorilla.py'),
     description="Convenient approach to monkey patching",
-    long_description=read('README.rst'),
+    long_description=_read('README.rst'),
     keywords='gorilla monkey patch',
     license='MIT',
     url='https://github.com/christophercrouzet/gorilla',
