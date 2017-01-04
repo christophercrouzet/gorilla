@@ -25,41 +25,36 @@ Gorilla
 Gorilla is a Python library that provides a convenient approach to monkey
 patching.
 
-Monkey patching is the process of modifying modules and classes attributes at
-runtime with the purpose of replacing or extending third-party code. See
-`Wikipedia's Monkey patch page`_ for a more complete definition.
+Monkey patching is the process of **modifying module and class attributes at
+runtime** with the purpose of replacing or extending third-party code.
+
+Although *not* a recommended practice, it is sometimes useful to fix or modify
+the behaviour of a piece of code from a third-party library, or to extend its
+public interface while making the additions feel like they are built-in into
+the library.
+
+The Python language makes monkey patching extremely easy but the advantages of
+Gorilla are multiple, not only in assuring a **consistent behaviour** on both
+Python 2 and Python 3 versions, but also in preventing common source of errors,
+and making the process both **intuitive and convenient** even when faced with
+*large* numbers of patches to create.
 
 
 Features
 --------
 
-* creation of patches using decorators.
-* creation of batches of patches using the members of either classes or
-  modules.
-* warns when patching an existing attribute and/or store the overriden
-  attribute to make it accessible.
-* customizable behaviour.
-* allows the dynamic creation of patches at runtime.
+* intuitive and convenient decorator approach to create patches.
+* can create patches for all class or module members at once.
 * compatible with both Python 2 and Python 3.
+* customizable behaviour.
 
 
 Usage
 -----
 
-Marking a function ``my_function()`` as being a patch for a module
-``destination`` is as easy as:
-
-.. code-block:: python
-
-   >>> import gorilla
-   >>> import destination
-   >>> @gorilla.patch(destination)
-   ... def my_function():
-   ...     print("Hello world!")
-
-
-Marking a class ``destination.Class`` to be patched with the members of another
-class is no sweat either:
+Thanks to the dynamic nature of Python that makes monkey patching possible, the
+process happens at runtime without ever having to directly modify the source
+code of the third-party library:
 
 .. code-block:: python
 
@@ -74,14 +69,25 @@ class is no sweat either:
    ...         print("world!")
 
 
-See the `Tutorial`_ section from the documentation for more information and
-examples on using Gorilla.
+The code above creates two patches, one for each member of the class
+``MyClass``, but does not apply them yet. In other words, they define the
+information required to carry on the operation but are not yet inserted into
+the specified destination class ``destination.Class``.
+
+Such patches created with the decorators can then be automatically retrieved by
+recursively scanning a package or a module, then applied:
+
+.. code-block:: python
+
+   >>> import gorilla
+   >>> import mypackage
+   >>> patches = gorilla.find_patches([mypackage])
+   >>> for patch in patches:
+   ...     gorilla.apply(patch)
 
 
-Installation
-------------
-
-See the `Installation`_ section from the documentation.
+See the `Tutorial`_ section from the documentation for more detailed examples
+and explanations on how to use Gorilla.
 
 
 Documentation
@@ -89,28 +95,6 @@ Documentation
 
 Read the documentation online at `gorilla.readthedocs.io`_ or check its source
 in the ``doc`` directory.
-
-
-Running the Tests
------------------
-
-Tests are available in the ``tests`` directory and can be fired through the
-``run.py`` file:
-
-.. code-block:: bash
-
-   $ python tests/run.py
-
-
-It is also possible to run specific tests by passing a space-separated list of
-partial names to match:
-
-.. code-block:: bash
-
-   $ python tests/run.py TestClass
-
-
-Finally, each test file is standalone and can be directly executed.
 
 
 Author
@@ -121,6 +105,4 @@ Christopher Crouzet
 
 
 .. _gorilla.readthedocs.io: https://gorilla.readthedocs.io
-.. _Wikipedia's Monkey patch page: https://en.wikipedia.org/wiki/Monkey_patch
 .. _Tutorial: https://gorilla.readthedocs.io/en/latest/tutorial.html
-.. _Installation: https://gorilla.readthedocs.io/en/latest/installation.html
