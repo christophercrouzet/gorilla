@@ -118,7 +118,7 @@ directly retrieve the source from the repository with the help of `Git`_:
 .. _easy_install: https://setuptools.readthedocs.io/en/latest/easy_install.html
 .. _get-pip.py: https://raw.github.com/pypa/pip/master/contrib/get-pip.py
 .. _Git: https://git-scm.com
-.. _pip: https://github.com/pypa/pip
-.. _Python Packaging User Guide: https://python-packaging-user-guide.readthedocs.io
+.. _pip: https://pip.pypa.io
+.. _Python Packaging User Guide: https://packaging.python.org/current/
 .. _setuptools: https://github.com/pypa/setuptools
 .. _virtualenv: https://virtualenv.pypa.io

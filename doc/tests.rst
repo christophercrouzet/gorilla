@@ -76,5 +76,5 @@ coverage status.
 .. |coverage| replace:: ``coverage``
 .. |tox| replace:: ``tox``
 
-.. _coverage: https://bitbucket.org/ned/coveragepy
-.. _tox: https://github.com/tox-dev/tox
+.. _coverage: https://coverage.readthedocs.io
+.. _tox: https://tox.readthedocs.io
