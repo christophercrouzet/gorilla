@@ -15,12 +15,22 @@ Utilities
    get_original_attribute
 
 
+----
+
 .. autofunction:: default_filter
+
+----
 
 .. autofunction:: create_patches
 
+----
+
 .. autofunction:: find_patches
 
+----
+
 .. autofunction:: get_attribute
+
+----
 
 .. autofunction:: get_original_attribute

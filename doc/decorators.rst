@@ -16,14 +16,26 @@ Decorators
    filter
 
 
+----
+
 .. autofunction:: patch
+
+----
 
 .. autofunction:: patches
 
+----
+
 .. autofunction:: destination
+
+----
 
 .. autofunction:: name
 
+----
+
 .. autofunction:: settings
+
+----
 
 .. autofunction:: filter

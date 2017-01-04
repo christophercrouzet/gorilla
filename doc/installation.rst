@@ -3,71 +3,122 @@
 Installation
 ============
 
-Gorilla is written in the Python language and supports both Python 2 and
-Python 3 versions.
+Gorilla doesn't have any requirement outside the Python interpreter. Any of the
+following Python versions is supported: 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 
-The Easy Way
-------------
+Installing pip
+--------------
 
-If your Python-fu is up-to-date and you possess the latest trend in
-installation tools [1]_, then you can install the most recent version of
-Gorilla using `pip`_:
+The recommended [1]_ approach for installing a Python package such as Gorilla
+is to use |pip|_, a package manager for projects written in Python. If ``pip``
+is not already installed on your system, you can do so by following these
+steps:
+
+    1. Download `get-pip.py`_.
+    2. Run ``python get-pip.py`` in a shell.
+
+
+.. note::
+
+   The installation commands described in this page might require ``sudo``
+   privileges to run successfully.
+
+
+System-Wide Installation
+------------------------
+
+Installing globally the most recent version of Gorilla can be done with
+``pip``:
 
 .. code-block:: bash
 
    $ pip install gorilla
 
 
-An alternative would be to use `easy_install`_ (included in `setuptools`_):
+Or using |easy_install|_ (provided with |setuptools|_):
 
 .. code-block:: bash
 
    $ easy_install gorilla
 
 
-From the Source
----------------
+Virtualenv
+----------
 
-You can also download a compressed archive containing the source from either
-`PyPI`_ or `GitHub`_.
+If you'd rather make Gorilla only available for your specific project, an
+alternative approach is to use |virtualenv|_. First, make sure that it is
+installed:
 
-Then, it's only a matter of:
+.. code-block:: bash
 
-1. Decompressing the archive.
-2. Running ``python setup.py install`` from the resulting directory.
+   $ pip install virtualenv
+
+
+Then, an isolated environment needs to be created for your project before
+installing Gorilla in there:
+
+.. code-block:: bash
+
+   $ mkdir myproject
+   $ cd myproject
+   $ virtualenv env
+   New python executable in /path/to/myproject/env/bin/python
+   Installing setuptools, pip, wheel...done.
+   $ source env/bin/activate
+   $ pip install gorilla
+
+
+At this point, Gorilla is available for the project ``myproject`` as long
+either the virtual environment is activated.
+
+To exit the virtual environment, run:
+
+.. code-block:: bash
+
+   $ deactivate
+
+
+.. note::
+
+   Instead of having to activate the virtual environment, it is also possible
+   to directly use the ``env/bin/python``, ``env/bin/pip``, and the other
+   executables found in the folder ``env/bin``.
+
+
+.. note::
+
+   For Windows, some code samples might not work out of the box. Mainly,
+   activating ``virtualenv`` is done by running the command
+   ``env\Scripts\activate`` instead.
 
 
 Development Version
 -------------------
 
-If you want to stay cutting edge by using the development version, then
-you can:
+To stay cutting edge with the latest development progresses, it is possible to
+directly retrieve the source from the repository with the help of `Git`_:
 
-1. Install `Git`_.
-2. ``git clone https://github.com/christophercrouzet/gorilla.git``.
-3. ``cd gorilla``.
-4. ``pip install --editable .`` or ``python setup.py develop``.
+.. code-block:: bash
 
-
-Installing pip
---------------
-
-If you're using Python 3.4, you should already be good to go, otherwise:
-
-1. Download `get-pip.py`_.
-2. Run ``python get-pip.py``.
+   $ git clone https://github.com/christophercrouzet/gorilla.git
+   $ cd gorilla
+   $ python setup.py develop
 
 ----
 
 .. [1] See the `Python Packaging User Guide`_
 
+.. |easy_install| replace:: ``easy_install``
+.. |get-pip.py| replace:: ``get-pip.py``
+.. |pip| replace:: ``pip``
+.. |setuptools| replace:: ``setuptools``
+.. |virtualenv| replace:: ``virtualenv``
 
-.. _Git: https://git-scm.com
-.. _GitHub: https://github.com/christophercrouzet/gorilla
-.. _PyPI: https://pypi.python.org/pypi/gorilla
-.. _Python Packaging User Guide: https://python-packaging-user-guide.readthedocs.io
-.. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+.. _easy_install: https://setuptools.readthedocs.io/en/latest/easy_install.html
 .. _get-pip.py: https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-.. _pip: https://pypi.python.org/pypi/pip
-.. _setuptools: https://pypi.python.org/pypi/setuptools
+.. _Git: https://git-scm.com
+.. _pip: https://github.com/pypa/pip
+.. _Python Packaging User Guide: https://python-packaging-user-guide.readthedocs.io
+.. _setuptools: https://github.com/pypa/setuptools
+.. _virtualenv: https://virtualenv.pypa.io

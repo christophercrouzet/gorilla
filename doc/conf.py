@@ -5,6 +5,8 @@ import sys
 sys.path.insert(0, os.path.abspath(os.pardir))
 
 
+from datetime import datetime
+
 import gorilla
 
 
@@ -25,7 +27,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'gorilla'
-copyright = u"2014-2016, Christopher Crouzet"
+copyright = u"2014-%i, Christopher Crouzet" % (datetime.utcnow().year,)
 author = u"Christopher Crouzet"
 version = gorilla.__version__
 release = version
@@ -39,17 +41,31 @@ pygments_style = 'sphinx'
 show_authors = False
 todo_include_todos = False
 
+description = (
+    "A Python library that provides a convenient approach to monkey patching."
+)
+
 
 # -- Options for HTML output ----------------------------------------------
 
-if os.environ.get('READTHEDOCS', None) != 'True':
-    try:
-        import sphinx_rtd_theme
-        html_theme = 'sphinx_rtd_theme'
-        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    except ImportError:
-        html_theme = 'alabaster'
-
+html_theme = 'alabaster'
+html_theme_options = {
+    'description': description,
+    'github_user': 'christophercrouzet',
+    'github_repo': 'gorilla',
+    'github_type': 'star',
+    'fixed_sidebar': True,
+}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'links.html',
+        'searchbox.html',
+        'donate.html',
+    ]
+}
 html_static_path = ['_static']
 
 
@@ -64,16 +80,14 @@ latex_elements = {
 }
 
 latex_documents = [
-    (master_doc, 'gorilla.tex', u"gorilla Documentation",
-     u"Christopher Crouzet", 'manual'),
+    (master_doc, 'gorilla.tex', u"gorilla Documentation", author, 'manual'),
 ]
 
 
 # -- Options for manual page output ---------------------------------------
 
 man_pages = [
-    (master_doc, 'gorilla', u"gorilla Documentation",
-     [author], 1)
+    (master_doc, 'gorilla', u"gorilla Documentation", [author], 1)
 ]
 
 
@@ -81,6 +95,5 @@ man_pages = [
 
 texinfo_documents = [
     (master_doc, 'gorilla', u"gorilla Documentation", author, 'gorilla',
-     "Convenient approach to monkey patching.",
-     'Miscellaneous'),
+     description, 'Miscellaneous'),
 ]

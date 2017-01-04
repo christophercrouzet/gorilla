@@ -5,22 +5,26 @@
 Tutorial
 ========
 
-The API revolves around the concept of patches, represented by the class
-:class:`Patch`. This class can be used directly if the patching information are
+In the end Gorilla is nothing more than a fancy wrapper around Python's
+|setattr()|_ function and thus requires to define patches, represented by the
+class :class:`Patch`, containing the destination object, the attribute name at
+the destination, and the actual value to set.
+
+The :class:`Patch` class can be used directly if the patching information are
 only known at runtime, as described in the section :ref:`dynamic_patching`, but
 otherwise a set of decorators are available to make the whole process more
-intuitive.
+intuitive and convenient.
 
 The recommended approach involving decorators is to be done in two steps:
 
-   * creating a :ref:`single patch <creating_single_patch>` and/or
-     :ref:`multiple patches <creating_multiple_patches>` respectively with the
-     :func:`patch` and :func:`patches` decorators.
-   * :ref:`finding and applying the patches <finding_and_applying_the_patches>`
-     through the :func:`find_patches` and :func:`apply` functions.
+   * create a :ref:`single patch <create_single_patch>` with the :func:`patch`
+     decorator and/or :ref:`multiple patches <create_multiple_patches>` using
+     :func:`patches`.
+   * :ref:`find and apply the patches <find_and_apply_patches>` through the
+     :func:`find_patches` and :func:`apply` functions.
 
 
-.. _creating_single_patch:
+.. _create_single_patch:
 
 Creating a Single Patch
 -----------------------
@@ -41,7 +45,7 @@ decorating our function:
 This step only creates the :class:`Patch` object containing the patch
 information but does not inject the function into the destination module just
 yet. The :func:`apply` function needs to be called for that to happen, as shown
-in the section :ref:`finding_and_applying_the_patches`.
+in the section :ref:`find_and_apply_patches`.
 
 The defaut behaviour is for the patch to inject the function at the destination
 using the name of the decorated object, that is ``'my_function'``. If a
@@ -76,7 +80,7 @@ existing class:
    ...     print("world!")
 
 
-.. _creating_multiple_patches:
+.. _create_multiple_patches:
 
 Creating Multiple Patches at Once
 ---------------------------------
@@ -133,8 +137,8 @@ modifier decorators:
 In the example above, the method's name is overriden to ``'better_method'``,
 the class method is allowed to overwrite an attribute with the same name at the
 destination, and the static method is to be filtered out during the discovery
-process described in :ref:`finding_and_applying_the_patches`, leading to no
-patch being created for it.
+process described in :ref:`find_and_apply_patches`, leading to no patch being
+created for it.
 
 .. note::
 
@@ -143,10 +147,10 @@ patch being created for it.
    :func:`create_patches` needs to be directly used instead.
 
 
-.. _overwriting_attributes:
+.. _overwrite_attributes:
 
-Overwriting Attributes at Destination
--------------------------------------
+Overwriting Attributes at the Destination
+-----------------------------------------
 
 If there was to be an attribute at the patch's destination already existing
 with the patch's name, then the patching process can optionally override the
@@ -162,7 +166,7 @@ remains accessible from within our code with the help of the
    >>> @gorilla.patch(destination, settings=settings)
    ... def function():
    ...     print("Hello world!")
-   ...     # We're overriding an existing function here,
+   ...     # We're overwriting an existing function here,
    ...     # preserve its original behaviour.
    ...     original = gorilla.get_original_attribute(destination, 'function')
    ...     return original()
@@ -171,7 +175,7 @@ remains accessible from within our code with the help of the
 .. note::
 
    The default settings of a patch do not allow attributes at the destination
-   to be overriden. For such a behaviour, the attribute
+   to be overwritten. For such a behaviour, the attribute
    :attr:`Settings.allow_hit` needs to be set to ``True``.
 
 
@@ -203,7 +207,7 @@ in an invalid definition since it will be interpreted as a standard method but
 doesn't define any parameter referring to the class object such as ``self``.
 
 
-.. _finding_and_applying_the_patches:
+.. _find_and_apply_patches:
 
 Finding and Applying the Patches
 --------------------------------
@@ -229,8 +233,8 @@ Dynamic Patching
 ----------------
 
 In the case where patches need to be created dynamically, meaning that the
-patch source objects and/or destinations are only to be known at runtime,
-then it is possible to directly use the :class:`Patch` class.
+patch source objects and/or destinations are not known until runtime, then it
+is possible to directly use the :class:`Patch` class.
 
 .. code-block:: python
 
@@ -247,3 +251,8 @@ then it is possible to directly use the :class:`Patch` class.
    Special precaution is advised when directly setting the :attr:`Patch.obj`
    attribute. See the warning note in the class :class:`Patch` for more
    details.
+
+
+.. |setattr()| replace:: ``setattr()``
+
+.. _setattr(): https://docs.python.org/library/functions.html#setattr

@@ -1,0 +1,11 @@
+hr {
+    border-color: #ddd;
+}
+
+pre {
+    font-size: 0.8em;
+}
+
+div.section table.docutils {
+    margin: 2em 0;
+}
