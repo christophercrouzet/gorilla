@@ -3,8 +3,8 @@
 Installation
 ============
 
-Gorilla doesn't have any requirement outside the Python interpreter. Any of the
-following Python versions is supported: 2.7, 3.3, 3.4, 3.5, and 3.6.
+Gorilla doesn't have any requirement outside of the Python interpreter. Any of
+the following Python versions is supported: 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 
 Installing pip
@@ -69,8 +69,8 @@ installing Gorilla in there:
    $ pip install gorilla
 
 
-At this point, Gorilla is available for the project ``myproject`` as long
-either the virtual environment is activated.
+At this point, Gorilla is available for the project ``myproject`` as long as
+the virtual environment is activated.
 
 To exit the virtual environment, run:
 
