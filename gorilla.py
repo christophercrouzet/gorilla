@@ -323,6 +323,7 @@ def patch(destination, name=None, settings=None):
         data.patches.append(patch)
         return wrapped
 
+
     return decorator
 
 
@@ -375,6 +376,7 @@ def patches(destination, settings=None, traverse_bases=True,
         data.patches.extend(patches)
         return wrapped
 
+
     return decorator
 
 
@@ -399,6 +401,7 @@ def destination(value):
         data = _get_decorator_data(_get_base(wrapped))
         data.override['destination'] = value
         return wrapped
+
 
     return decorator
 
@@ -425,6 +428,7 @@ def name(value):
         data.override['name'] = value
         return wrapped
 
+
     return decorator
 
 
@@ -449,6 +453,7 @@ def settings(**kwargs):
         data = _get_decorator_data(_get_base(wrapped))
         data.override.setdefault('settings', {}).update(kwargs)
         return wrapped
+
 
     return decorator
 
@@ -476,6 +481,7 @@ def filter(value):
         data = _get_decorator_data(_get_base(wrapped))
         data.filter = value
         return wrapped
+
 
     return decorator
 
