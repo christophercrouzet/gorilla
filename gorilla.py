@@ -262,6 +262,13 @@ def apply(patch):
     RuntimeError
         Overwriting an existing attribute is not allowed when the setting
         :attr:`Settings.allow_hit` is set to ``True``.
+
+    Note
+    ----
+    If both the attributes :attr:`Settings.allow_hit` and
+    :attr:`Settings.store_hit` are ``True`` but that the target attribute seems
+    to have already been stored, then it won't be stored again to avoid losing
+    the original attribute that was stored the first time around.
     """
     settings = Settings() if patch.settings is None else patch.settings
 
