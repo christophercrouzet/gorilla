@@ -17,7 +17,7 @@ unittest
 
 The tests are written using Python's built-in ``unittest`` module. They are
 available in the ``tests`` directory and can be fired through the
-``test/run.py`` file:
+``tests/run.py`` file:
 
 .. code-block:: bash
 
