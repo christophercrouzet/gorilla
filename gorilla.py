@@ -615,7 +615,7 @@ def find_patches(modules, recursive=True):
 def get_attribute(obj, name):
     """Retrieve an attribute while bypassing the descriptor protocol.
 
-    As per the built-in ``getattr`` function, if the input object is a class
+    As per the built-in |getattr()|_ function, if the input object is a class
     then its base classes might also be searched until the attribute is found.
 
     Parameters
@@ -634,6 +634,10 @@ def get_attribute(obj, name):
     ------
     AttributeError
         The attribute couldn't be found.
+
+
+    .. |getattr()| replace:: ``getattr()``
+    .. _getattr(): https://docs.python.org/library/functions.html#getattr
     """
     objs = inspect.getmro(obj) if isinstance(obj, _CLASS_TYPES) else [obj]
     for obj_ in objs:
