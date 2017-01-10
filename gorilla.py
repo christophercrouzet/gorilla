@@ -92,7 +92,7 @@ class _DecoratorData(object):
 
 class Settings(object):
 
-    """Defines the patching behaviour.
+    """Define the patching behaviour.
 
     Attributes
     ----------
@@ -152,7 +152,7 @@ class Settings(object):
 
 class Patch(object):
 
-    """Describes all the information required to apply a patch.
+    """Describe all the information required to apply a patch.
 
     Attributes
     ----------
