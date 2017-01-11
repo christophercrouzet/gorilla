@@ -97,6 +97,14 @@ Read the documentation online at `gorilla.readthedocs.io`_ or check its source
 in the ``doc`` directory.
 
 
+Out There
+---------
+
+Projects using Gorilla include:
+
+* `bana <https://github.com/christophercrouzet/bana>`_
+
+
 Author
 ------
 
