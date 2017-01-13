@@ -107,8 +107,6 @@ class Settings(object):
         name before being overwritten by the patch. Defaults to ``True``.
     """
 
-    __slots__ = ('allow_hit', 'store_hit')
-
     def __init__(self, **kwargs):
         """Constructor.
 
@@ -122,15 +120,14 @@ class Settings(object):
         self._update(**kwargs)
 
     def __repr__(self):
-        values = ', '.join(['%s=%r' % (attr, getattr(self, attr))
-                            for attr in self.__slots__])
+        values = ', '.join([
+            '%s=%r' % (key, value)
+            for key, value in sorted(_iteritems(self.__dict__))])
         return "%s(%s)" % (self.__class__.__name__, values)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return (self.__slots__ == other.__slots__
-                    and all(getattr(self, attr) == getattr(other, attr)
-                            for attr in self.__slots__))
+            return self.__dict__ == other.__dict__
 
         return NotImplemented
 
@@ -146,8 +143,7 @@ class Settings(object):
         kwargs
             Settings to update.
         """
-        for key, value in _iteritems(kwargs):
-            setattr(self, key, value)
+        self.__dict__.update(**kwargs)
 
 
 class Patch(object):

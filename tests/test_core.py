@@ -69,6 +69,30 @@ class CoreTest(GorillaTestCase):
             if module.__name__ in sys.modules:
                 del sys.modules[module.__name__]
 
+    def test_settings(self):
+        settings_1 = gorilla.Settings()
+        settings_2 = gorilla.Settings(allow_hit=False, store_hit=True)
+        self.assertEqual(settings_1, settings_2)
+        self.assertNotEqual(settings_1, {'allow_hit': False, 'store_hit': True})
+
+        settings_1.allow_hit = True
+        self.assertNotEqual(settings_1, settings_2)
+
+        settings_2.allow_hit = True
+        self.assertEqual(settings_1, settings_2)
+
+        settings_1.some_value = 123
+        self.assertNotEqual(settings_1, settings_2)
+
+        settings_2.some_value = 123
+        self.assertEqual(settings_1, settings_2)
+
+        self.assertEqual(str(gorilla.Settings()), "Settings(allow_hit=False, store_hit=True)")
+        self.assertEqual(str(gorilla.Settings(allow_hit=True)), "Settings(allow_hit=True, store_hit=True)")
+        self.assertEqual(str(gorilla.Settings(store_hit=False)), "Settings(allow_hit=False, store_hit=False)")
+        self.assertEqual(str(gorilla.Settings(some_value=123)), "Settings(allow_hit=False, some_value=123, store_hit=True)")
+        self.assertEqual(str(gorilla.Settings(string='abc')), "Settings(allow_hit=False, store_hit=True, string='abc')")
+
     def test_apply_patch_no_hit(self):
         name = 'dummy'
         settings = gorilla.Settings()
