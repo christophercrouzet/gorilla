@@ -226,10 +226,10 @@ class Patch(object):
         for key, value in _iteritems(kwargs):
             if key == 'settings':
                 if isinstance(value, dict):
-                    if isinstance(self.settings, Settings):
-                        self.settings._update(**value)
-                    else:
+                    if self.settings is None:
                         self.settings = Settings(**value)
+                    else:
+                        self.settings._update(**value)
                 else:
                     self.settings = value
             else:
