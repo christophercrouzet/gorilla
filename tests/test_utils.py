@@ -290,6 +290,18 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
+    def test_create_patches_6(self):
+        destination = tomodule.Class
+        obj = frommodule.Class
+        patches = gorilla.create_patches(destination, obj, filter=None,
+                                         recursive=False, use_decorators=False)
+
+        expected_patches = [
+            gorilla.Patch(destination, name, value)
+            for name, value in sorted(_iteritems(obj.__dict__))]
+
+        self.assertEqual(patches, expected_patches)
+
     def test_find_patches(self):
         patches = gorilla.find_patches([tests.utils])
         expected_patches = [
