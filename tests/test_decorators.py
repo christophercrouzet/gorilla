@@ -34,7 +34,7 @@ class DecoratorsTest(GorillaTestCase):
 
         self.assertIs(gorilla.patch(destination)(obj), obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             (destination, 'function', obj),
         ]
@@ -46,7 +46,7 @@ class DecoratorsTest(GorillaTestCase):
 
         self.assertIs(gorilla.patch(destination)(obj), obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             (destination, 'Class', obj),
         ]
@@ -58,7 +58,7 @@ class DecoratorsTest(GorillaTestCase):
 
         self.assertIs(gorilla.patches(destination)(obj), obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             (destination, 'STATIC_VALUE', obj),
             (destination, 'class_method', obj),
@@ -80,7 +80,7 @@ class DecoratorsTest(GorillaTestCase):
         gorilla.destination(destination_override)(gorilla.get_attribute(obj, 'value'))
         gorilla.patches(destination)(obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
             gorilla.Patch(destination_override, 'class_method', gorilla.get_attribute(obj, 'class_method')),
@@ -102,7 +102,7 @@ class DecoratorsTest(GorillaTestCase):
         gorilla.name(name_override)(gorilla.get_attribute(obj.Inner, 'method'))
         gorilla.patches(destination)(obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
             gorilla.Patch(destination, name_override, gorilla.get_attribute(obj, 'class_method')),
@@ -124,7 +124,7 @@ class DecoratorsTest(GorillaTestCase):
         gorilla.settings(allow_hit=True, store_hit=False)(gorilla.get_attribute(obj.Inner, 'method'))
         gorilla.patches(destination)(obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
             gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
@@ -146,7 +146,7 @@ class DecoratorsTest(GorillaTestCase):
         gorilla.settings(allow_hit=False, store_hit=True)(gorilla.get_attribute(obj.Inner, 'method'))
         gorilla.patches(destination, settings=gorilla.Settings(allow_hit=True, store_hit=False))(obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
             gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
@@ -167,7 +167,7 @@ class DecoratorsTest(GorillaTestCase):
         gorilla.filter(False)(gorilla.get_attribute(obj.Inner, 'method'))
         gorilla.patches(destination)(obj)
 
-        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
             gorilla.Patch(destination, '__init__', gorilla.get_attribute(obj, '__init__')),

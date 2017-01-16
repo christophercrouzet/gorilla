@@ -80,9 +80,21 @@ def default_filter(name, obj):
     return not (isinstance(obj, types.ModuleType) or name.startswith('_'))
 
 
-class _DecoratorData(object):
+class DecoratorData(object):
 
-    """Decorator data."""
+    """Decorator data.
+
+    Attributes
+    ----------
+    patches
+        Patches created through the decorators.
+    override
+        Any overriding value defined by the :func:`destination`, :func:`name`,
+        and :func:`settings` decorators.
+    filter
+        Value defined by the :func:`filter` decorator, if any, or ``None``
+        otherwise.
+    """
 
     def __init__(self):
         """Constructor."""
@@ -316,7 +328,7 @@ def patch(destination, name=None, settings=None):
         base = _get_base(wrapped)
         name_ = base.__name__ if name is None else name
         patch = Patch(destination, name_, wrapped, settings=settings)
-        data = _get_decorator_data(base, set_default=True)
+        data = get_decorator_data(base, set_default=True)
         data.patches.append(patch)
         return wrapped
 
@@ -368,7 +380,7 @@ def patches(destination, settings=None, traverse_bases=True,
             destination, wrapped, settings=settings,
             traverse_bases=traverse_bases, filter=filter, recursive=recursive,
             use_decorators=use_decorators)
-        data = _get_decorator_data(_get_base(wrapped), set_default=True)
+        data = get_decorator_data(_get_base(wrapped), set_default=True)
         data.patches.extend(patches)
         return wrapped
 
@@ -393,7 +405,7 @@ def destination(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped), set_default=True)
+        data = get_decorator_data(_get_base(wrapped), set_default=True)
         data.override['destination'] = value
         return wrapped
 
@@ -418,7 +430,7 @@ def name(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped), set_default=True)
+        data = get_decorator_data(_get_base(wrapped), set_default=True)
         data.override['name'] = value
         return wrapped
 
@@ -443,7 +455,7 @@ def settings(**kwargs):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped), set_default=True)
+        data = get_decorator_data(_get_base(wrapped), set_default=True)
         data.override.setdefault('settings', {}).update(kwargs)
         return wrapped
 
@@ -470,7 +482,7 @@ def filter(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped), set_default=True)
+        data = get_decorator_data(_get_base(wrapped), set_default=True)
         data.filter = value
         return wrapped
 
@@ -534,7 +546,7 @@ def create_patches(destination, root, settings=None, traverse_bases=True,
                           settings=copy.deepcopy(parent_patch.settings))
             if use_decorators:
                 base = _get_base(value)
-                decorator_data = _get_decorator_data(base)
+                decorator_data = get_decorator_data(base)
                 filter_override = (None if decorator_data is None
                                    else decorator_data.filter)
                 if ((filter_override is None and not filter(name, value))
@@ -594,7 +606,7 @@ def find_patches(modules, recursive=True):
         members = _get_members(module, filter=None)
         for _, value in members:
             base = _get_base(value)
-            decorator_data = _get_decorator_data(base)
+            decorator_data = get_decorator_data(base)
             if decorator_data is None:
                 continue
 
@@ -668,6 +680,30 @@ def get_original_attribute(obj, name):
     return getattr(obj, _ORIGINAL_NAME % (name,))
 
 
+def get_decorator_data(obj, set_default=False):
+    """Retrieve any decorator data from an object.
+
+    Parameters
+    ----------
+    obj : object
+        Object.
+    set_default : bool
+        If no data is found, a default one is set on the object and returned,
+        otherwise ``None`` is returned.
+
+    Returns
+    -------
+    gorilla.DecoratorData
+        The decorator data or ``None``.
+    """
+    data = getattr(obj, _DECORATOR_DATA, None)
+    if data is None and set_default:
+        data = DecoratorData()
+        setattr(obj, _DECORATOR_DATA, data)
+
+    return data
+
+
 def _get_base(obj):
     """Unwrap decorators to retrieve the base object.
 
@@ -693,30 +729,6 @@ def _get_base(obj):
         return obj
 
     return _get_base(obj)
-
-
-def _get_decorator_data(obj, set_default=False):
-    """Retrieve any decorator data from an object.
-
-    Parameters
-    ----------
-    obj : object
-        Object.
-    set_default : bool
-        If no data is found, a default one is set on the object and returned,
-        otherwise ``None`` is returned.
-
-    Returns
-    -------
-    gorilla._DecoratorData
-        The decorator data or ``None``.
-    """
-    data = getattr(obj, _DECORATOR_DATA, None)
-    if data is None and set_default:
-        data = _DecoratorData()
-        setattr(obj, _DECORATOR_DATA, data)
-
-    return data
 
 
 def _get_members(obj, traverse_bases=True, filter=default_filter,
