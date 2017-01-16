@@ -316,7 +316,7 @@ def patch(destination, name=None, settings=None):
         base = _get_base(wrapped)
         name_ = base.__name__ if name is None else name
         patch = Patch(destination, name_, wrapped, settings=settings)
-        data = _get_decorator_data(base)
+        data = _get_decorator_data(base, set_default=True)
         data.patches.append(patch)
         return wrapped
 
@@ -368,7 +368,7 @@ def patches(destination, settings=None, traverse_bases=True,
             destination, wrapped, settings=settings,
             traverse_bases=traverse_bases, filter=filter, recursive=recursive,
             use_decorators=use_decorators)
-        data = _get_decorator_data(_get_base(wrapped))
+        data = _get_decorator_data(_get_base(wrapped), set_default=True)
         data.patches.extend(patches)
         return wrapped
 
@@ -393,7 +393,7 @@ def destination(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped))
+        data = _get_decorator_data(_get_base(wrapped), set_default=True)
         data.override['destination'] = value
         return wrapped
 
@@ -418,7 +418,7 @@ def name(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped))
+        data = _get_decorator_data(_get_base(wrapped), set_default=True)
         data.override['name'] = value
         return wrapped
 
@@ -443,7 +443,7 @@ def settings(**kwargs):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped))
+        data = _get_decorator_data(_get_base(wrapped), set_default=True)
         data.override.setdefault('settings', {}).update(kwargs)
         return wrapped
 
@@ -470,7 +470,7 @@ def filter(value):
         The decorated object.
     """
     def decorator(wrapped):
-        data = _get_decorator_data(_get_base(wrapped))
+        data = _get_decorator_data(_get_base(wrapped), set_default=True)
         data.filter = value
         return wrapped
 
@@ -534,7 +534,7 @@ def create_patches(destination, root, settings=None, traverse_bases=True,
                           settings=copy.deepcopy(parent_patch.settings))
             if use_decorators:
                 base = _get_base(value)
-                decorator_data = _get_decorator_data(base, set_default=False)
+                decorator_data = _get_decorator_data(base)
                 filter_override = (None if decorator_data is None
                                    else decorator_data.filter)
                 if ((filter_override is None and not filter(name, value))
@@ -594,7 +594,7 @@ def find_patches(modules, recursive=True):
         members = _get_members(module, filter=None)
         for _, value in members:
             base = _get_base(value)
-            decorator_data = _get_decorator_data(base, set_default=False)
+            decorator_data = _get_decorator_data(base)
             if decorator_data is None:
                 continue
 
@@ -695,7 +695,7 @@ def _get_base(obj):
     return _get_base(obj)
 
 
-def _get_decorator_data(obj, set_default=True):
+def _get_decorator_data(obj, set_default=False):
     """Retrieve any decorator data from an object.
 
     Parameters
