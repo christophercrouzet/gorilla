@@ -771,7 +771,7 @@ def _get_members(obj, traverse_bases=True, filter=default_filter,
             if recursive and isinstance(value, _CLASS_TYPES):
                 stack.append(value)
 
-        out.extend(sorted(members))
+        out.extend(members)
 
     return out
 
