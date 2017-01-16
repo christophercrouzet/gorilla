@@ -240,7 +240,7 @@ class Patch(object):
                     else:
                         self.settings._update(**value)
                 else:
-                    self.settings = value
+                    self.settings = copy.deepcopy(value)
             else:
                 setattr(self, key, value)
 
@@ -327,7 +327,8 @@ def patch(destination, name=None, settings=None):
     def decorator(wrapped):
         base = _get_base(wrapped)
         name_ = base.__name__ if name is None else name
-        patch = Patch(destination, name_, wrapped, settings=settings)
+        settings_ = copy.deepcopy(settings)
+        patch = Patch(destination, name_, wrapped, settings=settings_)
         data = get_decorator_data(base, set_default=True)
         data.patches.append(patch)
         return wrapped
@@ -376,8 +377,9 @@ def patches(destination, settings=None, traverse_bases=True,
     :class:`Patch`, :func:`create_patches`.
     """
     def decorator(wrapped):
+        settings_ = copy.deepcopy(settings)
         patches = create_patches(
-            destination, wrapped, settings=settings,
+            destination, wrapped, settings=settings_,
             traverse_bases=traverse_bases, filter=filter, recursive=recursive,
             use_decorators=use_decorators)
         data = get_decorator_data(_get_base(wrapped), set_default=True)
