@@ -302,8 +302,58 @@ class UtilsTest(GorillaTestCase):
 
         self.assertEqual(patches, expected_patches)
 
-    def test_find_patches(self):
+    def test_find_patches_1(self):
         patches = gorilla.find_patches([tests.utils])
+        expected_patches = [
+            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
+            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
+            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule, 'function0', gorilla.get_attribute(subpackage, 'function')),
+            gorilla.Patch(tomodule, 'function1', gorilla.get_attribute(module1, 'function')),
+            gorilla.Patch(tomodule.Class, 'unbound_class_method', gorilla.get_attribute(module1, 'unbound_class_method')),
+            gorilla.Patch(tomodule.Class, 'unbound_method', gorilla.get_attribute(module1, 'unbound_method')),
+            gorilla.Patch(tomodule.Class, 'unbound_static_method', gorilla.get_attribute(module1, 'unbound_static_method')),
+            gorilla.Patch(tomodule.Class, 'method1', gorilla.get_attribute(module1.Class, 'method')),
+            gorilla.Patch(tomodule.Class, 'value1', gorilla.get_attribute(module1.Class, 'value')),
+            gorilla.Patch(tomodule.Class, 'class_method2', gorilla.get_attribute(module2.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'static_method2', gorilla.get_attribute(module2.Class, 'static_method')),
+        ]
+        self.assertEqual(patches, expected_patches)
+
+        patches = gorilla.find_patches([tests.utils], recursive=False)
+        expected_patches = [
+            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
+            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
+            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
+            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
+
+    def test_find_patches_2(self):
+        global frommodule, tomodule, subpackage, module1, module2
+        for module in [tomodule, frommodule, subpackage, module1, module2]:
+            if module.__name__ in sys.modules:
+                del sys.modules[module.__name__]
+
+        patches = gorilla.find_patches([tests.utils])
+
+        frommodule = sys.modules[frommodule.__name__]
+        tommodule = sys.modules[tomodule.__name__]
+        subpackage = sys.modules[subpackage.__name__]
+        module1 = sys.modules[module1.__name__]
+        module2 = sys.modules[module2.__name__]
+
         expected_patches = [
             gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
             gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
