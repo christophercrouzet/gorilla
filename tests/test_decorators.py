@@ -114,25 +114,47 @@ class DecoratorsTest(GorillaTestCase):
         ]
         self.assertEqual(decorator_data.patches, expected_patches)
 
-    def test_settings_decorator(self):
+    def test_settings_decorator_1(self):
         destination = tomodule.Class
         obj = frommodule.Class
 
-        settings_override = {'allow_hit': True}
-        gorilla.settings(**settings_override)(gorilla.get_attribute(obj, 'static_method'))
-        gorilla.settings(**settings_override)(gorilla.get_attribute(obj, 'value'))
-        gorilla.settings(**settings_override)(gorilla.get_attribute(obj.Inner, 'method'))
+        gorilla.settings(some_value=123)(gorilla.get_attribute(obj, 'method'))
+        gorilla.settings(allow_hit=True)(gorilla.get_attribute(obj, 'static_method'))
+        gorilla.settings(store_hit=False)(gorilla.get_attribute(obj, 'value'))
+        gorilla.settings(allow_hit=True, store_hit=False)(gorilla.get_attribute(obj.Inner, 'method'))
         gorilla.patches(destination)(obj)
 
         decorator_data = getattr(obj, '_gorilla_decorator_data')
         expected_patches = [
             gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
             gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
-            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method'), settings=gorilla.Settings(some_value=123)),
             gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method'), settings=gorilla.Settings(allow_hit=True)),
-            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value'), settings=gorilla.Settings(allow_hit=True)),
+            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value'), settings=gorilla.Settings(store_hit=False)),
             gorilla.Patch(destination.Inner, 'STATIC_VALUE', gorilla.get_attribute(obj.Inner, 'STATIC_VALUE')),
-            gorilla.Patch(destination.Inner, 'method', gorilla.get_attribute(obj.Inner, 'method'), settings=gorilla.Settings(allow_hit=True)),
+            gorilla.Patch(destination.Inner, 'method', gorilla.get_attribute(obj.Inner, 'method'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
+        ]
+        self.assertEqual(decorator_data.patches, expected_patches)
+
+    def test_settings_decorator_2(self):
+        destination = tomodule.Class
+        obj = frommodule.Class
+
+        gorilla.settings(some_value=123)(gorilla.get_attribute(obj, 'method'))
+        gorilla.settings(allow_hit=False)(gorilla.get_attribute(obj, 'static_method'))
+        gorilla.settings(store_hit=True)(gorilla.get_attribute(obj, 'value'))
+        gorilla.settings(allow_hit=False, store_hit=True)(gorilla.get_attribute(obj.Inner, 'method'))
+        gorilla.patches(destination, settings=gorilla.Settings(allow_hit=True, store_hit=False))(obj)
+
+        decorator_data = getattr(obj, '_gorilla_decorator_data')
+        expected_patches = [
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method'), settings=gorilla.Settings(allow_hit=True, some_value=123, store_hit=False)),
+            gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method'), settings=gorilla.Settings(store_hit=False)),
+            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value'), settings=gorilla.Settings(allow_hit=True)),
+            gorilla.Patch(destination.Inner, 'STATIC_VALUE', gorilla.get_attribute(obj.Inner, 'STATIC_VALUE'), settings=gorilla.Settings(allow_hit=True, store_hit=False)),
+            gorilla.Patch(destination.Inner, 'method', gorilla.get_attribute(obj.Inner, 'method'), settings=gorilla.Settings(allow_hit=False, store_hit=True)),
         ]
         self.assertEqual(decorator_data.patches, expected_patches)
 
@@ -140,7 +162,6 @@ class DecoratorsTest(GorillaTestCase):
         destination = tomodule.Class
         obj = frommodule.Class
 
-        settings_override = {'allow_hit': True}
         gorilla.filter(True)(gorilla.get_attribute(obj, '__init__'))
         gorilla.filter(False)(gorilla.get_attribute(obj, 'class_method'))
         gorilla.filter(False)(gorilla.get_attribute(obj.Inner, 'method'))

@@ -16,6 +16,7 @@
 """
 
 import collections
+import copy
 import inspect
 import pkgutil
 import sys
@@ -530,7 +531,7 @@ def create_patches(destination, root, settings=None, traverse_bases=True,
                                filter=None, recursive=False)
         for name, value in members:
             patch = Patch(parent_patch.destination, name, value,
-                          settings=parent_patch.settings)
+                          settings=copy.deepcopy(parent_patch.settings))
             if use_decorators:
                 base = _get_base(value)
                 decorator_data = _get_decorator_data(base, set_default=False)
