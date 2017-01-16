@@ -93,6 +93,30 @@ class CoreTest(GorillaTestCase):
         self.assertEqual(str(gorilla.Settings(some_value=123)), "Settings(allow_hit=False, some_value=123, store_hit=True)")
         self.assertEqual(str(gorilla.Settings(string='abc')), "Settings(allow_hit=False, store_hit=True, string='abc')")
 
+    def test_patch(self):
+        patch_1 = gorilla.Patch(tomodule, 'dummy', frommodule.function)
+        patch_2 = gorilla.Patch(tomodule, 'dummy', frommodule.function, settings=None)
+        self.assertEqual(patch_1, patch_2)
+        self.assertNotEqual(patch_1, {'destination': tomodule, 'name': 'dummy', 'obj': frommodule.function, 'settings': None})
+
+        patch_1.name = 'function'
+        self.assertNotEqual(patch_1, patch_2)
+
+        patch_2.name = 'function'
+        self.assertEqual(patch_1, patch_2)
+
+        patch_1.some_value = 123
+        self.assertNotEqual(patch_1, patch_2)
+
+        patch_2.some_value = 123
+        self.assertEqual(patch_1, patch_2)
+
+        patch = gorilla.Patch(tomodule, 'dummy', frommodule.function)
+        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (tomodule, frommodule.function))
+
+        patch.some_value = 123
+        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (tomodule, frommodule.function))
+
     def test_apply_patch_no_hit(self):
         name = 'dummy'
         settings = gorilla.Settings()

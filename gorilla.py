@@ -169,8 +169,6 @@ class Patch(object):
     retrieving attributes invalid for patching, such as bound methods.
     """
 
-    __slots__ = ('destination', 'name', 'obj', 'settings')
-
     def __init__(self, destination, name, obj, settings=None):
         """Constructor.
 
@@ -197,9 +195,7 @@ class Patch(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return (self.__slots__ == other.__slots__
-                    and all(getattr(self, attr) == getattr(other, attr)
-                            for attr in self.__slots__))
+            return self.__dict__ == other.__dict__
 
         return NotImplemented
 
