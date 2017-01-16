@@ -21,9 +21,15 @@ from tests.utils.subpackage import module2
 
 
 if sys.version_info[0] == 2:
+    def _iteritems(d, **kwargs):
+        return d.iteritems(**kwargs)
+
     def _unfold(obj):
         return obj.__func__
 else:
+    def _iteritems(d, **kwargs):
+        return iter(d.items(**kwargs))
+
     def _unfold(obj):
         return obj
 
@@ -261,6 +267,26 @@ class UtilsTest(GorillaTestCase):
         patches = gorilla.create_patches(destination, obj, filter=filter)
         expected_patches = [
             gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+        ]
+        self.assertEqual(patches, expected_patches)
+
+    def test_create_patches_5(self):
+        destination = tomodule
+        obj = frommodule
+
+        gorilla.name('function')(gorilla.get_attribute(obj, 'Class'))
+        gorilla.name('dummy_1')(gorilla.get_attribute(obj, 'Parent'))
+        gorilla.name('dummy_2')(gorilla.get_attribute(obj, 'Child'))
+        patches = gorilla.create_patches(destination, obj)
+
+        expected_patches = [
+            gorilla.Patch(destination, 'dummy_2', gorilla.get_attribute(obj, 'Child')),
+            gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'Class')),
+            gorilla.Patch(destination, 'dummy_1', gorilla.get_attribute(obj, 'Parent')),
+            gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'function')),
+            gorilla.Patch(destination, 'global_variable', gorilla.get_attribute(obj, 'global_variable')),
+            gorilla.Patch(destination, 'whatever', gorilla.get_attribute(obj, 'unbound_class_method')),
+            gorilla.Patch(destination, 'unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method'), settings=gorilla.Settings(allow_hit=True)),
         ]
         self.assertEqual(patches, expected_patches)
 
