@@ -55,77 +55,77 @@ class UtilsTest(GorillaTestCase):
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'function', obj),
-            (destination, 'global_variable', obj),
-            (destination, 'unbound_class_method', obj),
-            (destination, 'unbound_method', obj),
-            (destination, 'unbound_static_method', obj),
-            (destination.Child, 'STATIC_VALUE', obj.Child),
-            (destination.Child, 'child_value', obj.Child),
-            (destination.Child, 'from_value', obj.Child),
-            (destination.Child, 'instance_value', obj.Child),
-            (destination.Child, 'method', obj.Child),
-            (destination.Child, 'parent_value', obj.Child),
-            (destination.Child, 'to_value', obj.Child),
-            (destination.Class, 'STATIC_VALUE', obj.Class),
-            (destination.Class, 'class_method', obj.Class),
-            (destination.Class, 'method', obj.Class),
-            (destination.Class, 'static_method', obj.Class),
-            (destination.Class, 'value', obj.Class),
-            (destination.Parent, 'STATIC_VALUE', obj.Parent),
-            (destination.Parent, 'from_value', obj.Parent),
-            (destination.Parent, 'instance_value', obj.Parent),
-            (destination.Parent, 'method', obj.Parent),
-            (destination.Parent, 'parent_value', obj.Parent),
-            (destination.Parent, 'to_value', obj.Parent),
-            (destination.Class.Inner, 'STATIC_VALUE', obj.Class.Inner),
-            (destination.Class.Inner, 'method', obj.Class.Inner),
+            gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'function')),
+            gorilla.Patch(destination, 'global_variable', gorilla.get_attribute(obj, 'global_variable')),
+            gorilla.Patch(destination, 'unbound_class_method', gorilla.get_attribute(obj, 'unbound_class_method')),
+            gorilla.Patch(destination, 'unbound_method', gorilla.get_attribute(obj, 'unbound_method')),
+            gorilla.Patch(destination, 'unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method')),
+            gorilla.Patch(destination.Child, 'STATIC_VALUE', gorilla.get_attribute(obj.Child, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Child, 'child_value', gorilla.get_attribute(obj.Child, 'child_value')),
+            gorilla.Patch(destination.Child, 'from_value', gorilla.get_attribute(obj.Child, 'from_value')),
+            gorilla.Patch(destination.Child, 'instance_value', gorilla.get_attribute(obj.Child, 'instance_value')),
+            gorilla.Patch(destination.Child, 'method', gorilla.get_attribute(obj.Child, 'method')),
+            gorilla.Patch(destination.Child, 'parent_value', gorilla.get_attribute(obj.Child, 'parent_value')),
+            gorilla.Patch(destination.Child, 'to_value', gorilla.get_attribute(obj.Child, 'to_value')),
+            gorilla.Patch(destination.Class, 'STATIC_VALUE', gorilla.get_attribute(obj.Class, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Class, 'class_method', gorilla.get_attribute(obj.Class, 'class_method')),
+            gorilla.Patch(destination.Class, 'method', gorilla.get_attribute(obj.Class, 'method')),
+            gorilla.Patch(destination.Class, 'static_method', gorilla.get_attribute(obj.Class, 'static_method')),
+            gorilla.Patch(destination.Class, 'value', gorilla.get_attribute(obj.Class, 'value')),
+            gorilla.Patch(destination.Parent, 'STATIC_VALUE', gorilla.get_attribute(obj.Parent, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Parent, 'from_value', gorilla.get_attribute(obj.Parent, 'from_value')),
+            gorilla.Patch(destination.Parent, 'instance_value', gorilla.get_attribute(obj.Parent, 'instance_value')),
+            gorilla.Patch(destination.Parent, 'method', gorilla.get_attribute(obj.Parent, 'method')),
+            gorilla.Patch(destination.Parent, 'parent_value', gorilla.get_attribute(obj.Parent, 'parent_value')),
+            gorilla.Patch(destination.Parent, 'to_value', gorilla.get_attribute(obj.Parent, 'to_value')),
+            gorilla.Patch(destination.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(obj.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Class.Inner, 'method', gorilla.get_attribute(obj.Class.Inner, 'method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Class
         obj = frommodule.Class
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'class_method', obj),
-            (destination, 'method', obj),
-            (destination, 'static_method', obj),
-            (destination, 'value', obj),
-            (destination.Inner, 'STATIC_VALUE', obj.Inner),
-            (destination.Inner, 'method', obj.Inner),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method')),
+            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value')),
+            gorilla.Patch(destination.Inner, 'STATIC_VALUE', gorilla.get_attribute(obj.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Inner, 'method', gorilla.get_attribute(obj.Inner, 'method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Parent
         obj = frommodule.Parent
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'from_value', obj),
-            (destination, 'instance_value', obj),
-            (destination, 'method', obj),
-            (destination, 'parent_value', obj),
-            (destination, 'to_value', obj),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'from_value', gorilla.get_attribute(obj, 'from_value')),
+            gorilla.Patch(destination, 'instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            gorilla.Patch(destination, 'to_value', gorilla.get_attribute(obj, 'to_value')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Child
         obj = frommodule.Child
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'child_value', obj),
-            (destination, 'from_value', obj),
-            (destination, 'instance_value', obj),
-            (destination, 'method', obj),
-            (destination, 'parent_value', obj),
-            (destination, 'to_value', obj),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'child_value', gorilla.get_attribute(obj, 'child_value')),
+            gorilla.Patch(destination, 'from_value', gorilla.get_attribute(obj, 'from_value')),
+            gorilla.Patch(destination, 'instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            gorilla.Patch(destination, 'to_value', gorilla.get_attribute(obj, 'to_value')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
     def test_create_patches_2(self):
         destination = tomodule
@@ -133,59 +133,59 @@ class UtilsTest(GorillaTestCase):
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'Child', obj),
-            (destination, 'Class', obj),
-            (destination, 'Parent', obj),
-            (destination, 'function', obj),
-            (destination, 'global_variable', obj),
-            (destination, 'unbound_class_method', obj),
-            (destination, 'unbound_method', obj),
-            (destination, 'unbound_static_method', obj),
+            gorilla.Patch(destination, 'Child', gorilla.get_attribute(obj, 'Child')),
+            gorilla.Patch(destination, 'Class', gorilla.get_attribute(obj, 'Class')),
+            gorilla.Patch(destination, 'Parent', gorilla.get_attribute(obj, 'Parent')),
+            gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'function')),
+            gorilla.Patch(destination, 'global_variable', gorilla.get_attribute(obj, 'global_variable')),
+            gorilla.Patch(destination, 'unbound_class_method', gorilla.get_attribute(obj, 'unbound_class_method')),
+            gorilla.Patch(destination, 'unbound_method', gorilla.get_attribute(obj, 'unbound_method')),
+            gorilla.Patch(destination, 'unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Class
         obj = frommodule.Class
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'Inner', obj),
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'class_method', obj),
-            (destination, 'method', obj),
-            (destination, 'static_method', obj),
-            (destination, 'value', obj),
+            gorilla.Patch(destination, 'Inner', gorilla.get_attribute(obj, 'Inner')),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method')),
+            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Parent
         obj = frommodule.Parent
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'from_value', obj),
-            (destination, 'instance_value', obj),
-            (destination, 'method', obj),
-            (destination, 'parent_value', obj),
-            (destination, 'to_value', obj),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'from_value', gorilla.get_attribute(obj, 'from_value')),
+            gorilla.Patch(destination, 'instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            gorilla.Patch(destination, 'to_value', gorilla.get_attribute(obj, 'to_value')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Child
         obj = frommodule.Child
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'child_value', obj),
-            (destination, 'from_value', obj),
-            (destination, 'instance_value', obj),
-            (destination, 'method', obj),
-            (destination, 'parent_value', obj),
-            (destination, 'to_value', obj),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'child_value', gorilla.get_attribute(obj, 'child_value')),
+            gorilla.Patch(destination, 'from_value', gorilla.get_attribute(obj, 'from_value')),
+            gorilla.Patch(destination, 'instance_value', gorilla.get_attribute(obj, 'instance_value')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'parent_value', gorilla.get_attribute(obj, 'parent_value')),
+            gorilla.Patch(destination, 'to_value', gorilla.get_attribute(obj, 'to_value')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
     def test_create_patches_3(self):
         def filter(name, value):
@@ -196,40 +196,40 @@ class UtilsTest(GorillaTestCase):
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'unbound_class_method', obj),
-            (destination, 'unbound_method', obj),
-            (destination, 'unbound_static_method', obj),
+            gorilla.Patch(destination, 'unbound_class_method', gorilla.get_attribute(obj, 'unbound_class_method')),
+            gorilla.Patch(destination, 'unbound_method', gorilla.get_attribute(obj, 'unbound_method')),
+            gorilla.Patch(destination, 'unbound_static_method', gorilla.get_attribute(obj, 'unbound_static_method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Class
         obj = frommodule.Class
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'class_method', obj),
-            (destination, 'method', obj),
-            (destination, 'static_method', obj),
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Parent
         obj = frommodule.Parent
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'method', obj),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
         destination = tomodule.Child
         obj = frommodule.Child
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
-            (destination, 'method', obj),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
         ]
-        self.assertEqual(patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(patches, expected_patches)
 
     def test_create_patches_4(self):
         def filter(name, value):

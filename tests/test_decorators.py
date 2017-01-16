@@ -36,9 +36,9 @@ class DecoratorsTest(GorillaTestCase):
 
         decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
-            (destination, 'function', obj),
+            gorilla.Patch(destination, 'function', obj),
         ]
-        self.assertEqual(decorator_data.patches, [gorilla.Patch(destination, name, obj) for destination, name, obj in expected_patches])
+        self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patch_decorator_on_class(self):
         destination = tomodule
@@ -48,9 +48,9 @@ class DecoratorsTest(GorillaTestCase):
 
         decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
-            (destination, 'Class', obj),
+            gorilla.Patch(destination, 'Class', obj),
         ]
-        self.assertEqual(decorator_data.patches, [gorilla.Patch(destination, name, obj) for destination, name, obj in expected_patches])
+        self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patch_decorator(self):
         destination = tomodule
@@ -75,15 +75,15 @@ class DecoratorsTest(GorillaTestCase):
 
         decorator_data = gorilla.get_decorator_data(obj)
         expected_patches = [
-            (destination, 'STATIC_VALUE', obj),
-            (destination, 'class_method', obj),
-            (destination, 'method', obj),
-            (destination, 'static_method', obj),
-            (destination, 'value', obj),
-            (destination.Inner, 'STATIC_VALUE', obj.Inner),
-            (destination.Inner, 'method', obj.Inner),
+            gorilla.Patch(destination, 'STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
+            gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
+            gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
+            gorilla.Patch(destination, 'static_method', gorilla.get_attribute(obj, 'static_method')),
+            gorilla.Patch(destination, 'value', gorilla.get_attribute(obj, 'value')),
+            gorilla.Patch(destination.Inner, 'STATIC_VALUE', gorilla.get_attribute(obj.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(destination.Inner, 'method', gorilla.get_attribute(obj.Inner, 'method')),
         ]
-        self.assertEqual(decorator_data.patches, [gorilla.Patch(destination, name, gorilla.get_attribute(source, name)) for destination, name, source in expected_patches])
+        self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patches_decorator(self):
         destination = tomodule.Class
