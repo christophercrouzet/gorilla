@@ -86,12 +86,12 @@ class DecoratorData(object):
 
     Attributes
     ----------
-    patches
+    patches : list of gorilla.Patch
         Patches created through the decorators.
-    override
+    override : dict
         Any overriding value defined by the :func:`destination`, :func:`name`,
         and :func:`settings` decorators.
-    filter
+    filter : bool or None
         Value defined by the :func:`filter` decorator, if any, or ``None``
         otherwise.
     """
@@ -109,12 +109,12 @@ class Settings(object):
 
     Attributes
     ----------
-    allow_hit
+    allow_hit : bool
         A hit occurs when an attribute at the destination already exists with
         the name given by the patch. If ``False``, the patch process won't
         allow setting a new value for the attribute by raising an exception.
         Defaults to ``False``.
-    store_hit
+    store_hit : bool
         If ``True`` and :attr:`allow_hit` is also set to ``True``, then any
         attribute at the destination that is hit is stored under a different
         name before being overwritten by the patch. Defaults to ``True``.
@@ -165,13 +165,13 @@ class Patch(object):
 
     Attributes
     ----------
-    destination
+    destination : obj
         Patch destination.
-    name
+    name : str
         Name of the attribute at the destination.
-    obj
+    obj : obj
         Attribute value.
-    settings
+    settings : gorilla.Settings or None
         Settings. If ``None``, the default settings are used.
 
     Warning
