@@ -341,13 +341,11 @@ class UtilsTest(GorillaTestCase):
         self.assertEqual(patches, expected_patches)
 
     def test_find_patches_2(self):
-        global frommodule, tomodule, subpackage, module1, module2
-        for module in [tomodule, frommodule, subpackage, module1, module2]:
-            if module.__name__ in sys.modules:
-                del sys.modules[module.__name__]
+        self.tearDown()
 
         patches = gorilla.find_patches([tests.utils])
 
+        global frommodule, tomodule, subpackage, module1, module2
         frommodule = sys.modules[frommodule.__name__]
         tommodule = sys.modules[tomodule.__name__]
         subpackage = sys.modules[subpackage.__name__]
