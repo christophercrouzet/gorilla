@@ -12,25 +12,32 @@ import sys
 import gorilla
 
 from tests._testcase import GorillaTestCase
-from tests.decorators import frommodule
-from tests.decorators import tomodule
+from tests import decorators as _decorators
+from tests.decorators import frommodule as _frommodule
+from tests.decorators import tomodule as _tomodule
+
+
+_MODULES = [
+    ('_decorators', _decorators.__name__),
+    ('_frommodule', _frommodule.__name__),
+    ('_tomodule', _tomodule.__name__),
+]
 
 
 class DecoratorsTest(GorillaTestCase):
 
     def setUp(self):
-        global frommodule, tomodule
-        tomodule = importlib.import_module(tomodule.__name__)
-        frommodule = importlib.import_module(frommodule.__name__)
+        for module, path in _MODULES:
+            globals()[module] = importlib.import_module(path)
 
     def tearDown(self):
-        for module in [tomodule, frommodule]:
-            if module.__name__ in sys.modules:
-                del sys.modules[module.__name__]
+        for module, path in _MODULES:
+            if path in sys.modules:
+                del sys.modules[path]
 
     def test_patch_decorator_on_function(self):
-        destination = tomodule
-        obj = gorilla.get_attribute(frommodule, 'function')
+        destination = _tomodule
+        obj = gorilla.get_attribute(_frommodule, 'function')
 
         self.assertIs(gorilla.patch(destination)(obj), obj)
 
@@ -41,8 +48,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patch_decorator_on_class(self):
-        destination = tomodule
-        obj = frommodule.Class
+        destination = _tomodule
+        obj = _frommodule.Class
 
         self.assertIs(gorilla.patch(destination)(obj), obj)
 
@@ -53,8 +60,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patch_decorator(self):
-        destination = tomodule
-        obj = gorilla.get_attribute(frommodule, 'function')
+        destination = _tomodule
+        obj = gorilla.get_attribute(_frommodule, 'function')
 
         settings = gorilla.Settings(allow_hit=True, store_hit=True)
         self.assertIs(gorilla.patch(destination, settings=settings)(obj), obj)
@@ -68,8 +75,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patches_decorator_on_class(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         self.assertIs(gorilla.patches(destination)(obj), obj)
 
@@ -86,8 +93,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_patches_decorator(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         settings = gorilla.Settings(allow_hit=True, store_hit=True)
         self.assertIs(gorilla.patches(destination, settings=settings)(obj), obj)
@@ -107,10 +114,10 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_destination_decorator(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
-        destination_override = tomodule.Parent
+        destination_override = _tomodule.Parent
         gorilla.destination(destination_override)(gorilla.get_attribute(obj, 'class_method'))
         gorilla.destination(destination_override)(gorilla.get_attribute(obj, 'method'))
         gorilla.destination(destination_override)(gorilla.get_attribute(obj, 'value'))
@@ -129,8 +136,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_name_decorator(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         name_override = 'whatever'
         gorilla.name(name_override)(gorilla.get_attribute(obj, 'class_method'))
@@ -151,8 +158,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_settings_decorator_1(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         gorilla.settings(some_value=123)(gorilla.get_attribute(obj, 'method'))
         gorilla.settings(allow_hit=True)(gorilla.get_attribute(obj, 'static_method'))
@@ -173,8 +180,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_settings_decorator_2(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         gorilla.settings(some_value=123)(gorilla.get_attribute(obj, 'method'))
         gorilla.settings(allow_hit=False)(gorilla.get_attribute(obj, 'static_method'))
@@ -195,8 +202,8 @@ class DecoratorsTest(GorillaTestCase):
         self.assertEqual(decorator_data.patches, expected_patches)
 
     def test_filter_decorator(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
 
         gorilla.filter(True)(gorilla.get_attribute(obj, '__init__'))
         gorilla.filter(False)(gorilla.get_attribute(obj, 'class_method'))

@@ -12,12 +12,12 @@ import sys
 import gorilla
 
 from tests._testcase import GorillaTestCase
-import tests.utils
-from tests.utils import frommodule
-from tests.utils import tomodule
-from tests.utils import subpackage
-from tests.utils.subpackage import module1
-from tests.utils.subpackage import module2
+from tests import utils as _utils
+from tests.utils import frommodule as _frommodule
+from tests.utils import tomodule as _tomodule
+from tests.utils import subpackage as _subpackage
+from tests.utils.subpackage import module1 as _module1
+from tests.utils.subpackage import module2 as _module2
 
 
 if sys.version_info[0] == 2:
@@ -34,24 +34,30 @@ else:
         return obj
 
 
+_MODULES = [
+    ('_utils', _utils.__name__),
+    ('_frommodule', _frommodule.__name__),
+    ('_tomodule', _tomodule.__name__),
+    ('_subpackage', _subpackage.__name__),
+    ('_module1', _module1.__name__),
+    ('_module2', _module2.__name__),
+]
+
+
 class UtilsTest(GorillaTestCase):
 
     def setUp(self):
-        global frommodule, tomodule, subpackage, module1, module2
-        tomodule = importlib.import_module(tomodule.__name__)
-        frommodule = importlib.import_module(frommodule.__name__)
-        subpackage = importlib.import_module(subpackage.__name__)
-        module1 = importlib.import_module(module1.__name__)
-        module2 = importlib.import_module(module2.__name__)
+        for module, path in _MODULES:
+            globals()[module] = importlib.import_module(path)
 
     def tearDown(self):
-        for module in [tomodule, frommodule, subpackage, module1, module2]:
-            if module.__name__ in sys.modules:
-                del sys.modules[module.__name__]
+        for module, path in _MODULES:
+            if path in sys.modules:
+                del sys.modules[path]
 
     def test_create_patches_1(self):
-        destination = tomodule
-        obj = frommodule
+        destination = _tomodule
+        obj = _frommodule
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
@@ -83,8 +89,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
@@ -98,8 +104,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Parent
-        obj = frommodule.Parent
+        destination = _tomodule.Parent
+        obj = _frommodule.Parent
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
@@ -112,8 +118,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Child
-        obj = frommodule.Child
+        destination = _tomodule.Child
+        obj = _frommodule.Child
         patches = gorilla.create_patches(destination, obj,
                                          use_decorators=False)
         expected_patches = [
@@ -128,8 +134,8 @@ class UtilsTest(GorillaTestCase):
         self.assertEqual(patches, expected_patches)
 
     def test_create_patches_2(self):
-        destination = tomodule
-        obj = frommodule
+        destination = _tomodule
+        obj = _frommodule
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
@@ -144,8 +150,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
@@ -158,8 +164,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Parent
-        obj = frommodule.Parent
+        destination = _tomodule.Parent
+        obj = _frommodule.Parent
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
@@ -172,8 +178,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Child
-        obj = frommodule.Child
+        destination = _tomodule.Child
+        obj = _frommodule.Child
         patches = gorilla.create_patches(destination, obj, recursive=False,
                                          use_decorators=False)
         expected_patches = [
@@ -191,8 +197,8 @@ class UtilsTest(GorillaTestCase):
         def filter(name, value):
             return 'method' in name
 
-        destination = tomodule
-        obj = frommodule
+        destination = _tomodule
+        obj = _frommodule
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
@@ -202,8 +208,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
@@ -213,8 +219,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Parent
-        obj = frommodule.Parent
+        destination = _tomodule.Parent
+        obj = _frommodule.Parent
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
@@ -222,8 +228,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Child
-        obj = frommodule.Child
+        destination = _tomodule.Child
+        obj = _frommodule.Child
         patches = gorilla.create_patches(destination, obj, filter=filter,
                                          use_decorators=False)
         expected_patches = [
@@ -235,8 +241,8 @@ class UtilsTest(GorillaTestCase):
         def filter(name, value):
             return 'method' in name
 
-        destination = tomodule
-        obj = frommodule
+        destination = _tomodule
+        obj = _frommodule
         patches = gorilla.create_patches(destination, obj, filter=filter)
         expected_patches = [
             gorilla.Patch(destination, 'function', gorilla.get_attribute(obj, 'function')),
@@ -245,8 +251,8 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
         patches = gorilla.create_patches(destination, obj, filter=filter)
         expected_patches = [
             gorilla.Patch(destination, 'class_method', gorilla.get_attribute(obj, 'class_method')),
@@ -254,16 +260,16 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Parent
-        obj = frommodule.Parent
+        destination = _tomodule.Parent
+        obj = _frommodule.Parent
         patches = gorilla.create_patches(destination, obj, filter=filter)
         expected_patches = [
             gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
         ]
         self.assertEqual(patches, expected_patches)
 
-        destination = tomodule.Child
-        obj = frommodule.Child
+        destination = _tomodule.Child
+        obj = _frommodule.Child
         patches = gorilla.create_patches(destination, obj, filter=filter)
         expected_patches = [
             gorilla.Patch(destination, 'method', gorilla.get_attribute(obj, 'method')),
@@ -271,8 +277,8 @@ class UtilsTest(GorillaTestCase):
         self.assertEqual(patches, expected_patches)
 
     def test_create_patches_5(self):
-        destination = tomodule
-        obj = frommodule
+        destination = _tomodule
+        obj = _frommodule
 
         gorilla.name('function')(gorilla.get_attribute(obj, 'Class'))
         gorilla.name('dummy_1')(gorilla.get_attribute(obj, 'Parent'))
@@ -291,8 +297,8 @@ class UtilsTest(GorillaTestCase):
         self.assertEqual(patches, expected_patches)
 
     def test_create_patches_6(self):
-        destination = tomodule.Class
-        obj = frommodule.Class
+        destination = _tomodule.Class
+        obj = _frommodule.Class
         patches = gorilla.create_patches(destination, obj, filter=None,
                                          recursive=False, use_decorators=False)
 
@@ -303,110 +309,106 @@ class UtilsTest(GorillaTestCase):
         self.assertEqual(patches, expected_patches)
 
     def test_find_patches_1(self):
-        patches = gorilla.find_patches([tests.utils])
+        patches = gorilla.find_patches([_utils])
         expected_patches = [
-            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
-            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
-            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
-            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule, 'function0', gorilla.get_attribute(subpackage, 'function')),
-            gorilla.Patch(tomodule, 'function1', gorilla.get_attribute(module1, 'function')),
-            gorilla.Patch(tomodule.Class, 'unbound_class_method', gorilla.get_attribute(module1, 'unbound_class_method')),
-            gorilla.Patch(tomodule.Class, 'unbound_method', gorilla.get_attribute(module1, 'unbound_method')),
-            gorilla.Patch(tomodule.Class, 'unbound_static_method', gorilla.get_attribute(module1, 'unbound_static_method')),
-            gorilla.Patch(tomodule.Class, 'method1', gorilla.get_attribute(module1.Class, 'method')),
-            gorilla.Patch(tomodule.Class, 'value1', gorilla.get_attribute(module1.Class, 'value')),
-            gorilla.Patch(tomodule.Class, 'class_method2', gorilla.get_attribute(module2.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'static_method2', gorilla.get_attribute(module2.Class, 'static_method')),
+            gorilla.Patch(_tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class, 'class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'whatever', gorilla.get_attribute(_frommodule.Class, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            gorilla.Patch(_tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class.Inner, 'method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
+            gorilla.Patch(_tomodule, 'function', gorilla.get_attribute(_frommodule, 'function')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule, 'function0', gorilla.get_attribute(_subpackage, 'function')),
+            gorilla.Patch(_tomodule, 'function1', gorilla.get_attribute(_module1, 'function')),
+            gorilla.Patch(_tomodule.Class, 'unbound_class_method', gorilla.get_attribute(_module1, 'unbound_class_method')),
+            gorilla.Patch(_tomodule.Class, 'unbound_method', gorilla.get_attribute(_module1, 'unbound_method')),
+            gorilla.Patch(_tomodule.Class, 'unbound_static_method', gorilla.get_attribute(_module1, 'unbound_static_method')),
+            gorilla.Patch(_tomodule.Class, 'method1', gorilla.get_attribute(_module1.Class, 'method')),
+            gorilla.Patch(_tomodule.Class, 'value1', gorilla.get_attribute(_module1.Class, 'value')),
+            gorilla.Patch(_tomodule.Class, 'class_method2', gorilla.get_attribute(_module2.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'static_method2', gorilla.get_attribute(_module2.Class, 'static_method')),
         ]
         self.assertEqual(patches, expected_patches)
 
-        patches = gorilla.find_patches([tests.utils], recursive=False)
+        patches = gorilla.find_patches([_utils], recursive=False)
         expected_patches = [
-            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
-            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
-            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
-            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class, 'class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'whatever', gorilla.get_attribute(_frommodule.Class, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            gorilla.Patch(_tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class.Inner, 'method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
+            gorilla.Patch(_tomodule, 'function', gorilla.get_attribute(_frommodule, 'function')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
         ]
         self.assertEqual(patches, expected_patches)
 
     def test_find_patches_2(self):
+        global _utils
         self.tearDown()
+        _utils = importlib.import_module(_utils.__name__)
 
-        patches = gorilla.find_patches([tests.utils])
-
-        global frommodule, tomodule, subpackage, module1, module2
-        frommodule = sys.modules[frommodule.__name__]
-        tommodule = sys.modules[tomodule.__name__]
-        subpackage = sys.modules[subpackage.__name__]
-        module1 = sys.modules[module1.__name__]
-        module2 = sys.modules[module2.__name__]
+        patches = gorilla.find_patches([_utils])
+        self.setUp()
 
         expected_patches = [
-            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
-            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
-            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
-            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule, 'function0', gorilla.get_attribute(subpackage, 'function')),
-            gorilla.Patch(tomodule, 'function1', gorilla.get_attribute(module1, 'function')),
-            gorilla.Patch(tomodule.Class, 'unbound_class_method', gorilla.get_attribute(module1, 'unbound_class_method')),
-            gorilla.Patch(tomodule.Class, 'unbound_method', gorilla.get_attribute(module1, 'unbound_method')),
-            gorilla.Patch(tomodule.Class, 'unbound_static_method', gorilla.get_attribute(module1, 'unbound_static_method')),
-            gorilla.Patch(tomodule.Class, 'method1', gorilla.get_attribute(module1.Class, 'method')),
-            gorilla.Patch(tomodule.Class, 'value1', gorilla.get_attribute(module1.Class, 'value')),
-            gorilla.Patch(tomodule.Class, 'class_method2', gorilla.get_attribute(module2.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'static_method2', gorilla.get_attribute(module2.Class, 'static_method')),
+            gorilla.Patch(_tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class, 'class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'whatever', gorilla.get_attribute(_frommodule.Class, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            gorilla.Patch(_tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class.Inner, 'method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
+            gorilla.Patch(_tomodule, 'function', gorilla.get_attribute(_frommodule, 'function')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule, 'function0', gorilla.get_attribute(_subpackage, 'function')),
+            gorilla.Patch(_tomodule, 'function1', gorilla.get_attribute(_module1, 'function')),
+            gorilla.Patch(_tomodule.Class, 'unbound_class_method', gorilla.get_attribute(_module1, 'unbound_class_method')),
+            gorilla.Patch(_tomodule.Class, 'unbound_method', gorilla.get_attribute(_module1, 'unbound_method')),
+            gorilla.Patch(_tomodule.Class, 'unbound_static_method', gorilla.get_attribute(_module1, 'unbound_static_method')),
+            gorilla.Patch(_tomodule.Class, 'method1', gorilla.get_attribute(_module1.Class, 'method')),
+            gorilla.Patch(_tomodule.Class, 'value1', gorilla.get_attribute(_module1.Class, 'value')),
+            gorilla.Patch(_tomodule.Class, 'class_method2', gorilla.get_attribute(_module2.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'static_method2', gorilla.get_attribute(_module2.Class, 'static_method')),
         ]
         self.assertEqual(patches, expected_patches)
 
-        patches = gorilla.find_patches([tests.utils], recursive=False)
+        patches = gorilla.find_patches([_utils], recursive=False)
         expected_patches = [
-            gorilla.Patch(tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class, 'class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            gorilla.Patch(tomodule.Class, 'whatever', gorilla.get_attribute(frommodule.Class, 'method')),
-            gorilla.Patch(tomodule.Parent, 'value', gorilla.get_attribute(frommodule.Class, 'value')),
-            gorilla.Patch(tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            gorilla.Patch(tomodule.Class.Inner, 'method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
-            gorilla.Patch(tomodule, 'function', gorilla.get_attribute(frommodule, 'function')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            gorilla.Patch(tomodule.Parent, 'method', gorilla.get_attribute(frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Class, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class, 'class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            gorilla.Patch(_tomodule.Class, 'whatever', gorilla.get_attribute(_frommodule.Class, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            gorilla.Patch(_tomodule.Class.Inner, 'STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            gorilla.Patch(_tomodule.Class.Inner, 'method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
+            gorilla.Patch(_tomodule, 'function', gorilla.get_attribute(_frommodule, 'function')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            gorilla.Patch(_tomodule.Parent, 'method', gorilla.get_attribute(_frommodule.Parent, 'method')),
         ]
         self.assertEqual(patches, expected_patches)
 
     def test_get_attribute(self):
-        self.assertIs(gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE'), frommodule.Class.__dict__['STATIC_VALUE'])
-        self.assertIs(gorilla.get_attribute(frommodule.Class, '__init__'), frommodule.Class.__dict__['__init__'])
-        self.assertIs(gorilla.get_attribute(frommodule.Class, 'value'), frommodule.Class.__dict__['value'])
-        self.assertIs(gorilla.get_attribute(frommodule.Class, 'method'), frommodule.Class.__dict__['method'])
-        self.assertIs(gorilla.get_attribute(frommodule.Class, 'class_method'), frommodule.Class.__dict__['class_method'])
-        self.assertIs(gorilla.get_attribute(frommodule.Class, 'static_method'), frommodule.Class.__dict__['static_method'])
-        self.assertIs(gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE'), frommodule.Parent.__dict__['STATIC_VALUE'])
-        self.assertIs(gorilla.get_attribute(frommodule.Parent, '__init__'), frommodule.Parent.__dict__['__init__'])
-        self.assertIs(gorilla.get_attribute(frommodule.Parent, 'method'), frommodule.Parent.__dict__['method'])
-        self.assertIs(gorilla.get_attribute(frommodule.Child, 'STATIC_VALUE'), frommodule.Parent.__dict__['STATIC_VALUE'])
-        self.assertIs(gorilla.get_attribute(frommodule.Child, '__init__'), frommodule.Child.__dict__['__init__'])
-        self.assertIs(gorilla.get_attribute(frommodule.Child, 'method'), frommodule.Parent.__dict__['method'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE'), _frommodule.Class.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, '__init__'), _frommodule.Class.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, 'value'), _frommodule.Class.__dict__['value'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, 'method'), _frommodule.Class.__dict__['method'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, 'class_method'), _frommodule.Class.__dict__['class_method'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Class, 'static_method'), _frommodule.Class.__dict__['static_method'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE'), _frommodule.Parent.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Parent, '__init__'), _frommodule.Parent.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Parent, 'method'), _frommodule.Parent.__dict__['method'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Child, 'STATIC_VALUE'), _frommodule.Parent.__dict__['STATIC_VALUE'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Child, '__init__'), _frommodule.Child.__dict__['__init__'])
+        self.assertIs(gorilla.get_attribute(_frommodule.Child, 'method'), _frommodule.Parent.__dict__['method'])
 
     def test_get_original_attribute(self):
-        destination = tomodule.Class
+        destination = _tomodule.Class
         name = 'method'
         target = gorilla.get_attribute(destination, name)
-        obj = gorilla.get_attribute(frommodule, 'unbound_method')
+        obj = gorilla.get_attribute(_frommodule, 'unbound_method')
         settings = gorilla.Settings(allow_hit=True)
         patch = gorilla.Patch(destination, name, obj, settings=settings)
 
@@ -417,137 +419,137 @@ class UtilsTest(GorillaTestCase):
         self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
 
     def test_get_members_1(self):
-        members = gorilla._get_members(frommodule)
+        members = gorilla._get_members(_frommodule)
         expected_members = [
-            ('Child', gorilla.get_attribute(frommodule, 'Child')),
-            ('Class', gorilla.get_attribute(frommodule, 'Class')),
-            ('Parent', gorilla.get_attribute(frommodule, 'Parent')),
-            ('function', gorilla.get_attribute(frommodule, 'function')),
-            ('global_variable', gorilla.get_attribute(frommodule, 'global_variable')),
-            ('unbound_class_method', gorilla.get_attribute(frommodule, 'unbound_class_method')),
-            ('unbound_method', gorilla.get_attribute(frommodule, 'unbound_method')),
-            ('unbound_static_method', gorilla.get_attribute(frommodule, 'unbound_static_method')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
-            ('Inner', frommodule.Class.Inner),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
-            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
-            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            ('Child', gorilla.get_attribute(_frommodule, 'Child')),
+            ('Class', gorilla.get_attribute(_frommodule, 'Class')),
+            ('Parent', gorilla.get_attribute(_frommodule, 'Parent')),
+            ('function', gorilla.get_attribute(_frommodule, 'function')),
+            ('global_variable', gorilla.get_attribute(_frommodule, 'global_variable')),
+            ('unbound_class_method', gorilla.get_attribute(_frommodule, 'unbound_class_method')),
+            ('unbound_method', gorilla.get_attribute(_frommodule, 'unbound_method')),
+            ('unbound_static_method', gorilla.get_attribute(_frommodule, 'unbound_static_method')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('child_value', gorilla.get_attribute(_frommodule.Child, 'child_value')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
+            ('Inner', _frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(_frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(_frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Class)
+        members = gorilla._get_members(_frommodule.Class)
         expected_members = [
-            ('Inner', frommodule.Class.Inner),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
-            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
-            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            ('Inner', _frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(_frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(_frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Parent)
+        members = gorilla._get_members(_frommodule.Parent)
         expected_members = [
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Child)
+        members = gorilla._get_members(_frommodule.Child)
         expected_members = [
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('child_value', gorilla.get_attribute(_frommodule.Child, 'child_value')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
         ]
         self.assertEqual(members, expected_members)
 
     def test_get_members_2(self):
-        members = gorilla._get_members(frommodule, traverse_bases=False)
+        members = gorilla._get_members(_frommodule, traverse_bases=False)
         expected_members = [
-            ('Child', gorilla.get_attribute(frommodule, 'Child')),
-            ('Class', gorilla.get_attribute(frommodule, 'Class')),
-            ('Parent', gorilla.get_attribute(frommodule, 'Parent')),
-            ('function', gorilla.get_attribute(frommodule, 'function')),
-            ('global_variable', gorilla.get_attribute(frommodule, 'global_variable')),
-            ('unbound_class_method', gorilla.get_attribute(frommodule, 'unbound_class_method')),
-            ('unbound_method', gorilla.get_attribute(frommodule, 'unbound_method')),
-            ('unbound_static_method', gorilla.get_attribute(frommodule, 'unbound_static_method')),
-            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
-            ('Inner', frommodule.Class.Inner),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
-            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
-            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            ('Child', gorilla.get_attribute(_frommodule, 'Child')),
+            ('Class', gorilla.get_attribute(_frommodule, 'Class')),
+            ('Parent', gorilla.get_attribute(_frommodule, 'Parent')),
+            ('function', gorilla.get_attribute(_frommodule, 'function')),
+            ('global_variable', gorilla.get_attribute(_frommodule, 'global_variable')),
+            ('unbound_class_method', gorilla.get_attribute(_frommodule, 'unbound_class_method')),
+            ('unbound_method', gorilla.get_attribute(_frommodule, 'unbound_method')),
+            ('unbound_static_method', gorilla.get_attribute(_frommodule, 'unbound_static_method')),
+            ('child_value', gorilla.get_attribute(_frommodule.Child, 'child_value')),
+            ('Inner', _frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(_frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(_frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Class, traverse_bases=False)
+        members = gorilla._get_members(_frommodule.Class, traverse_bases=False)
         expected_members = [
-            ('Inner', frommodule.Class.Inner),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class, 'STATIC_VALUE')),
-            ('class_method', gorilla.get_attribute(frommodule.Class, 'class_method')),
-            ('method', gorilla.get_attribute(frommodule.Class, 'method')),
-            ('static_method', gorilla.get_attribute(frommodule.Class, 'static_method')),
-            ('value', gorilla.get_attribute(frommodule.Class, 'value')),
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Class.Inner, 'STATIC_VALUE')),
-            ('method', gorilla.get_attribute(frommodule.Class.Inner, 'method')),
+            ('Inner', _frommodule.Class.Inner),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class, 'STATIC_VALUE')),
+            ('class_method', gorilla.get_attribute(_frommodule.Class, 'class_method')),
+            ('method', gorilla.get_attribute(_frommodule.Class, 'method')),
+            ('static_method', gorilla.get_attribute(_frommodule.Class, 'static_method')),
+            ('value', gorilla.get_attribute(_frommodule.Class, 'value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Class.Inner, 'STATIC_VALUE')),
+            ('method', gorilla.get_attribute(_frommodule.Class.Inner, 'method')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Parent, traverse_bases=False)
+        members = gorilla._get_members(_frommodule.Parent, traverse_bases=False)
         expected_members = [
-            ('STATIC_VALUE', gorilla.get_attribute(frommodule.Parent, 'STATIC_VALUE')),
-            ('from_value', gorilla.get_attribute(frommodule.Parent, 'from_value')),
-            ('instance_value', gorilla.get_attribute(frommodule.Parent, 'instance_value')),
-            ('method', gorilla.get_attribute(frommodule.Parent, 'method')),
-            ('parent_value', gorilla.get_attribute(frommodule.Parent, 'parent_value')),
-            ('to_value', gorilla.get_attribute(frommodule.Parent, 'to_value')),
+            ('STATIC_VALUE', gorilla.get_attribute(_frommodule.Parent, 'STATIC_VALUE')),
+            ('from_value', gorilla.get_attribute(_frommodule.Parent, 'from_value')),
+            ('instance_value', gorilla.get_attribute(_frommodule.Parent, 'instance_value')),
+            ('method', gorilla.get_attribute(_frommodule.Parent, 'method')),
+            ('parent_value', gorilla.get_attribute(_frommodule.Parent, 'parent_value')),
+            ('to_value', gorilla.get_attribute(_frommodule.Parent, 'to_value')),
         ]
         self.assertEqual(members, expected_members)
 
-        members = gorilla._get_members(frommodule.Child, traverse_bases=False)
+        members = gorilla._get_members(_frommodule.Child, traverse_bases=False)
         expected_members = [
-            ('child_value', gorilla.get_attribute(frommodule.Child, 'child_value')),
+            ('child_value', gorilla.get_attribute(_frommodule.Child, 'child_value')),
         ]
         self.assertEqual(members, expected_members)
 
     def test_get_members_3(self):
-        obj = frommodule
+        obj = _frommodule
         members = gorilla._get_members(obj, recursive=False)
         expected_members = [
             ('Child', gorilla.get_attribute(obj, 'Child')),
@@ -561,7 +563,7 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(members, expected_members)
 
-        obj = frommodule.Class
+        obj = _frommodule.Class
         members = gorilla._get_members(obj, recursive=False)
         expected_members = [
             ('Inner', gorilla.get_attribute(obj, 'Inner')),
@@ -573,7 +575,7 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(members, expected_members)
 
-        obj = frommodule.Parent
+        obj = _frommodule.Parent
         members = gorilla._get_members(obj, recursive=False)
         expected_members = [
             ('STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),
@@ -585,7 +587,7 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(members, expected_members)
 
-        obj = frommodule.Child
+        obj = _frommodule.Child
         members = gorilla._get_members(obj, recursive=False)
         expected_members = [
             ('STATIC_VALUE', gorilla.get_attribute(obj, 'STATIC_VALUE')),

@@ -14,11 +14,16 @@ import sys
 import gorilla
 
 from tests._testcase import GorillaTestCase
-from tests.core import frommodule
-from tests.core import tomodule
+from tests import core as _core
+from tests.core import frommodule as _frommodule
+from tests.core import tomodule as _tomodule
 
 
-_MODULES = [frommodule, tomodule]
+_MODULES = [
+    ('_core', _core.__name__),
+    ('_frommodule', _frommodule.__name__),
+    ('_tomodule', _tomodule.__name__),
+]
 
 _CLS_REFERENCES = {
     'Class': 'Class',
@@ -60,14 +65,13 @@ def _split_attribute_path(path):
 class CoreTest(GorillaTestCase):
 
     def setUp(self):
-        global frommodule, tomodule
-        tomodule = importlib.import_module(tomodule.__name__)
-        frommodule = importlib.import_module(frommodule.__name__)
+        for module, path in _MODULES:
+            globals()[module] = importlib.import_module(path)
 
     def tearDown(self):
-        for module in [tomodule, frommodule]:
-            if module.__name__ in sys.modules:
-                del sys.modules[module.__name__]
+        for module, path in _MODULES:
+            if path in sys.modules:
+                del sys.modules[path]
 
     def test_settings(self):
         settings_1 = gorilla.Settings()
@@ -94,10 +98,10 @@ class CoreTest(GorillaTestCase):
         self.assertEqual(str(gorilla.Settings(string='abc')), "Settings(allow_hit=False, store_hit=True, string='abc')")
 
     def test_patch(self):
-        patch_1 = gorilla.Patch(tomodule, 'dummy', frommodule.function)
-        patch_2 = gorilla.Patch(tomodule, 'dummy', frommodule.function, settings=None)
+        patch_1 = gorilla.Patch(_tomodule, 'dummy', _frommodule.function)
+        patch_2 = gorilla.Patch(_tomodule, 'dummy', _frommodule.function, settings=None)
         self.assertEqual(patch_1, patch_2)
-        self.assertNotEqual(patch_1, {'destination': tomodule, 'name': 'dummy', 'obj': frommodule.function, 'settings': None})
+        self.assertNotEqual(patch_1, {'destination': _tomodule, 'name': 'dummy', 'obj': _frommodule.function, 'settings': None})
 
         patch_1.name = 'function'
         self.assertNotEqual(patch_1, patch_2)
@@ -111,18 +115,18 @@ class CoreTest(GorillaTestCase):
         patch_2.some_value = 123
         self.assertEqual(patch_1, patch_2)
 
-        patch = gorilla.Patch(tomodule, 'dummy', frommodule.function)
-        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (tomodule, frommodule.function))
+        patch = gorilla.Patch(_tomodule, 'dummy', _frommodule.function)
+        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (_tomodule, _frommodule.function))
 
         patch.some_value = 123
-        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (tomodule, frommodule.function))
+        self.assertEqual(str(patch), "Patch(destination=%r, name='dummy', obj=%r, settings=None)" % (_tomodule, _frommodule.function))
 
     def test_apply_patch_no_hit(self):
         name = 'dummy'
         settings = gorilla.Settings()
 
-        source_paths = [''] + _list_attribute_paths(frommodule)
-        target_paths = _list_attribute_paths(tomodule)
+        source_paths = [''] + _list_attribute_paths(_frommodule)
+        target_paths = _list_attribute_paths(_tomodule)
 
         branch_count = 0
 
@@ -137,11 +141,11 @@ class CoreTest(GorillaTestCase):
         for source_path, destination_path in combinations:
             self.setUp()
 
-            destination = _get_attribute_from_path(tomodule, destination_path)
-            obj = _get_attribute_from_path(frommodule, source_path)
+            destination = _get_attribute_from_path(_tomodule, destination_path)
+            obj = _get_attribute_from_path(_frommodule, source_path)
             patch = gorilla.Patch(destination, name, obj, settings=settings)
             gorilla.apply(patch)
-            self.assertIs(destination, _get_attribute_from_path(tomodule, destination_path))
+            self.assertIs(destination, _get_attribute_from_path(_tomodule, destination_path))
 
             result = gorilla.get_attribute(destination, name)
             self.assertIs(result, obj)
@@ -234,15 +238,15 @@ class CoreTest(GorillaTestCase):
     def test_apply_patch_with_hit_1(self):
         settings = gorilla.Settings()
 
-        source_paths = [''] + _list_attribute_paths(frommodule)
-        target_paths = _list_attribute_paths(tomodule)
+        source_paths = [''] + _list_attribute_paths(_frommodule)
+        target_paths = _list_attribute_paths(_tomodule)
         combinations = itertools.product(source_paths, target_paths)
         for source_path, target_path in combinations:
             self.setUp()
 
             destination_path, name = _split_attribute_path(target_path)
-            destination = _get_attribute_from_path(tomodule, destination_path)
-            obj = _get_attribute_from_path(frommodule, source_path)
+            destination = _get_attribute_from_path(_tomodule, destination_path)
+            obj = _get_attribute_from_path(_frommodule, source_path)
             patch = gorilla.Patch(destination, name, obj, settings=settings)
             self.assertRaises(RuntimeError, gorilla.apply, patch)
 
@@ -253,19 +257,19 @@ class CoreTest(GorillaTestCase):
 
         branch_count = 0
 
-        source_paths = [''] + _list_attribute_paths(frommodule)
-        target_paths = _list_attribute_paths(tomodule)
+        source_paths = [''] + _list_attribute_paths(_frommodule)
+        target_paths = _list_attribute_paths(_tomodule)
         combinations = itertools.product(source_paths, target_paths)
         for source_path, target_path in combinations:
             self.setUp()
 
             destination_path, name = _split_attribute_path(target_path)
-            destination = _get_attribute_from_path(tomodule, destination_path)
+            destination = _get_attribute_from_path(_tomodule, destination_path)
             target = gorilla.get_attribute(destination, name)
-            obj = _get_attribute_from_path(frommodule, source_path)
+            obj = _get_attribute_from_path(_frommodule, source_path)
             patch = gorilla.Patch(destination, name, obj, settings=settings)
             gorilla.apply(patch)
-            self.assertIs(destination, _get_attribute_from_path(tomodule, destination_path))
+            self.assertIs(destination, _get_attribute_from_path(_tomodule, destination_path))
 
             result = gorilla.get_attribute(destination, name)
             self.assertIs(result, obj)
@@ -374,18 +378,18 @@ class CoreTest(GorillaTestCase):
     def test_apply_patch_with_hit_3(self):
         settings = gorilla.Settings(allow_hit=True, store_hit=False)
 
-        source_paths = [''] + _list_attribute_paths(frommodule)
-        target_paths = _list_attribute_paths(tomodule)
+        source_paths = [''] + _list_attribute_paths(_frommodule)
+        target_paths = _list_attribute_paths(_tomodule)
         combinations = itertools.product(source_paths, target_paths)
         for source_path, target_path in combinations:
             self.setUp()
 
             destination_path, name = _split_attribute_path(target_path)
-            destination = _get_attribute_from_path(tomodule, destination_path)
-            obj = _get_attribute_from_path(frommodule, source_path)
+            destination = _get_attribute_from_path(_tomodule, destination_path)
+            obj = _get_attribute_from_path(_frommodule, source_path)
             patch = gorilla.Patch(destination, name, obj, settings=settings)
             gorilla.apply(patch)
-            self.assertIs(destination, _get_attribute_from_path(tomodule, destination_path))
+            self.assertIs(destination, _get_attribute_from_path(_tomodule, destination_path))
 
             result = gorilla.get_attribute(destination, name)
             self.assertIs(result, obj)
