@@ -136,10 +136,10 @@ class Settings(object):
         values = ', '.join([
             '%s=%r' % (key, value)
             for key, value in sorted(_iteritems(self.__dict__))])
-        return "%s(%s)" % (self.__class__.__name__, values)
+        return "%s(%s)" % (type(self).__name__, values)
 
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, type(self)):
             return self.__dict__ == other.__dict__
 
         return NotImplemented
@@ -203,11 +203,11 @@ class Patch(object):
 
     def __repr__(self):
         return "%s(destination=%r, name=%r, obj=%r, settings=%r)" % (
-            self.__class__.__name__, self.destination, self.name, self.obj,
+            type(self).__name__, self.destination, self.name, self.obj,
             self.settings)
 
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, type(self)):
             return self.__dict__ == other.__dict__
 
         return NotImplemented

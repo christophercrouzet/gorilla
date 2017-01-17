@@ -25,10 +25,11 @@ def _find_tests(path, selectors=None):
                        for selector in selectors)
 
     out = []
+    loader = unittest.TestLoader()
     if path == '__main__':
-        root_test = unittest.TestLoader().loadTestsFromModule(sys.modules[path])
+        root_test = loader.loadTestsFromModule(sys.modules[path])
     else:
-        root_test = unittest.TestLoader().discover(path)
+        root_test = loader.discover(path)
 
     stack = collections.deque((root_test,))
     while stack:
@@ -52,7 +53,7 @@ def _get_test_name(test):
 
 
 def _get_test_full_name(test):
-    return '%s.%s.%s' % (test.__class__.__module__, test.__class__.__name__,
+    return '%s.%s.%s' % (type(test).__module__, type(test).__name__,
                          _get_test_name(test))
 
 
