@@ -23,7 +23,7 @@ import sys
 import types
 
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 
 if sys.version_info[0] == 2:
