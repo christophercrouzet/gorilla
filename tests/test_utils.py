@@ -418,7 +418,7 @@ class UtilsTest(GorillaTestCase):
         gorilla.apply(patch)
         self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
 
-    def test_get_members_1(self):
+    def test__get_members_1(self):
         members = gorilla._get_members(_frommodule)
         expected_members = [
             ('Child', gorilla.get_attribute(_frommodule, 'Child')),
@@ -489,7 +489,7 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(members, expected_members)
 
-    def test_get_members_2(self):
+    def test__get_members_2(self):
         members = gorilla._get_members(_frommodule, traverse_bases=False)
         expected_members = [
             ('Child', gorilla.get_attribute(_frommodule, 'Child')),
@@ -548,7 +548,7 @@ class UtilsTest(GorillaTestCase):
         ]
         self.assertEqual(members, expected_members)
 
-    def test_get_members_3(self):
+    def test__get_members_3(self):
         obj = _frommodule
         members = gorilla._get_members(obj, recursive=False)
         expected_members = [
