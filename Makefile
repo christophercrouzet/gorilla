@@ -29,10 +29,17 @@ doc:
 env:
 	virtualenv env
 
+lint:
+	@-pylint -r n gorilla
+
+style:
+	@-pycodestyle gorilla.py
+	@-pydocstyle gorilla.py
+
 test:
 	@python -m unittest discover -s tests -v
 
 upload:
 	@twine upload dist/*
 
-.PHONY: clean coverage dist doc env test upload
+.PHONY: clean coverage dist doc env lint style test upload

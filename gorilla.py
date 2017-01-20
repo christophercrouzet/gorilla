@@ -5,14 +5,10 @@
 #   |_____|
 #
 
-"""
-    gorilla
-    ~~~~~~~
+"""Convenient approach to monkey patching.
 
-    Convenient approach to monkey patching.
-
-    :copyright: Copyright 2014-2017 by Christopher Crouzet.
-    :license: MIT, see LICENSE for details.
+:copyright: Copyright 2014-2017 by Christopher Crouzet.
+:license: MIT, see LICENSE for details.
 """
 
 import collections
@@ -81,7 +77,6 @@ def default_filter(name, obj):
 
 
 class DecoratorData(object):
-
     """Decorator data.
 
     Attributes
@@ -104,7 +99,6 @@ class DecoratorData(object):
 
 
 class Settings(object):
-
     """Define the patching behaviour.
 
     Attributes
@@ -160,7 +154,6 @@ class Settings(object):
 
 
 class Patch(object):
-
     """Describe all the information required to apply a patch.
 
     Attributes
