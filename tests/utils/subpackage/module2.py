@@ -1,6 +1,6 @@
 import gorilla
 
-from tests.utils import tomodule
+import tests.utils.tomodule
 
 
 def function():
@@ -47,13 +47,13 @@ class Class(object):
         """subpackage.module2.Class.method"""
         return "subpackage.module2.Class.method"
 
-    @gorilla.patch(tomodule.Class, name='class_method2')
+    @gorilla.patch(tests.utils.tomodule.Class, name='class_method2')
     @classmethod
     def class_method(cls):
         """subpackage.module2.Class.class_method"""
         return "subpackage.module2.Class.class_method"
 
-    @gorilla.patch(tomodule.Class, name='static_method2')
+    @gorilla.patch(tests.utils.tomodule.Class, name='static_method2')
     @staticmethod
     def static_method():
         """subpackage.module2.Class.static_method"""

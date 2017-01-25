@@ -1,28 +1,28 @@
 import gorilla
 
-from tests.utils import tomodule
+import tests.utils.tomodule
 
 
-@gorilla.patch(tomodule, name='function1')
+@gorilla.patch(tests.utils.tomodule, name='function1')
 def function():
     """subpackage.module1.function"""
     return "subpackage.module1.function"
 
 
-@gorilla.patch(tomodule.Class)
+@gorilla.patch(tests.utils.tomodule.Class)
 def unbound_method(self):
     """subpackage.module1.unbound_method"""
     return "subpackage.module1.unbound_method"
 
 
-@gorilla.patch(tomodule.Class)
+@gorilla.patch(tests.utils.tomodule.Class)
 @classmethod
 def unbound_class_method(cls):
     """subpackage.module1.unbound_class_method"""
     return "subpackage.module1.unbound_class_method"
 
 
-@gorilla.patch(tomodule.Class)
+@gorilla.patch(tests.utils.tomodule.Class)
 @staticmethod
 def unbound_static_method():
     """subpackage.module1.unbound_static_method"""
@@ -42,13 +42,13 @@ class Class(object):
             return "subpackage.module1.Class.Inner.method"
 
 
-    @gorilla.patch(tomodule.Class, name='value1')
+    @gorilla.patch(tests.utils.tomodule.Class, name='value1')
     @property
     def value(self):
         """subpackage.module1.Class.value.getter"""
         return "subpackage.module1.Class.value.getter"
 
-    @gorilla.patch(tomodule.Class, name='method1')
+    @gorilla.patch(tests.utils.tomodule.Class, name='method1')
     def method(self):
         """subpackage.module1.Class.method"""
         return "subpackage.module1.Class.method"

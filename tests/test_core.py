@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 
-import os
-import sys
-_HERE = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
-
-
 import collections
 import importlib
 import itertools
+import os
 import sys
+
+_HERE = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
 
 import gorilla
 
+import tests.core as _core
+import tests.core.frommodule as _frommodule
+import tests.core.tomodule as _tomodule
 from tests._testcase import GorillaTestCase
-from tests import core as _core
-from tests.core import frommodule as _frommodule
-from tests.core import tomodule as _tomodule
 
 
 _MODULES = [

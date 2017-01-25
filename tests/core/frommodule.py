@@ -1,6 +1,6 @@
 import gorilla
 
-from tests.core import tomodule
+import tests.core.tomodule
 
 
 __all__ = ['global_variable', 'function', 'unbound_method',
@@ -99,7 +99,7 @@ class Parent(object):
     """frommodule.Parent"""
 
     __all__ = ['STATIC_VALUE', '__init__', 'method']
-    __slots__ = tomodule.Parent.__slots__ + ('from_value',)
+    __slots__ = tests.core.tomodule.Parent.__slots__ + ('from_value',)
 
     STATIC_VALUE = "frommodule.Parent.STATIC_VALUE"
 

@@ -1,9 +1,9 @@
 import gorilla
 
-from tests.utils import tomodule
+import tests.utils.tomodule
 
 
-@gorilla.patch(tomodule, name='function0')
+@gorilla.patch(tests.utils.tomodule, name='function0')
 def function():
     """subpackage.function"""
     return "subpackage.function"

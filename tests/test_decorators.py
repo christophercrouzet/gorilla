@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
+import importlib
 import os
 import sys
+
 _HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
 
-
-import importlib
-import sys
-
 import gorilla
 
+import tests.decorators as _decorators
+import tests.decorators.frommodule as _frommodule
+import tests.decorators.tomodule as _tomodule
 from tests._testcase import GorillaTestCase
-from tests import decorators as _decorators
-from tests.decorators import frommodule as _frommodule
-from tests.decorators import tomodule as _tomodule
 
 
 _MODULES = [

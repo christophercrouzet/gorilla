@@ -1,6 +1,6 @@
 import gorilla
 
-from tests.utils import tomodule
+import tests.utils.tomodule
 
 
 __all__ = ['global_variable', 'function', 'unbound_method',
@@ -13,7 +13,7 @@ global_variable = "frommodule.global_variable"
 
 
 @gorilla.filter(True)
-@gorilla.patch(tomodule)
+@gorilla.patch(tests.utils.tomodule)
 def function():
     """frommodule.function"""
     return "frommodule.function (%s)" % (Class.STATIC_VALUE,)
@@ -40,7 +40,7 @@ def unbound_static_method():
     return "frommodule.unbound_static_method (%s)" % (Class.STATIC_VALUE,)
 
 
-@gorilla.patches(tomodule.Class)
+@gorilla.patches(tests.utils.tomodule.Class)
 class Class(object):
 
     """frommodule.Class"""
@@ -74,7 +74,7 @@ class Class(object):
         self.stored_init_instance_value = self.instance_value
         self.instance_value = "frommodule.Class.instance_value"
 
-    @gorilla.destination(tomodule.Parent)
+    @gorilla.destination(tests.utils.tomodule.Parent)
     @property
     def value(self):
         """frommodule.Class.value.getter"""
@@ -109,7 +109,7 @@ class Parent(object):
     """frommodule.Parent"""
 
     __all__ = ['STATIC_VALUE', '__init__', 'method']
-    __slots__ = tomodule.Parent.__slots__ + ('from_value',)
+    __slots__ = tests.utils.tomodule.Parent.__slots__ + ('from_value',)
 
     STATIC_VALUE = "frommodule.Parent.STATIC_VALUE"
 
@@ -120,7 +120,7 @@ class Parent(object):
         self.to_value = "frommodule.Parent.to_value"
         self.from_value = "frommodule.Parent.from_value"
 
-    @gorilla.patch(tomodule.Parent)
+    @gorilla.patch(tests.utils.tomodule.Parent)
     def method(self):
         """frommodule.Parent.method"""
         return "frommodule.Parent.method (%s)" % (self.instance_value,)

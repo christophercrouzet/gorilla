@@ -1,23 +1,21 @@
 #!/usr/bin/env python
 
+import importlib
 import os
 import sys
+
 _HERE = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.abspath(os.path.join(_HERE, os.pardir)))
 
-
-import importlib
-import sys
-
 import gorilla
 
+import tests.utils as _utils
+import tests.utils.frommodule as _frommodule
+import tests.utils.tomodule as _tomodule
+import tests.utils.subpackage as _subpackage
+import tests.utils.subpackage.module1 as _module1
+import tests.utils.subpackage.module2 as _module2
 from tests._testcase import GorillaTestCase
-from tests import utils as _utils
-from tests.utils import frommodule as _frommodule
-from tests.utils import tomodule as _tomodule
-from tests.utils import subpackage as _subpackage
-from tests.utils.subpackage import module1 as _module1
-from tests.utils.subpackage import module2 as _module2
 
 
 if sys.version_info[0] == 2:
