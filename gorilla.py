@@ -5,11 +5,20 @@
 #   |_____|
 #
 
-"""Convenient approach to monkey patching.
+"""Convenient approach to monkey patching."""
 
-:copyright: Copyright 2014-2017 by Christopher Crouzet.
-:license: MIT, see LICENSE for details.
-"""
+__all__ = ['default_filter', 'DecoratorData', 'Settings', 'Patch', 'apply',
+           'patch', 'patches', 'destination', 'name', 'settings', 'filter',
+           'create_patches', 'find_patches', 'get_attribute',
+           'get_original_attribute', 'get_decorator_data']
+
+__title__ = 'gorilla'
+__version__ = '0.3.0'
+__summary__ = "Convenient approach to monkey patching"
+__url__ = 'https://github.com/christophercrouzet/gorilla'
+__author__ = "Christopher Crouzet"
+__contact__ = 'christopher.crouzet@gmail.com'
+__license__ = "MIT"
 
 import collections
 import copy
@@ -17,13 +26,6 @@ import inspect
 import pkgutil
 import sys
 import types
-
-
-__version__ = '0.3.0'
-__all__ = ['default_filter', 'DecoratorData', 'Settings', 'Patch', 'apply',
-           'patch', 'patches', 'destination', 'name', 'settings', 'filter',
-           'create_patches', 'find_patches', 'get_attribute',
-           'get_original_attribute', 'get_decorator_data']
 
 
 if sys.version_info[0] == 2:
