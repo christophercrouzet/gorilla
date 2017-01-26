@@ -86,5 +86,5 @@ class Child(Parent):
 
     def __init__(self):
         """tomodule.Child.__init__"""
-        super(type(self), self).__init__()
+        super(Child, self).__init__()
         self.child_value = "tomodule.Child.child_value"

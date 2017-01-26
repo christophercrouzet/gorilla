@@ -124,5 +124,5 @@ class Child(Parent):
 
     def __init__(self):
         """frommodule.Child.__init__"""
-        super(type(self), self).__init__()
+        super(Child, self).__init__()
         self.child_value = "frommodule.Child.child_value"
