@@ -17,13 +17,13 @@ Core
 
 .. autoclass:: Settings
    :members:
-   :special-members:
+   :special-members: __init__
 
 ----
 
 .. autoclass:: Patch
    :members:
-   :special-members:
+   :special-members:  __init__
 
 ----
 

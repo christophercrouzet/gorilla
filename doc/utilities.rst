@@ -41,7 +41,7 @@ Utilities
 
 .. autoclass:: DecoratorData
    :members:
-   :special-members:
+   :special-members: __init__
 
 ----
 
