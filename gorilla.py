@@ -149,13 +149,7 @@ class Settings(object):
         return is_equal if is_equal is NotImplemented else not is_equal
 
     def _update(self, **kwargs):
-        """Update some settings.
-
-        Parameters
-        ----------
-        kwargs
-            Settings to update.
-        """
+        """Update some settings."""
         self.__dict__.update(**kwargs)
 
 
@@ -218,18 +212,8 @@ class Patch(object):
     def _update(self, **kwargs):
         """Update some attributes.
 
-        If a 'settings' attribute is passed as a dict, then it will update the
+        If a 'settings' attribute is passed as a dict, then it updates the
         content of the settings, if any, instead of completely overwriting it.
-
-        Parameters
-        ----------
-        kwargs
-            Attributes to update.
-
-        Raises
-        ------
-        ValueError
-            The setting doesn't exist.
         """
         for key, value in _iteritems(kwargs):
             if key == 'settings':
@@ -714,18 +698,7 @@ def get_decorator_data(obj, set_default=False):
 
 
 def _get_base(obj):
-    """Unwrap decorators to retrieve the base object.
-
-    Parameters
-    ----------
-    obj : object
-        Object.
-
-    Returns
-    -------
-    object
-        The base object found or the input object otherwise.
-    """
+    """Unwrap decorators to retrieve the base object."""
     if hasattr(obj, '__func__'):
         obj = obj.__func__
     elif isinstance(obj, property):
@@ -744,27 +717,7 @@ def _get_members(obj, traverse_bases=True, filter=default_filter,
                  recursive=True):
     """Retrieve the member attributes of a module or a class.
 
-    The descriptor protocol is bypassed.
-
-    Parameters
-    ----------
-    obj : module or class
-        Object.
-    traverse_bases : bool
-        If the object is a class, the base classes are also traversed.
-    filter : function
-        Attributes for which the function returns ``False`` are skipped. The
-        function needs to define two parameters: ``name``, the attribute name,
-        and ``obj``, the attribute value. If ``None``, no attribute is skipped.
-    recursive : bool
-        ``True`` to search recursively through subclasses.
-
-    Returns
-    ------
-    list of (name, value)
-        A list of tuples each containing the name and the value of the
-        attribute.
-    """
+    The descriptor protocol is bypassed."""
     if filter is None:
         filter = _true
 
@@ -798,20 +751,7 @@ def _get_members(obj, traverse_bases=True, filter=default_filter,
 
 
 def _module_iterator(root, recursive=True):
-    """Iterate over modules.
-
-    Parameters
-    ----------
-    root : module
-        Root module or package to iterate from.
-    recursive : bool
-        ``True`` to iterate within subpackages.
-
-    Yields
-    ------
-    module
-        The modules found.
-    """
+    """Iterate over modules."""
     yield root
 
     stack = collections.deque((root,))
