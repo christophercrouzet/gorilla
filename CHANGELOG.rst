@@ -10,7 +10,7 @@ Version numbers comply with the `Sementic Versioning Specification (SemVer)`_.
 Added
 ^^^^^
 
-* Set the `__all__` attribute.
+* Set the ``__all__`` attribute.
 * Make use of styling and linting tools.
 
 
@@ -26,7 +26,7 @@ Changed
 Fixed
 ^^^^^
 
-* Fix `__weakref__` showing up in the doc.
+* Fix ``__weakref__`` showing up in the doc.
 * Fix the changelog reference.
 
 
