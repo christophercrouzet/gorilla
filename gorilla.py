@@ -51,6 +51,9 @@ else:
 # Pattern for each internal attribute name.
 _PATTERN = '_gorilla_%s'
 
+# Pattern for the flag expressing whether an attribute was created.
+_CREATED = _PATTERN % ('created_%s',)
+
 # Pattern for the name of the overidden attributes to be stored.
 _ORIGINAL_NAME = _PATTERN % ('original_%s',)
 
@@ -262,7 +265,8 @@ def apply(patch):
     try:
         target = get_attribute(patch.destination, patch.name)
     except AttributeError:
-        pass
+        created = _CREATED % (patch.name,)
+        setattr(patch.destination, created, True)
     else:
         if not settings.allow_hit:
             raise RuntimeError(
@@ -281,6 +285,39 @@ def apply(patch):
                 setattr(patch.destination, original_name, target)
 
     setattr(patch.destination, patch.name, patch.obj)
+
+
+def revert(patch):
+    """Revert a patch.
+
+    Parameters
+    ----------
+    patch : gorilla.Patch
+        Patch.
+
+    Note
+    ----
+    This is only possible if the attribute :attr:`Settings.store_hit` was set
+    to ``True`` when applying the patch and overriding an existing attribute.
+    """
+    created = _CREATED % (patch.name,)
+    if getattr(patch.destination, created, False):
+        delattr(patch.destination, patch.name)
+        return
+
+    target = get_attribute(patch.destination, patch.name)
+
+    try:
+        original = get_original_attribute(patch.destination, patch.name)
+    except AttributeError:
+        raise RuntimeError(
+                "Cannot revert the attribute named '%s' since the setting "
+                "'store_hit' was not set to True when applying the patch."
+                % (patch.destination.__name__,))
+
+    original_name = _ORIGINAL_NAME % (patch.name,)
+    setattr(patch.destination, patch.name, original)
+    delattr(patch.destination, original_name)
 
 
 def patch(destination, name=None, settings=None):
