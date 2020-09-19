@@ -396,6 +396,28 @@ class CoreTest(GorillaTestCase):
 
             self.tearDown()
 
+    def test_revert_patch(self):
+        self.setUp()
+
+        settings = gorilla.Settings(allow_hit=True)
+        destination = _tomodule
+        obj = _frommodule.global_variable
+
+        patch = gorilla.Patch(destination, 'dummy', obj, settings=settings)
+        gorilla.apply(patch)
+        self.assertEqual(_tomodule.dummy, "frommodule.global_variable")
+        gorilla.revert(patch)
+        self.assertRaises(AttributeError, getattr, _tomodule, 'dummy')
+
+
+        patch = gorilla.Patch(destination, 'global_variable', obj, settings=settings)
+        gorilla.apply(patch)
+        self.assertEqual(_tomodule.global_variable, "frommodule.global_variable")
+        gorilla.revert(patch)
+        self.assertEqual(_tomodule.global_variable, "tomodule.global_variable")
+
+        self.tearDown()
+
 
 if __name__ == '__main__':
     from tests.run import run

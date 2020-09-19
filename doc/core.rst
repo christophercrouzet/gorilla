@@ -28,3 +28,7 @@ Core
 ----
 
 .. autofunction:: apply
+
+----
+
+.. autofunction:: revert
