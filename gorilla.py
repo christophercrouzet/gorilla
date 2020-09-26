@@ -231,7 +231,7 @@ class Patch(object):
                 setattr(self, key, value)
 
 
-def apply(patch):
+def apply(patch, id='default'):
     """Apply a patch.
 
     The patch's :attr:`~Patch.obj` attribute is injected into the patch's
@@ -244,6 +244,9 @@ def apply(patch):
     ----------
     patch : gorilla.Patch
         Patch.
+    id : str
+        When applying a stack of patches on top of a same attribute, this
+        identifier allows to pinpoint a specific original attribute if needed.
 
     Raises
     ------
@@ -281,8 +284,10 @@ def apply(patch):
 
         if settings.store_hit:
             original_name = _ORIGINAL_NAME % (patch.name,)
-            if not hasattr(patch.destination, original_name):
-                setattr(patch.destination, original_name, target)
+            if hasattr(patch.destination, original_name):
+                getattr(patch.destination, original_name).append((id, target))
+            else:
+                setattr(patch.destination, original_name, [(id, target)])
 
     setattr(patch.destination, patch.name, patch.obj)
 
@@ -305,19 +310,19 @@ def revert(patch):
         delattr(patch.destination, patch.name)
         return
 
+    original_name = _ORIGINAL_NAME % (patch.name,)
     target = get_attribute(patch.destination, patch.name)
 
     try:
-        original = get_original_attribute(patch.destination, patch.name)
+        original_stack = getattr(patch.destination, original_name)
     except AttributeError:
         raise RuntimeError(
                 "Cannot revert the attribute named '%s' since the setting "
                 "'store_hit' was not set to True when applying the patch."
                 % (patch.destination.__name__,))
 
-    original_name = _ORIGINAL_NAME % (patch.name,)
-    setattr(patch.destination, patch.name, original)
-    delattr(patch.destination, original_name)
+    _, attr = original_stack.pop()
+    setattr(patch.destination, patch.name, attr)
 
 
 def patch(destination, name=None, settings=None):
@@ -675,7 +680,7 @@ def get_attribute(obj, name):
                          % (type(obj), name))
 
 
-def get_original_attribute(obj, name):
+def get_original_attribute(obj, name, id='default'):
     """Retrieve an overriden attribute that has been stored.
 
     Parameters
@@ -684,6 +689,8 @@ def get_original_attribute(obj, name):
         Object to search the attribute in.
     name : str
         Name of the attribute.
+    id : str
+        Identifier of the original attribute to retrieve from the stack.
 
     Returns
     -------
@@ -699,7 +706,13 @@ def get_original_attribute(obj, name):
     --------
     :attr:`Settings.allow_hit`.
     """
-    return getattr(obj, _ORIGINAL_NAME % (name,))
+    original_stack = getattr(obj, _ORIGINAL_NAME % (name,))
+    for original_id, original_attr in reversed(original_stack):
+        if original_id == id:
+            return original_attr
+
+    raise RuntimeError(
+        "No original attribute found  matching the id '%s'." % (id,))
 
 
 def get_decorator_data(obj, set_default=False):
