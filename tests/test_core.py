@@ -277,8 +277,8 @@ class CoreTest(GorillaTestCase):
             # expected.
             original = gorilla.get_attribute(destination,
                                              '_gorilla_original_%s' % (name,))
-            self.assertIs(original, target)
-            self.assertIsNot(original, result)
+            self.assertIs(original[-1][1], target)
+            self.assertIsNot(original[-1][1], result)
 
             if source_path == '':
                 branch_count += 1
@@ -415,6 +415,22 @@ class CoreTest(GorillaTestCase):
         self.assertEqual(_tomodule.global_variable, "frommodule.global_variable")
         gorilla.revert(patch)
         self.assertEqual(_tomodule.global_variable, "tomodule.global_variable")
+
+        self.tearDown()
+
+    def test_stack_patches(self):
+        self.setUp()
+
+        settings = gorilla.Settings(allow_hit=True)
+        destination = _tomodule
+
+        patch = gorilla.Patch(_tomodule, 'stack', _frommodule.stack_1, settings=settings)
+        gorilla.apply(patch, id='first')
+
+        patch = gorilla.Patch(_tomodule, 'stack', _frommodule.stack_2, settings=settings)
+        gorilla.apply(patch, id='second')
+
+        self.assertEqual(_tomodule.stack(), ("blue", "white", "red"))
 
         self.tearDown()
 

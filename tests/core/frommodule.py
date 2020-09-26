@@ -126,3 +126,13 @@ class Child(Parent):
         """frommodule.Child.__init__"""
         super(Child, self).__init__()
         self.child_value = "frommodule.Child.child_value"
+
+
+def stack_1():
+    original = gorilla.get_original_attribute(tests.core.tomodule, 'stack', id='first')()
+    return original + ("white",)
+
+
+def stack_2():
+    original = gorilla.get_original_attribute(tests.core.tomodule, 'stack', id='second')()
+    return original + ("red",)

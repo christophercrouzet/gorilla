@@ -97,3 +97,7 @@ class Child(Parent):
         """tomodule.Child.__init__"""
         super(Child, self).__init__()
         self.child_value = "tomodule.Child.child_value"
+
+
+def stack():
+    return ("blue",)
