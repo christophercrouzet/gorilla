@@ -272,14 +272,6 @@ class CoreTest(GorillaTestCase):
             result = gorilla.get_attribute(destination, name)
             self.assertIs(result, obj)
 
-            # `gorilla.get_original_attribute` cannot be used here because it
-            # could return a bounded method, which would not compare as
-            # expected.
-            original = gorilla.get_attribute(destination,
-                                             '_gorilla_original_%s' % (name,))
-            self.assertIs(original[-1][1], target)
-            self.assertIsNot(original[-1][1], result)
-
             if source_path == '':
                 branch_count += 1
                 self.assertEqual(result.global_variable, "frommodule.global_variable")

@@ -413,9 +413,6 @@ class UtilsTest(GorillaTestCase):
         gorilla.apply(patch)
         self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
 
-        gorilla.apply(patch)
-        self.assertIs(_unfold(gorilla.get_original_attribute(destination, name)), target)
-
     def test__get_members_1(self):
         members = gorilla._get_members(_frommodule)
         expected_members = [
