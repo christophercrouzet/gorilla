@@ -54,8 +54,11 @@ _PATTERN = '_gorilla_%s'
 # Pattern for the flag expressing whether an attribute was created.
 _CREATED = _PATTERN % ('created_%s',)
 
-# Pattern for the name of the overidden attributes to be stored.
-_ORIGINAL_NAME = _PATTERN % ('original_%s',)
+# Pattern for the ids of the original attributes stored.
+_ORIGINAL_IDS = _PATTERN % ('ids_%s',)
+
+# Pattern for each original attribute stored.
+_ORIGINAL_ITEM = _PATTERN % ('item_%s_%d',)
 
 # Attribute for the decorator data.
 _DECORATOR_DATA = _PATTERN % ('decorator_data',)
@@ -283,11 +286,14 @@ def apply(patch, id='default'):
                 % (patch.name, patch.destination.__name__))
 
         if settings.store_hit:
-            original_name = _ORIGINAL_NAME % (patch.name,)
-            if hasattr(patch.destination, original_name):
-                getattr(patch.destination, original_name).append((id, target))
-            else:
-                setattr(patch.destination, original_name, [(id, target)])
+            original_ids = _ORIGINAL_IDS % (patch.name,)
+            ids = getattr(patch.destination, original_ids, ())
+
+            original_item = _ORIGINAL_ITEM % (patch.name, len(ids))
+            setattr(patch.destination, original_item, target)
+
+            ids += (id,)
+            setattr(patch.destination, original_ids, ids)
 
     setattr(patch.destination, patch.name, patch.obj)
 
@@ -310,19 +316,22 @@ def revert(patch):
         delattr(patch.destination, patch.name)
         return
 
-    original_name = _ORIGINAL_NAME % (patch.name,)
-    target = get_attribute(patch.destination, patch.name)
-
+    original_ids = _ORIGINAL_IDS % (patch.name,)
     try:
-        original_stack = getattr(patch.destination, original_name)
+        ids = getattr(patch.destination, original_ids)
+        if not ids:
+            raise AttributeError
     except AttributeError:
         raise RuntimeError(
                 "Cannot revert the attribute named '%s' since the setting "
                 "'store_hit' was not set to True when applying the patch."
                 % (patch.destination.__name__,))
 
-    _, attr = original_stack.pop()
+    original_item = _ORIGINAL_ITEM % (patch.name, len(ids) - 1)
+    attr = getattr(patch.destination, original_item)
     setattr(patch.destination, patch.name, attr)
+    delattr(patch.destination, original_item)
+    setattr(patch.destination, original_ids, ids[:-1])
 
 
 def patch(destination, name=None, settings=None):
@@ -706,12 +715,23 @@ def get_original_attribute(obj, name, id='default'):
     --------
     :attr:`Settings.allow_hit`.
     """
-    original_stack = getattr(obj, _ORIGINAL_NAME % (name,))
-    for original_id, original_attr in reversed(original_stack):
-        if original_id == id:
-            return original_attr
+    original_ids = _ORIGINAL_IDS % (name,)
+    try:
+        ids = getattr(obj, original_ids)
+        if not ids:
+            raise AttributeError
+    except AttributeError:
+        raise AttributeError(
+            "Cannot retrieve the attribute named '%s' since the setting "
+            "'store_hit' was not set to True when applying the patch."
+            % (obj.__name__,))
 
-    raise RuntimeError(
+    for i, original_id in reversed(tuple(enumerate(ids))):
+        if original_id == id:
+            original_item = _ORIGINAL_ITEM % (name, i)
+            return getattr(obj, original_item)
+
+    raise AttributeError(
         "No original attribute found  matching the id '%s'." % (id,))
 
 
