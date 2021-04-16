@@ -153,6 +153,9 @@ class Settings(object):
             for key, value in sorted(_iteritems(self.__dict__))])
         return '{}({})'.format(type(self).__name__, values)
 
+    def __hash__(self):
+        return hash(sorted(_iteritems(self.__dict__)))
+
     def __eq__(self, other):
         if isinstance(other, type(self)):
             return self.__dict__ == other.__dict__
@@ -215,6 +218,9 @@ class Patch(object):
             .format(
                 type(self).__name__, self.destination, self.name, self.obj,
                 self.settings))
+
+    def __hash__(self):
+        return hash(sorted(_iteritems(self.__dict__)))
 
     def __eq__(self, other):
         if isinstance(other, type(self)):
@@ -334,9 +340,9 @@ def revert(patch):
             raise AttributeError
     except AttributeError:
         raise RuntimeError(
-                "Cannot revert the attribute named '{}' since the setting "
-                "'store_hit' was not set to True when applying the patch."
-                .format(patch.destination.__name__))
+            "Cannot revert the attribute named '{}' since the setting "
+            "'store_hit' was not set to True when applying the patch."
+            .format(patch.destination.__name__))
 
     original_item = _ORIGINAL_ITEM.format(patch.name, len(ids) - 1)
     attr = getattr(patch.destination, original_item)
@@ -798,7 +804,8 @@ def _get_members(obj, traverse_bases=True, filter=default_filter,
                  recursive=True):
     """Retrieve the member attributes of a module or a class.
 
-    The descriptor protocol is bypassed."""
+    The descriptor protocol is bypassed.
+    """
     if filter is None:
         filter = _true
 
