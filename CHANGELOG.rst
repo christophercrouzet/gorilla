@@ -10,8 +10,20 @@ Version numbers comply with the `Sementic Versioning Specification (SemVer)`_.
 Added
 ^^^^^
 
+* Implement a new public function to revert a patch.
+* Support applying stacks of patches.
+* Include the utf-8 shebang to all source files.
+* Enforce Python 3 compatibility with the ``__future__`` module.
+* Testing with Python versions 3.7, 3,8, and 3.9.
 * Set the ``__all__`` attribute.
 * Make use of styling and linting tools.
+
+
+Removed
+^^^^^^^
+
+* Testing with Python version 3.3.
+* Testing of the representation outputs.
 
 
 Changed
@@ -21,6 +33,8 @@ Changed
 * Rework the project's metadata.
 * Shorten docstrings for non-public functions.
 * Make minor tweaks to the code.
+* Use the ‘new’ string formatting method.
+* Update the contact's email.
 
 
 Fixed
