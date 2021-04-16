@@ -26,7 +26,7 @@ __version__ = '0.3.0'
 __summary__ = "Convenient approach to monkey patching"
 __url__ = 'https://github.com/christophercrouzet/gorilla'
 __author__ = "Christopher Crouzet"
-__contact__ = 'christopher.crouzet@gmail.com'
+__contact__ = 'christopher@crouzet.pm'
 __license__ = "MIT"
 
 import collections
