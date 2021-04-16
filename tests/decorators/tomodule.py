@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #: tomodule.global_variable
 global_variable = "tomodule.global_variable"
 
