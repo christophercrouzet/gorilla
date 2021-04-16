@@ -22,7 +22,7 @@ __all__ = ['default_filter', 'DecoratorData', 'Settings', 'Patch', 'apply',
            'get_original_attribute', 'get_decorator_data']
 
 __title__ = 'gorilla'
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __summary__ = "Convenient approach to monkey patching"
 __url__ = 'https://github.com/christophercrouzet/gorilla'
 __author__ = "Christopher Crouzet"

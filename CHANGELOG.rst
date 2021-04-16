@@ -7,6 +7,10 @@ Version numbers comply with the `Sementic Versioning Specification (SemVer)`_.
 `Unreleased`_
 -------------
 
+
+`v0.4.0`_ (2021-04-17)
+----------------------
+
 Added
 ^^^^^
 
@@ -118,6 +122,7 @@ v0.0.1 (2014-06-21)
 
 .. _Sementic Versioning Specification (SemVer): http://semver.org
 .. _Unreleased: https://github.com/christophercrouzet/gorilla/compare/v0.3.0...HEAD
+.. _v0.4.0: https://github.com/christophercrouzet/gorilla/compare/v0.3.0...v0.4.0
 .. _v0.3.0: https://github.com/christophercrouzet/gorilla/compare/v0.2.0...v0.3.0
 .. _v0.2.0: https://github.com/christophercrouzet/gorilla/compare/v0.1.0...v0.2.0
 .. _v0.1.0: https://github.com/christophercrouzet/gorilla/compare/v0.0.1...v0.1.0
