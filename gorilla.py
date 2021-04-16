@@ -58,19 +58,19 @@ else:
 
 
 # Pattern for each internal attribute name.
-_PATTERN = '_gorilla_%s'
+_PATTERN = '_gorilla_{}'
 
 # Pattern for the flag expressing whether an attribute was created.
-_CREATED = _PATTERN % ('created_%s',)
+_CREATED = _PATTERN.format('created_{}')
 
 # Pattern for the ids of the original attributes stored.
-_ORIGINAL_IDS = _PATTERN % ('ids_%s',)
+_ORIGINAL_IDS = _PATTERN.format('ids_{}')
 
 # Pattern for each original attribute stored.
-_ORIGINAL_ITEM = _PATTERN % ('item_%s_%d',)
+_ORIGINAL_ITEM = _PATTERN.format('item_{}_{}')
 
 # Attribute for the decorator data.
-_DECORATOR_DATA = _PATTERN % ('decorator_data',)
+_DECORATOR_DATA = _PATTERN.format('decorator_data')
 
 
 def default_filter(name, obj):
@@ -149,9 +149,9 @@ class Settings(object):
 
     def __repr__(self):
         values = ', '.join([
-            '%s=%r' % (key, value)
+            '{}={!r}'.format(key, value)
             for key, value in sorted(_iteritems(self.__dict__))])
-        return "%s(%s)" % (type(self).__name__, values)
+        return '{}({})'.format(type(self).__name__, values)
 
     def __eq__(self, other):
         if isinstance(other, type(self)):
@@ -210,9 +210,11 @@ class Patch(object):
         self.settings = settings
 
     def __repr__(self):
-        return "%s(destination=%r, name=%r, obj=%r, settings=%r)" % (
-            type(self).__name__, self.destination, self.name, self.obj,
-            self.settings)
+        return (
+            '{}(destination={!r}, name={!r}, obj={!r}, settings={!r})'
+            .format(
+                type(self).__name__, self.destination, self.name, self.obj,
+                self.settings))
 
     def __eq__(self, other):
         if isinstance(other, type(self)):
@@ -280,25 +282,25 @@ def apply(patch, id='default'):
     try:
         target = get_attribute(patch.destination, patch.name)
     except AttributeError:
-        created = _CREATED % (patch.name,)
+        created = _CREATED.format(patch.name)
         setattr(patch.destination, created, True)
     else:
         if not settings.allow_hit:
             raise RuntimeError(
-                "An attribute named '%s' already exists at the destination "
-                "'%s'. Set a different name through the patch object to avoid "
+                "An attribute named '{}' already exists at the destination "
+                "'{}'. Set a different name through the patch object to avoid "
                 "a name clash or set the setting 'allow_hit' to True to "
                 "overwrite the attribute. In the latter case, it is "
                 "recommended to also set the 'store_hit' setting to True in "
                 "order to store the original attribute under a different "
                 "name so it can still be accessed."
-                % (patch.name, patch.destination.__name__))
+                .format(patch.name, patch.destination.__name__))
 
         if settings.store_hit:
-            original_ids = _ORIGINAL_IDS % (patch.name,)
+            original_ids = _ORIGINAL_IDS.format(patch.name)
             ids = getattr(patch.destination, original_ids, ())
 
-            original_item = _ORIGINAL_ITEM % (patch.name, len(ids))
+            original_item = _ORIGINAL_ITEM.format(patch.name, len(ids))
             setattr(patch.destination, original_item, target)
 
             ids += (id,)
@@ -320,23 +322,23 @@ def revert(patch):
     This is only possible if the attribute :attr:`Settings.store_hit` was set
     to ``True`` when applying the patch and overriding an existing attribute.
     """
-    created = _CREATED % (patch.name,)
+    created = _CREATED.format(patch.name)
     if getattr(patch.destination, created, False):
         delattr(patch.destination, patch.name)
         return
 
-    original_ids = _ORIGINAL_IDS % (patch.name,)
+    original_ids = _ORIGINAL_IDS.format(patch.name)
     try:
         ids = getattr(patch.destination, original_ids)
         if not ids:
             raise AttributeError
     except AttributeError:
         raise RuntimeError(
-                "Cannot revert the attribute named '%s' since the setting "
+                "Cannot revert the attribute named '{}' since the setting "
                 "'store_hit' was not set to True when applying the patch."
-                % (patch.destination.__name__,))
+                .format(patch.destination.__name__))
 
-    original_item = _ORIGINAL_ITEM % (patch.name, len(ids) - 1)
+    original_item = _ORIGINAL_ITEM.format(patch.name, len(ids) - 1)
     attr = getattr(patch.destination, original_item)
     setattr(patch.destination, patch.name, attr)
     delattr(patch.destination, original_item)
@@ -694,8 +696,8 @@ def get_attribute(obj, name):
         except AttributeError:
             pass
 
-    raise AttributeError("'%s' object has no attribute '%s'"
-                         % (type(obj), name))
+    raise AttributeError("'{}' object has no attribute '{}'"
+                         .format(type(obj), name))
 
 
 def get_original_attribute(obj, name, id='default'):
@@ -724,24 +726,24 @@ def get_original_attribute(obj, name, id='default'):
     --------
     :attr:`Settings.allow_hit`.
     """
-    original_ids = _ORIGINAL_IDS % (name,)
+    original_ids = _ORIGINAL_IDS.format(name)
     try:
         ids = getattr(obj, original_ids)
         if not ids:
             raise AttributeError
     except AttributeError:
         raise AttributeError(
-            "Cannot retrieve the attribute named '%s' since the setting "
+            "Cannot retrieve the attribute named '{}' since the setting "
             "'store_hit' was not set to True when applying the patch."
-            % (obj.__name__,))
+            .format(obj.__name__))
 
     for i, original_id in reversed(tuple(enumerate(ids))):
         if original_id == id:
-            original_item = _ORIGINAL_ITEM % (name, i)
+            original_item = _ORIGINAL_ITEM.format(name, i)
             return getattr(obj, original_item)
 
     raise AttributeError(
-        "No original attribute found  matching the id '%s'." % (id,))
+        "No original attribute found  matching the id '{}'.".format(id))
 
 
 def get_decorator_data(obj, set_default=False):
@@ -842,7 +844,7 @@ def _module_iterator(root, recursive=True):
         for path in paths:
             modules = pkgutil.iter_modules([path])
             for finder, name, is_package in modules:
-                module_name = '%s.%s' % (package.__name__, name)
+                module_name = '{}.{}'.format(package.__name__, name)
                 module = sys.modules.get(module_name, None)
                 if module is None:
                     # Import the module through the finder to support package
