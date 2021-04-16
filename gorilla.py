@@ -9,6 +9,13 @@
 
 """Convenient approach to monkey patching."""
 
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
+
 __all__ = ['default_filter', 'DecoratorData', 'Settings', 'Patch', 'apply',
            'patch', 'patches', 'destination', 'name', 'settings', 'filter',
            'create_patches', 'find_patches', 'get_attribute',
