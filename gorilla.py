@@ -31,6 +31,7 @@ __license__ = "MIT"
 
 import collections
 import copy
+import importlib.util
 import inspect
 import pkgutil
 import sys
@@ -46,7 +47,7 @@ if sys.version_info[0] == 2:
     def _load_module(finder, name):
         loader = finder.find_module(name)
         return loader.load_module(name)
-else:
+elif sys.version_info < (3, 5):
     _CLASS_TYPES = (type,)
 
     def _iteritems(d, **kwargs):
@@ -55,6 +56,18 @@ else:
     def _load_module(finder, name):
         loader, _ = finder.find_loader(name)
         return loader.load_module()
+else:
+    _CLASS_TYPES = (type,)
+
+    def _iteritems(d, **kwargs):
+        return iter(d.items(**kwargs))
+
+    def _load_module(finder, name):
+        spec = finder.find_spec(name)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
 
 
 # Pattern for each internal attribute name.
