@@ -8,6 +8,16 @@ Version numbers comply with the `Sementic Versioning Specification (SemVer)`_.
 -------------
 
 
+`v0.5.0`_ (2026-03-14)
+----------------------
+
+Fixed
+^^^^^
+
+* Fix module loading for Python 3.12+ by replacing the removed
+  ``find_loader``/``load_module`` APIs with ``find_spec``/``exec_module``.
+
+
 `v0.4.0`_ (2021-04-17)
 ----------------------
 
@@ -121,7 +131,8 @@ v0.0.1 (2014-06-21)
 
 
 .. _Sementic Versioning Specification (SemVer): http://semver.org
-.. _Unreleased: https://github.com/christophercrouzet/gorilla/compare/v0.4.0...HEAD
+.. _Unreleased: https://github.com/christophercrouzet/gorilla/compare/v0.5.0...HEAD
+.. _v0.5.0: https://github.com/christophercrouzet/gorilla/compare/v0.4.0...v0.5.0
 .. _v0.4.0: https://github.com/christophercrouzet/gorilla/compare/v0.3.0...v0.4.0
 .. _v0.3.0: https://github.com/christophercrouzet/gorilla/compare/v0.2.0...v0.3.0
 .. _v0.2.0: https://github.com/christophercrouzet/gorilla/compare/v0.1.0...v0.2.0
